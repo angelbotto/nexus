@@ -115,13 +115,51 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| — | — | — |
+| CONF-01 | Phase 1 | Pending |
+| CONF-02 | Phase 3 | Pending |
+| CONF-03 | Phase 3 | Pending |
+| CONF-04 | Phase 1 | Pending |
+| CONF-05 | Phase 3 | Pending |
+| NAV-01 | Phase 2 | Pending |
+| NAV-02 | Phase 2 | Pending |
+| NAV-03 | Phase 2 | Pending |
+| NAV-04 | Phase 2 | Pending |
+| NAV-05 | Phase 2 | Pending |
+| NAV-06 | Phase 3 | Pending |
+| KEY-01 | Phase 2 | Pending |
+| KEY-02 | Phase 2 | Pending |
+| KEY-03 | Phase 2 | Pending |
+| KEY-04 | Phase 2 | Pending |
+| CMD-01 | Phase 3 | Pending |
+| CMD-02 | Phase 3 | Pending |
+| CMD-03 | Phase 3 | Pending |
+| CMD-04 | Phase 3 | Pending |
+| WEB-01 | Phase 1 | Pending |
+| WEB-02 | Phase 4 | Pending |
+| WEB-03 | Phase 4 | Pending |
+| WEB-04 | Phase 4 | Pending |
+| WEB-05 | Phase 1 | Pending |
+| WEB-06 | Phase 1 | Pending |
+| WEB-07 | Phase 1 | Pending |
+| WEB-08 | Phase 2 | Pending |
+| VIS-01 | Phase 2 | Pending |
+| VIS-02 | Phase 2 | Pending |
+| VIS-03 | Phase 4 | Pending |
+| VIS-04 | Phase 2 | Pending |
+| PERF-01 | Phase 4 | Pending |
+| PERF-02 | Phase 4 | Pending |
+| PERF-03 | Phase 4 | Pending |
+| PERF-04 | Phase 5 | Pending |
+| PLAT-01 | Phase 1 | Pending |
+| PLAT-02 | Phase 5 | Pending |
+| PLAT-03 | Phase 5 | Pending |
+| PLAT-04 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 30 total
-- Mapped to phases: 0
-- Unmapped: 30
+- Mapped to phases: 30
+- Unmapped: 0
 
 ---
 *Requirements defined: 2025-03-18*
-*Last updated: 2025-03-18 after initial definition*
+*Last updated: 2026-03-18 after roadmap creation*
