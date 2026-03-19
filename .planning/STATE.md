@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: in_progress
-stopped_at: "Completed 02-sidebar-navigation/02-01-PLAN.md"
-last_updated: "2026-03-19T05:43:00Z"
+status: completed
+stopped_at: Completed 02-sidebar-navigation/02-02-PLAN.md
+last_updated: "2026-03-19T05:47:47.090Z"
 last_activity: 2026-03-19 — Plan 02-01 complete (config schema extension + save_config + switch_app_impl)
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 7
-  completed_plans: 4
+  completed_plans: 5
   percent: 57
 ---
 
@@ -51,6 +51,7 @@ Progress: [████░░░░░░] 57% (Phase 2 in progress — Plan 02-
 - Trend: fast execution on well-scoped plans
 
 *Updated after each plan completion*
+| Phase 02-sidebar-navigation P02 | 8 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -72,6 +73,9 @@ Recent decisions affecting current work:
 - [Plan 01-03]: 300ms debounce absorbs atomic editor saves (temp file → rename) without flicker
 - [Plan 02-01]: serde rename_all = "camelCase" on all config structs — JSON keys match TypeScript camelCase conventions (lastActiveAppId, sidebarCollapsed)
 - [Plan 02-01]: switch_app_impl takes &AppHandle and &Mutex<AppState> (not State<>) — only signature compatible with both IPC and shortcut handler direct calls
+- [Phase 02-02]: App.tsx owns local config state copy synced from useAppsConfig via useEffect — avoids modifying hook before Plan 02-03 handles watcher loop prevention
+- [Phase 02-02]: groupApps() silently skips groups with no matching apps; Other bucket always rendered last with no header
+- [Phase 02-02]: Tailwind v4 @theme block in index.css for custom sidebar color token (--color-sidebar: #111117)
 
 ### Pending Todos
 
@@ -85,6 +89,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T05:43:00Z
-Stopped at: Completed 02-sidebar-navigation/02-01-PLAN.md
-Resume file: .planning/phases/02-sidebar-navigation/02-02-PLAN.md
+Last session: 2026-03-19T05:47:47.086Z
+Stopped at: Completed 02-sidebar-navigation/02-02-PLAN.md
+Resume file: None

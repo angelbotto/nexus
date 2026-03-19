@@ -46,7 +46,7 @@ Plans:
   3. User can press Cmd+B to collapse the sidebar, and the webview expands to fill the full window; pressing Cmd+B again restores the sidebar
   4. User can press Cmd+R to reload the currently active app webview
   5. Apps are visually grouped in the sidebar under collapsible group labels matching their `group` field in the config
-**Plans:** 4 plans
+**Plans:** 2/4 plans executed
 Plans:
 - [x] 02-01-PLAN.md — Extend config schema (Rust + TS) and add save_config command
 - [ ] 02-02-PLAN.md — Sidebar UI refactor with groups, Arc dark mode aesthetic
@@ -94,7 +94,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete    | 2026-03-19 |
-| 2. Sidebar & Navigation | 1/4 | In progress | - |
+| 2. Sidebar & Navigation | 2/4 | In Progress|  |
 | 3. Command Palette & Config Management | 0/TBD | Not started | - |
 | 4. Performance & Activity | 0/TBD | Not started | - |
 | 5. Cross-Platform Distribution | 0/TBD | Not started | - |
