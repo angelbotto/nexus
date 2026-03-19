@@ -1,6 +1,6 @@
 use std::sync::Mutex;
 
-use tauri::{AppHandle, Manager, State, WebviewUrl, WebviewWindowBuilder};
+use tauri::{AppHandle, Emitter, Manager, State, WebviewUrl, WebviewWindowBuilder};
 use tauri::webview::NewWindowResponse;
 use tauri_plugin_opener::OpenerExt;
 
@@ -101,8 +101,12 @@ pub fn switch_app_impl(
     }
 
     // Update active app
-    let mut st = state.lock().map_err(|e| e.to_string())?;
-    st.active_app_id = Some(app_id);
+    {
+        let mut st = state.lock().map_err(|e| e.to_string())?;
+        st.active_app_id = Some(app_id.clone());
+    }
+
+    let _ = app_handle.emit("app-switched", &app_id);
 
     Ok(())
 }

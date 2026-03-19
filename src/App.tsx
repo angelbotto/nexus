@@ -5,7 +5,7 @@ import { Sidebar } from "./components/Sidebar";
 import type { NexusConfig } from "./types";
 
 function App() {
-  const { config: hookConfig, activeAppId, switchApp, loading } = useAppsConfig();
+  const { config: hookConfig, activeAppId, sidebarCollapsed, switchApp, loading } = useAppsConfig();
   const [config, setConfig] = useState<NexusConfig | null>(null);
 
   useEffect(() => {
@@ -42,7 +42,7 @@ function App() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-950">
-      {!config.sidebarCollapsed && (
+      {!sidebarCollapsed && (
         <Sidebar
           config={config}
           activeAppId={activeAppId}
