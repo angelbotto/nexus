@@ -79,7 +79,7 @@ Each task was committed atomically:
 1. **Task 1: Create AppIcon component and refactor Sidebar with groups and Arc aesthetic** - `e696989` (feat)
 2. **Task 2: Update App.tsx layout with webview card styling and sidebar toggle support** - `579dfda` (feat)
 
-**Plan metadata:** (docs commit — pending)
+**Plan metadata:** `45f69e8` (docs: complete plan)
 
 ## Files Created/Modified
 - `src/components/AppIcon.tsx` - Favicon with onError first-letter fallback
