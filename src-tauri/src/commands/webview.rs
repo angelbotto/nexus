@@ -7,11 +7,10 @@ use tauri_plugin_opener::OpenerExt;
 use crate::routing::{extract_base_domain, is_oauth_provider, is_subdomain_of, make_store_id};
 use crate::state::AppState;
 
-#[tauri::command]
-pub fn switch_app(
+pub fn switch_app_impl(
     app_id: String,
-    state: State<'_, Mutex<AppState>>,
-    app_handle: AppHandle,
+    app_handle: &AppHandle,
+    state: &Mutex<AppState>,
 ) -> Result<(), String> {
     let (already_created, app_url, prev_app_id) = {
         let st = state.lock().map_err(|e| e.to_string())?;
@@ -46,7 +45,7 @@ pub fn switch_app(
         let base_domain_new_win = base_domain.clone();
 
         WebviewWindowBuilder::new(
-            &app_handle,
+            app_handle,
             &label,
             WebviewUrl::External(url),
         )
@@ -106,4 +105,13 @@ pub fn switch_app(
     st.active_app_id = Some(app_id);
 
     Ok(())
+}
+
+#[tauri::command]
+pub fn switch_app(
+    app_id: String,
+    state: State<'_, Mutex<AppState>>,
+    app_handle: AppHandle,
+) -> Result<(), String> {
+    switch_app_impl(app_id, &app_handle, &state)
 }

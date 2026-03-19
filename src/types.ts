@@ -8,9 +8,12 @@ export interface AppConfig {
 export interface GroupConfig {
   id: string;
   name: string;
+  collapsed: boolean;
 }
 
 export interface NexusConfig {
   groups: GroupConfig[];
   apps: AppConfig[];
+  lastActiveAppId: string | null;
+  sidebarCollapsed: boolean;
 }
