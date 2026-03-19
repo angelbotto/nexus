@@ -33,8 +33,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Command Palette
 
-- [ ] **CMD-01**: User can open a command palette overlay with Cmd+K
-- [ ] **CMD-02**: User can fuzzy search across all app names to quickly switch
+- [x] **CMD-01**: User can open a command palette overlay with Cmd+K
+- [x] **CMD-02**: User can fuzzy search across all app names to quickly switch
 - [x] **CMD-03**: User can add a new app URL from the command palette
 - [x] **CMD-04**: User can access quick actions (reload, remove app) from command palette
 
@@ -130,8 +130,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | KEY-02 | Phase 2 | Complete |
 | KEY-03 | Phase 2 | Complete |
 | KEY-04 | Phase 2 | Pending |
-| CMD-01 | Phase 3 | Pending |
-| CMD-02 | Phase 3 | Pending |
+| CMD-01 | Phase 3 | Complete |
+| CMD-02 | Phase 3 | Complete |
 | CMD-03 | Phase 3 | Complete |
 | CMD-04 | Phase 3 | Complete |
 | WEB-01 | Phase 1 | Done (01-02) |

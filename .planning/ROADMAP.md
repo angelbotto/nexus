@@ -62,7 +62,7 @@ Plans:
   2. User can add a new app (name + URL) from the command palette without touching `apps.json` directly, and the new app immediately appears in the sidebar
   3. User can remove an app from the command palette or sidebar context, and it disappears from both the sidebar and `apps.json`
   4. User can drag and drop an app in the sidebar to reorder it, and the new order is written back to `apps.json` immediately
-**Plans:** 4 plans
+**Plans:** 2/4 plans executed
 Plans:
 - [ ] 03-01-PLAN.md — Test infra + config mutation functions + destroy_webview command
 - [ ] 03-02-PLAN.md — Command palette component with fuzzy search and action modes
@@ -100,6 +100,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete    | 2026-03-19 |
 | 2. Sidebar & Navigation | 3/4 | Complete    | 2026-03-19 |
-| 3. Command Palette & Config Management | 0/4 | Not started | - |
+| 3. Command Palette & Config Management | 2/4 | In Progress|  |
 | 4. Performance & Activity | 0/TBD | Not started | - |
 | 5. Cross-Platform Distribution | 0/TBD | Not started | - |
