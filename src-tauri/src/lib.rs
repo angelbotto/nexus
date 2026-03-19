@@ -244,6 +244,7 @@ pub fn run() {
             commands::webview::reload_active_webview,
             commands::webview::reload_webview,
             commands::webview::set_active_webview_dimmed,
+            commands::webview::notify_title_changed,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

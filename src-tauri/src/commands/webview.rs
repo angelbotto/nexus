@@ -5,6 +5,29 @@ use tauri::{AppHandle, LogicalPosition, LogicalSize, Manager, State, WebviewUrl}
 use tauri_plugin_opener::OpenerExt;
 
 #[tauri::command]
+pub fn notify_title_changed(
+    app_id: String,
+    title: String,
+    state: State<'_, Mutex<AppState>>,
+    app_handle: AppHandle,
+) -> Result<(), String> {
+    let is_active = {
+        let st = state.lock().map_err(|e| e.to_string())?;
+        st.active_app_id.as_deref() == Some(app_id.as_str())
+    };
+    if !is_active {
+        if let Some(main_wv) = app_handle.get_webview("main") {
+            let payload = serde_json::json!({ "appId": app_id, "title": title });
+            let _ = main_wv.eval(&format!(
+                "window.dispatchEvent(new CustomEvent('app-title-changed', {{ detail: {} }}))",
+                payload
+            ));
+        }
+    }
+    Ok(())
+}
+
+#[tauri::command]
 pub fn destroy_webview(
     app_id: String,
     state: State<'_, Mutex<AppState>>,
@@ -125,10 +148,33 @@ pub fn switch_app_impl(
             .parse()
             .map_err(|e| format!("invalid URL '{}': {}", app_url_clone, e))?;
 
+        let init_script = format!(
+            r#"(function() {{
+    var _lastTitle = document.title;
+    function checkTitle() {{
+        if (document.title !== _lastTitle) {{
+            _lastTitle = document.title;
+            try {{
+                window.__TAURI_INTERNALS__.invoke('notify_title_changed', {{
+                    appId: '{}',
+                    title: document.title
+                }});
+            }} catch(e) {{}}
+        }}
+    }}
+    var observer = new MutationObserver(checkTitle);
+    observer.observe(document.documentElement, {{
+        subtree: true, childList: true, characterData: true
+    }});
+}})();"#,
+            app_id
+        );
+
         let child_wv = main_window
             .add_child(
                 WebviewBuilder::new(&label, WebviewUrl::External(url))
                     .data_store_identifier(store_id)
+                    .initialization_script(&init_script)
                     .on_navigation(move |_nav_url| {
                         // Allow all in-page navigations (OAuth, widgets, redirects).
                         // External link handling is only on target="_blank" (on_new_window).
