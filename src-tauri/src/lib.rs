@@ -21,6 +21,7 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             commands::config::load_config,
+            commands::config::reload_config,
             commands::webview::switch_app,
         ])
         .run(tauri::generate_context!())
