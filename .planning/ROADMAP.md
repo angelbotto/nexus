@@ -78,7 +78,7 @@ Plans:
   2. Switching between two previously visited apps feels instant — no reload, under 100ms perceived latency
   3. With 10 app webviews visited, RAM stays under 500 MB; the LRU pool evicts the least-recently-used webview when the pool is full, and revisiting an evicted app reloads it correctly
   4. When a background app's page title changes (e.g., new message count in Gmail), a dot badge appears on its sidebar icon
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 Plans:
 - [ ] 04-01-PLAN.md — LRU webview pool with eviction logic in switch_app_impl
 - [ ] 04-02-PLAN.md — Activity badge dots via MutationObserver + title change IPC
@@ -105,5 +105,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 1. Foundation | 3/3 | Complete    | 2026-03-19 |
 | 2. Sidebar & Navigation | 3/4 | Complete    | 2026-03-19 |
 | 3. Command Palette & Config Management | 3/4 | Complete    | 2026-03-19 |
-| 4. Performance & Activity | 0/3 | Not started | - |
+| 4. Performance & Activity | 1/3 | In Progress|  |
 | 5. Cross-Platform Distribution | 0/TBD | Not started | - |

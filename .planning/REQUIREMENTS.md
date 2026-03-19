@@ -41,9 +41,9 @@ Requirements for initial release. Each maps to roadmap phases.
 ### WebView
 
 - [x] **WEB-01**: Each app loads its URL in a dedicated webview
-- [ ] **WEB-02**: Webviews use lazy loading — only created on first visit, not at startup
-- [ ] **WEB-03**: Recently used webviews stay alive (LRU cache), inactive ones are unloaded
-- [ ] **WEB-04**: Switching between cached webviews feels instant (no reload)
+- [x] **WEB-02**: Webviews use lazy loading — only created on first visit, not at startup
+- [x] **WEB-03**: Recently used webviews stay alive (LRU cache), inactive ones are unloaded
+- [x] **WEB-04**: Switching between cached webviews feels instant (no reload)
 - [x] **WEB-05**: Sessions (cookies, login state) persist across app restarts
 - [x] **WEB-06**: Each app has isolated session storage (separate data directory)
 - [x] **WEB-07**: External links (different domain) open in system default browser
@@ -58,9 +58,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Performance
 
-- [ ] **PERF-01**: App starts in under 1 second (cold start)
-- [ ] **PERF-02**: Switching between cached apps takes < 100ms perceived
-- [ ] **PERF-03**: RAM stays under 500MB with 10 active webviews
+- [x] **PERF-01**: App starts in under 1 second (cold start)
+- [x] **PERF-02**: Switching between cached apps takes < 100ms perceived
+- [x] **PERF-03**: RAM stays under 500MB with 10 active webviews
 - [ ] **PERF-04**: Binary size is small (under 15MB for the app bundle)
 
 ### Platform
@@ -135,9 +135,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CMD-03 | Phase 3 | Complete |
 | CMD-04 | Phase 3 | Complete |
 | WEB-01 | Phase 1 | Done (01-02) |
-| WEB-02 | Phase 4 | Pending |
-| WEB-03 | Phase 4 | Pending |
-| WEB-04 | Phase 4 | Pending |
+| WEB-02 | Phase 4 | Complete |
+| WEB-03 | Phase 4 | Complete |
+| WEB-04 | Phase 4 | Complete |
 | WEB-05 | Phase 1 | Done (01-02) |
 | WEB-06 | Phase 1 | Done (01-02) |
 | WEB-07 | Phase 1 | Complete |
@@ -146,9 +146,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | VIS-02 | Phase 2 | Complete |
 | VIS-03 | Phase 4 | Pending |
 | VIS-04 | Phase 2 | Complete |
-| PERF-01 | Phase 4 | Pending |
-| PERF-02 | Phase 4 | Pending |
-| PERF-03 | Phase 4 | Pending |
+| PERF-01 | Phase 4 | Complete |
+| PERF-02 | Phase 4 | Complete |
+| PERF-03 | Phase 4 | Complete |
 | PERF-04 | Phase 5 | Pending |
 | PLAT-01 | Phase 1 | Done (01-01) |
 | PLAT-02 | Phase 5 | Pending |
