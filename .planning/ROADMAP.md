@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Tauri scaffold, config layer, session-isolated WebviewWindows, IPC boundary
 - [x] **Phase 2: Sidebar & Navigation** - Sidebar UI, app switching, keyboard shortcuts, dark mode (completed 2026-03-19)
-- [ ] **Phase 3: Command Palette & Config Management** - Cmd+K palette, add/remove apps in-app, drag-drop reorder
+- [x] **Phase 3: Command Palette & Config Management** - Cmd+K palette, add/remove apps in-app, drag-drop reorder (completed 2026-03-19)
 - [ ] **Phase 4: Performance & Activity** - Lazy loading, LRU pool, activity badge dots, perf validation
 - [ ] **Phase 5: Cross-Platform Distribution** - macOS intel, Linux, Windows builds and installers
 
@@ -62,7 +62,7 @@ Plans:
   2. User can add a new app (name + URL) from the command palette without touching `apps.json` directly, and the new app immediately appears in the sidebar
   3. User can remove an app from the command palette or sidebar context, and it disappears from both the sidebar and `apps.json`
   4. User can drag and drop an app in the sidebar to reorder it, and the new order is written back to `apps.json` immediately
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans complete
 Plans:
 - [ ] 03-01-PLAN.md — Test infra + config mutation functions + destroy_webview command
 - [ ] 03-02-PLAN.md — Command palette component with fuzzy search and action modes
@@ -100,6 +100,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete    | 2026-03-19 |
 | 2. Sidebar & Navigation | 3/4 | Complete    | 2026-03-19 |
-| 3. Command Palette & Config Management | 3/4 | In Progress|  |
+| 3. Command Palette & Config Management | 3/4 | Complete    | 2026-03-19 |
 | 4. Performance & Activity | 0/TBD | Not started | - |
 | 5. Cross-Platform Distribution | 0/TBD | Not started | - |
