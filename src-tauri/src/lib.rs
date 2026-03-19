@@ -4,6 +4,7 @@ use tauri::Manager;
 
 mod commands;
 mod config;
+mod routing;
 mod state;
 
 use state::AppState;
