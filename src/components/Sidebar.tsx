@@ -30,13 +30,8 @@ export function Sidebar({ config, activeAppId, switchApp }: SidebarProps) {
   );
 
   return (
-    <aside className="flex h-full w-[220px] flex-shrink-0 flex-col bg-gray-900">
-      <div className="px-4 py-3">
-        <span className="text-xs font-semibold uppercase tracking-widest text-gray-400">
-          Nexus
-        </span>
-      </div>
-      <nav className="flex-1 overflow-y-auto px-2 pb-2">
+    <aside className="flex h-full w-[220px] flex-shrink-0 flex-col bg-[#111117]">
+      <nav className="flex-1 overflow-y-auto px-2 pt-8 pb-2">
         {config.groups.map((group) => {
           const groupApps = config.apps.filter((app) => app.group === group.id);
           const isCollapsed = collapsedGroups[group.id] ?? false;

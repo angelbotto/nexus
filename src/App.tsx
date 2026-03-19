@@ -21,12 +21,14 @@ function App() {
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-[#111117]">
       {sidebarVisible && (
         <Sidebar config={config} activeAppId={activeAppId} switchApp={switchApp} />
       )}
-      <main className="flex flex-1 items-center justify-center bg-gray-950 text-sm text-gray-600">
-        {activeAppId ? null : "Select an app"}
+      <main className="flex flex-1 items-center justify-center text-sm text-gray-600">
+        {!activeAppId && (
+          <span className="text-gray-500">Select an app</span>
+        )}
       </main>
     </div>
   );

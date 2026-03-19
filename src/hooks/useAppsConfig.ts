@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
 import { watch } from "@tauri-apps/plugin-fs";
 import { homeDir } from "@tauri-apps/api/path";
 import type { NexusConfig } from "../types";
@@ -20,20 +19,21 @@ export function useAppsConfig(): UseAppsConfigResult {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let unwatchFn: (() => void) | null = null;
-    let unlistenAppSwitched: (() => void) | null = null;
-    let unlistenSidebarToggle: (() => void) | null = null;
+    let cancelled = false;
+    const cleanupFns: Array<() => void> = [];
 
     async function init() {
       const loaded = await invoke<NexusConfig>("load_config");
+      if (cancelled) return;
       setConfig(loaded);
       setSidebarVisible(!loaded.sidebarCollapsed);
       setLoading(false);
 
       const home = await homeDir();
+      if (cancelled) return;
       const configPath = `${home}/.nexus/apps.json`;
 
-      unwatchFn = await watch(
+      const unwatchFn = await watch(
         configPath,
         async () => {
           try {
@@ -45,24 +45,40 @@ export function useAppsConfig(): UseAppsConfigResult {
         },
         { delayMs: 300 }
       );
-
-      // Sync active app when Rust switches via keyboard shortcut (Cmd+1-9)
-      unlistenAppSwitched = await listen<string>("app-switched", (event) => {
-        setActiveAppId(event.payload);
-      });
-
-      // Toggle sidebar visibility when Rust emits sidebar-toggle (Cmd+B)
-      unlistenSidebarToggle = await listen("sidebar-toggle", () => {
-        setSidebarVisible((prev) => !prev);
-      });
+      if (cancelled) { unwatchFn(); return; }
+      cleanupFns.push(unwatchFn);
     }
 
     init().catch(() => setLoading(false));
 
+    // Listen for DOM CustomEvents injected by Rust via eval() — this bypasses
+    // Tauri's event system which doesn't reliably deliver to the main webview
+    // when child webviews have focus.
+    function handleAppSwitched(e: Event) {
+      const detail = (e as CustomEvent).detail;
+      if (typeof detail === "string") {
+        setActiveAppId(detail);
+      }
+    }
+
+    function handleSidebarToggle() {
+      setSidebarVisible((prev) => {
+        const next = !prev;
+        invoke("resize_active_webview", { sidebarVisible: next }).catch(() => {});
+        return next;
+      });
+    }
+
+    window.addEventListener("app-switched", handleAppSwitched);
+    window.addEventListener("sidebar-toggle", handleSidebarToggle);
+    cleanupFns.push(() => {
+      window.removeEventListener("app-switched", handleAppSwitched);
+      window.removeEventListener("sidebar-toggle", handleSidebarToggle);
+    });
+
     return () => {
-      if (unwatchFn) unwatchFn();
-      if (unlistenAppSwitched) unlistenAppSwitched();
-      if (unlistenSidebarToggle) unlistenSidebarToggle();
+      cancelled = true;
+      for (const fn of cleanupFns) fn();
     };
   }, []);
 
