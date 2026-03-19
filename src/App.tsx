@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   DndContext,
   closestCenter,
@@ -39,6 +40,12 @@ function App() {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
+
+  // Dim the active child webview while the palette is open so the palette
+  // is readable over the dimmed page content (native webviews always composite above parent DOM).
+  useEffect(() => {
+    invoke("set_active_webview_dimmed", { dimmed: isPaletteOpen }).catch(() => {});
+  }, [isPaletteOpen]);
 
   useEffect(() => {
     function handleOpenPalette() {
@@ -177,6 +184,15 @@ function App() {
       onDragEnd={handleDragEnd}
       onDragCancel={handleDragCancel}
     >
+      {/* Top drag region — spans the gap above the webview (40px).
+          Uses onMouseDown + startDragging() because data-tauri-drag-region
+          doesn't work reliably with titleBarStyle Overlay. */}
+      <div
+        className="fixed top-0 left-0 right-0 h-10 z-30"
+        onMouseDown={() => {
+          getCurrentWindow().startDragging().catch(() => {});
+        }}
+      />
       <div className="flex h-screen overflow-hidden bg-[#111117]">
         {sidebarVisible && (
           <Sidebar

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useSortable, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Menu, MenuItem, PredefinedMenuItem } from "@tauri-apps/api/menu";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import type { NexusConfig, AppConfig, GroupConfig } from "../types";
 
 interface SidebarProps {
@@ -160,7 +161,13 @@ export function Sidebar({
 
   return (
     <aside className="flex h-full w-[220px] flex-shrink-0 flex-col bg-[#111117]">
-      <nav className="flex-1 overflow-y-auto px-2 pt-8 pb-2">
+      <div
+        className="h-10 w-full flex-shrink-0"
+        onMouseDown={() => {
+          getCurrentWindow().startDragging().catch(() => {});
+        }}
+      />
+      <nav className="flex-1 overflow-y-auto px-2 pb-2">
         <SortableContext items={groupIds} strategy={verticalListSortingStrategy}>
           {config.groups.map((group) => {
             const groupApps = config.apps.filter((app) => app.group === group.id);

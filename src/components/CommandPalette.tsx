@@ -217,12 +217,12 @@ export function CommandPalette({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh]"
-      style={{ background: "rgba(0,0,0,0.45)" }}
+      className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]"
+      style={{ background: "rgba(0,0,0,0.6)" }}
       onClick={onClose}
     >
       <div
-        className="w-[560px] rounded-xl bg-[#1c1c21] shadow-2xl ring-1 ring-white/10"
+        className="w-[560px] rounded-xl bg-[#111117] shadow-2xl ring-1 ring-white/10"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search / Action input */}
@@ -270,7 +270,7 @@ export function CommandPalette({
           <div className="border-t border-white/5" />
         ) : null}
 
-        {/* Search results */}
+        {/* Search results + quick actions */}
         {mode === "search" && (
           <ul className="max-h-[300px] overflow-y-auto py-1">
             {searchResults.map((app, i) => (
@@ -296,6 +296,30 @@ export function CommandPalette({
             ))}
             {searchResults.length === 0 && query !== "" && (
               <li className="px-4 py-3 text-sm text-gray-600">No apps match "{query}"</li>
+            )}
+            {/* Quick actions always visible at bottom of search results */}
+            <li className="border-t border-white/5 mt-1" />
+            <li
+              className={`flex cursor-pointer items-center gap-3 px-4 py-2 text-sm transition-colors ${
+                selectedIndex === searchResults.length ? "bg-white/10 text-white" : "text-gray-400 hover:bg-white/5 hover:text-white"
+              }`}
+              onClick={() => { setMode("add-form"); setSelectedIndex(0); }}
+              onMouseEnter={() => setSelectedIndex(searchResults.length)}
+            >
+              <span className="text-gray-500">+</span>
+              <span>Add new app</span>
+            </li>
+            {activeAppId && (
+              <li
+                className={`flex cursor-pointer items-center gap-3 px-4 py-2 text-sm transition-colors ${
+                  selectedIndex === searchResults.length + 1 ? "bg-white/10 text-white" : "text-gray-400 hover:bg-white/5 hover:text-white"
+                }`}
+                onClick={() => { onRemove(activeAppId).then(() => onClose()); }}
+                onMouseEnter={() => setSelectedIndex(searchResults.length + 1)}
+              >
+                <span className="text-gray-500">×</span>
+                <span>Remove {config?.apps.find(a => a.id === activeAppId)?.name ?? "current app"}</span>
+              </li>
             )}
           </ul>
         )}

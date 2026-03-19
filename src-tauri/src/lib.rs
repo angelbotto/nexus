@@ -20,6 +20,11 @@ pub fn run() {
             let config = config::load_or_create_config();
             app.manage(Mutex::new(AppState::new(config)));
 
+            // Set window background to match the app dark theme (#111117)
+            if let Some(main_window) = app.get_window("main") {
+                let _ = main_window.set_background_color(Some(tauri::window::Color(0x11, 0x11, 0x17, 0xFF)));
+            }
+
             // Native macOS menu bar
             let nexus_menu = SubmenuBuilder::new(app, "Nexus")
                 .about(None)
@@ -238,6 +243,7 @@ pub fn run() {
             commands::webview::destroy_webview,
             commands::webview::reload_active_webview,
             commands::webview::reload_webview,
+            commands::webview::set_active_webview_dimmed,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

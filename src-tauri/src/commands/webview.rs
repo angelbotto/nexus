@@ -55,9 +55,13 @@ use crate::state::AppState;
 // Sidebar is 220px wide.
 const SIDEBAR_WIDTH: f64 = 220.0;
 // Gap around the webview for the "floating card" effect.
-const GAP: f64 = 6.0;
-// Extra top gap to account for macOS titlebar overlay area.
-const GAP_TOP: f64 = 38.0;
+// Must be >= cornerRadius (12px) so rounded corners are fully visible.
+const GAP: f64 = 12.0;
+// Top gap below the titlebar overlay — must be enough for:
+// 1. macOS traffic lights + drag region (~28px)
+// 2. Corner radius visibility (12px)
+// Total: 40px gives room for both.
+const GAP_TOP: f64 = 40.0;
 
 /// Returns (webview_x, webview_y, webview_width, webview_height) based on actual window size.
 pub fn calc_webview_rect(
@@ -124,29 +128,25 @@ pub fn switch_app_impl(
             .add_child(
                 WebviewBuilder::new(&label, WebviewUrl::External(url))
                     .data_store_identifier(store_id)
-                    .on_navigation(move |nav_url| {
-                        let host = nav_url.host_str().unwrap_or("");
-                        if host == base_domain_nav || is_subdomain_of(host, &base_domain_nav) {
-                            return true;
-                        }
-                        if is_oauth_provider(nav_url.as_str()) {
-                            return true;
-                        }
-                        let _ =
-                            app_handle_nav.opener().open_url(nav_url.as_str(), None::<&str>);
-                        false
+                    .on_navigation(move |_nav_url| {
+                        // Allow all in-page navigations (OAuth, widgets, redirects).
+                        // External link handling is only on target="_blank" (on_new_window).
+                        true
                     })
                     .on_new_window(move |nav_url, _features| {
                         use tauri::webview::NewWindowResponse;
                         let host = nav_url.host_str().unwrap_or("");
+                        // Same domain or subdomain → allow in webview
                         if host == base_domain_new_win
                             || is_subdomain_of(host, &base_domain_new_win)
                         {
                             return NewWindowResponse::Allow;
                         }
+                        // OAuth providers → allow in webview
                         if is_oauth_provider(nav_url.as_str()) {
                             return NewWindowResponse::Allow;
                         }
+                        // Different domain target=_blank → open in system browser
                         let _ = app_handle_new_win
                             .opener()
                             .open_url(nav_url.as_str(), None::<&str>);
@@ -225,6 +225,29 @@ pub fn switch_app(
     app_handle: AppHandle,
 ) -> Result<(), String> {
     switch_app_impl(app_id, &app_handle, &state)
+}
+
+/// Hides or shows the active child webview so the command palette (rendered in the
+/// parent webview) can appear above it. Native child webviews always composite above
+/// the parent's DOM, so hiding is the only way to make overlays visible.
+#[tauri::command]
+pub fn set_active_webview_dimmed(
+    dimmed: bool,
+    state: State<'_, Mutex<AppState>>,
+    app_handle: AppHandle,
+) -> Result<(), String> {
+    let st = state.lock().map_err(|e| e.to_string())?;
+    if let Some(ref app_id) = st.active_app_id {
+        let label = format!("app-{}", app_id);
+        if let Some(wv) = app_handle.get_webview(&label) {
+            if dimmed {
+                wv.hide().map_err(|e| e.to_string())?;
+            } else {
+                wv.show().map_err(|e| e.to_string())?;
+            }
+        }
+    }
+    Ok(())
 }
 
 /// Called by the frontend after toggling the sidebar so the active webview is repositioned.
