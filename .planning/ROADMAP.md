@@ -30,7 +30,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Clicking an external link inside an app webview opens it in the system default browser, not in Nexus
   4. Restarting Nexus restores the previous login state for each app (sessions persist across restarts)
   5. Editing `~/.nexus/apps.json` externally and saving causes the sidebar to update without restarting the app
-**Plans:** 3 plans
+**Plans:** 3/3 plans complete
 Plans:
 - [x] 01-01-PLAN.md — Scaffold Tauri 2 project and build config layer with tests
 - [x] 01-02-PLAN.md — WebviewWindow management with session isolation and sidebar UI
@@ -88,7 +88,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 3/3 | Complete | 2026-03-19 |
+| 1. Foundation | 3/3 | Complete    | 2026-03-19 |
 | 2. Sidebar & Navigation | 0/TBD | Not started | - |
 | 3. Command Palette & Config Management | 0/TBD | Not started | - |
 | 4. Performance & Activity | 0/TBD | Not started | - |
