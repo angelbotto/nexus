@@ -48,7 +48,7 @@ Plans:
   5. Apps are visually grouped in the sidebar under collapsible group labels matching their `group` field in the config
 **Plans:** 4 plans
 Plans:
-- [ ] 02-01-PLAN.md — Extend config schema (Rust + TS) and add save_config command
+- [x] 02-01-PLAN.md — Extend config schema (Rust + TS) and add save_config command
 - [ ] 02-02-PLAN.md — Sidebar UI refactor with groups, Arc dark mode aesthetic
 - [ ] 02-03-PLAN.md — Global shortcuts (Cmd+1-9, Cmd+B, Cmd+R) and startup restore
 - [ ] 02-04-PLAN.md — Human verification of all Phase 2 success criteria
@@ -94,7 +94,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete    | 2026-03-19 |
-| 2. Sidebar & Navigation | 0/4 | Planning complete | - |
+| 2. Sidebar & Navigation | 1/4 | In progress | - |
 | 3. Command Palette & Config Management | 0/TBD | Not started | - |
 | 4. Performance & Activity | 0/TBD | Not started | - |
 | 5. Cross-Platform Distribution | 0/TBD | Not started | - |

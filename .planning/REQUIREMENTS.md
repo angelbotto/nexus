@@ -18,9 +18,9 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Navigation
 
 - [ ] **NAV-01**: User sees a collapsible sidebar on the left with app icons and labels
-- [ ] **NAV-02**: User can toggle sidebar visibility with Cmd+B (Ctrl+B on Linux/Windows)
-- [ ] **NAV-03**: Apps are visually grouped in sidebar by their `group` field (collapsible sections)
-- [ ] **NAV-04**: User can click an app in sidebar to switch to its webview
+- [x] **NAV-02**: User can toggle sidebar visibility with Cmd+B (Ctrl+B on Linux/Windows)
+- [x] **NAV-03**: Apps are visually grouped in sidebar by their `group` field (collapsible sections)
+- [x] **NAV-04**: User can click an app in sidebar to switch to its webview
 - [ ] **NAV-05**: Active app is visually highlighted in sidebar
 - [ ] **NAV-06**: User can drag and drop apps to reorder them within the sidebar
 
@@ -121,9 +121,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CONF-04 | Phase 1 | Complete |
 | CONF-05 | Phase 3 | Pending |
 | NAV-01 | Phase 2 | Pending |
-| NAV-02 | Phase 2 | Pending |
-| NAV-03 | Phase 2 | Pending |
-| NAV-04 | Phase 2 | Pending |
+| NAV-02 | Phase 2 | Complete |
+| NAV-03 | Phase 2 | Complete |
+| NAV-04 | Phase 2 | Complete |
 | NAV-05 | Phase 2 | Pending |
 | NAV-06 | Phase 3 | Pending |
 | KEY-01 | Phase 2 | Pending |

@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Phase 2 planned and verified
-last_updated: "2026-03-19T05:38:19.187Z"
-last_activity: 2026-03-19 — Plan 01-03 complete (config hot-reload + Phase 1 human verification passed)
+status: in_progress
+stopped_at: "Completed 02-sidebar-navigation/02-01-PLAN.md"
+last_updated: "2026-03-19T05:43:00Z"
+last_activity: 2026-03-19 — Plan 02-01 complete (config schema extension + save_config + switch_app_impl)
 progress:
   total_phases: 5
   completed_phases: 1
   total_plans: 7
-  completed_plans: 3
-  percent: 100
+  completed_plans: 4
+  percent: 57
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 
 ## Current Position
 
-Phase: 1 of 5 (Foundation) — COMPLETE
-Plan: 3 of 3 in phase — all complete
-Status: Phase 1 done, ready for Phase 2
-Last activity: 2026-03-19 — Plan 01-03 complete (config hot-reload + Phase 1 human verification passed)
+Phase: 2 of 5 (Sidebar Navigation) — IN PROGRESS
+Plan: 1 of 4 in phase — complete
+Status: Phase 2 Plan 01 done, ready for Plan 02-02
+Last activity: 2026-03-19 — Plan 02-01 complete (config schema extension + save_config + switch_app_impl)
 
-Progress: [██████████] 100% (Phase 1 complete)
+Progress: [████░░░░░░] 57% (Phase 2 in progress — Plan 02-01 done)
 
 ## Performance Metrics
 
@@ -44,6 +44,7 @@ Progress: [██████████] 100% (Phase 1 complete)
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation | 3 | 74 min | 25 min |
+| 02-sidebar-navigation | 1 | 2 min | 2 min |
 
 **Recent Trend:**
 - Last 5 plans: 54 min, 5 min, 15 min
@@ -69,6 +70,8 @@ Recent decisions affecting current work:
 - [Plan 01-03]: reload_config keeps existing AppState on corrupt JSON — prevents partial save from overwriting good config with defaults
 - [Plan 01-03]: Frontend-owned file watcher (Option A): watch() in useEffect with 300ms debounce, invoke reload_config on event
 - [Plan 01-03]: 300ms debounce absorbs atomic editor saves (temp file → rename) without flicker
+- [Plan 02-01]: serde rename_all = "camelCase" on all config structs — JSON keys match TypeScript camelCase conventions (lastActiveAppId, sidebarCollapsed)
+- [Plan 02-01]: switch_app_impl takes &AppHandle and &Mutex<AppState> (not State<>) — only signature compatible with both IPC and shortcut handler direct calls
 
 ### Pending Todos
 
@@ -82,6 +85,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T05:38:19.185Z
-Stopped at: Phase 2 planned and verified
-Resume file: .planning/phases/02-sidebar-navigation/02-01-PLAN.md
+Last session: 2026-03-19T05:43:00Z
+Stopped at: Completed 02-sidebar-navigation/02-01-PLAN.md
+Resume file: .planning/phases/02-sidebar-navigation/02-02-PLAN.md
