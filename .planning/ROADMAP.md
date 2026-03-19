@@ -12,7 +12,7 @@ Build a high-performance Tauri 2 desktop app that acts as a unified launcher for
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** - Tauri scaffold, config layer, session-isolated WebviewWindows, IPC boundary
+- [x] **Phase 1: Foundation** - Tauri scaffold, config layer, session-isolated WebviewWindows, IPC boundary
 - [ ] **Phase 2: Sidebar & Navigation** - Sidebar UI, app switching, keyboard shortcuts, dark mode
 - [ ] **Phase 3: Command Palette & Config Management** - Cmd+K palette, add/remove apps in-app, drag-drop reorder
 - [ ] **Phase 4: Performance & Activity** - Lazy loading, LRU pool, activity badge dots, perf validation
@@ -34,7 +34,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 - [x] 01-01-PLAN.md — Scaffold Tauri 2 project and build config layer with tests
 - [x] 01-02-PLAN.md — WebviewWindow management with session isolation and sidebar UI
-- [ ] 01-03-PLAN.md — Config file watcher, hot-reload, and full Phase 1 verification
+- [x] 01-03-PLAN.md — Config file watcher, hot-reload, and full Phase 1 verification
 
 ### Phase 2: Sidebar & Navigation
 **Goal**: The primary user-facing surface is complete — users can navigate between all their apps using the sidebar or keyboard shortcuts, toggle sidebar visibility, and see which app is active, all with the Arc-inspired dark mode aesthetic.
@@ -88,7 +88,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 2/3 | In progress | - |
+| 1. Foundation | 3/3 | Complete | 2026-03-19 |
 | 2. Sidebar & Navigation | 0/TBD | Not started | - |
 | 3. Command Palette & Config Management | 0/TBD | Not started | - |
 | 4. Performance & Activity | 0/TBD | Not started | - |

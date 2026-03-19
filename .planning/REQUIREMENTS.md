@@ -12,7 +12,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **CONF-01**: User can define apps in `~/.nexus/apps.json` with id, name, url, icon, and group fields
 - [ ] **CONF-02**: User can add a new app from within the app (UI form or command palette) without editing JSON manually
 - [ ] **CONF-03**: User can remove an app from within the app
-- [ ] **CONF-04**: App reads and watches `~/.nexus/apps.json` for external changes and reloads automatically
+- [x] **CONF-04**: App reads and watches `~/.nexus/apps.json` for external changes and reloads automatically
 - [ ] **CONF-05**: Drag & drop reorder in sidebar persists new order back to `apps.json`
 
 ### Navigation
@@ -46,7 +46,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **WEB-04**: Switching between cached webviews feels instant (no reload)
 - [x] **WEB-05**: Sessions (cookies, login state) persist across app restarts
 - [x] **WEB-06**: Each app has isolated session storage (separate data directory)
-- [ ] **WEB-07**: External links (different domain) open in system default browser
+- [x] **WEB-07**: External links (different domain) open in system default browser
 - [ ] **WEB-08**: User can reload current webview with Cmd+R
 
 ### Visual
@@ -118,7 +118,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CONF-01 | Phase 1 | Done (01-01) |
 | CONF-02 | Phase 3 | Pending |
 | CONF-03 | Phase 3 | Pending |
-| CONF-04 | Phase 1 | Pending |
+| CONF-04 | Phase 1 | Complete |
 | CONF-05 | Phase 3 | Pending |
 | NAV-01 | Phase 2 | Pending |
 | NAV-02 | Phase 2 | Pending |
@@ -140,7 +140,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WEB-04 | Phase 4 | Pending |
 | WEB-05 | Phase 1 | Done (01-02) |
 | WEB-06 | Phase 1 | Done (01-02) |
-| WEB-07 | Phase 1 | Pending |
+| WEB-07 | Phase 1 | Complete |
 | WEB-08 | Phase 2 | Pending |
 | VIS-01 | Phase 2 | Pending |
 | VIS-02 | Phase 2 | Pending |
