@@ -9,7 +9,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Configuration
 
-- [ ] **CONF-01**: User can define apps in `~/.nexus/apps.json` with id, name, url, icon, and group fields
+- [x] **CONF-01**: User can define apps in `~/.nexus/apps.json` with id, name, url, icon, and group fields
 - [ ] **CONF-02**: User can add a new app from within the app (UI form or command palette) without editing JSON manually
 - [ ] **CONF-03**: User can remove an app from within the app
 - [ ] **CONF-04**: App reads and watches `~/.nexus/apps.json` for external changes and reloads automatically
@@ -65,7 +65,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Platform
 
-- [ ] **PLAT-01**: App builds and runs on macOS arm64
+- [x] **PLAT-01**: App builds and runs on macOS arm64
 - [ ] **PLAT-02**: App builds and runs on macOS intel
 - [ ] **PLAT-03**: App builds and runs on Linux (Ubuntu 22.04+)
 - [ ] **PLAT-04**: App builds and runs on Windows 10/11
@@ -115,7 +115,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CONF-01 | Phase 1 | Pending |
+| CONF-01 | Phase 1 | Done (01-01) |
 | CONF-02 | Phase 3 | Pending |
 | CONF-03 | Phase 3 | Pending |
 | CONF-04 | Phase 1 | Pending |
@@ -150,7 +150,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PERF-02 | Phase 4 | Pending |
 | PERF-03 | Phase 4 | Pending |
 | PERF-04 | Phase 5 | Pending |
-| PLAT-01 | Phase 1 | Pending |
+| PLAT-01 | Phase 1 | Done (01-01) |
 | PLAT-02 | Phase 5 | Pending |
 | PLAT-03 | Phase 5 | Pending |
 | PLAT-04 | Phase 5 | Pending |
