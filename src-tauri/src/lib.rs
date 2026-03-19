@@ -1,5 +1,6 @@
 use std::sync::Mutex;
 
+use tauri::menu::{MenuBuilder, MenuItemBuilder, PredefinedMenuItem, SubmenuBuilder};
 use tauri::Manager;
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 
@@ -19,11 +20,87 @@ pub fn run() {
             let config = config::load_or_create_config();
             app.manage(Mutex::new(AppState::new(config)));
 
+            // Native macOS menu bar
+            let nexus_menu = SubmenuBuilder::new(app, "Nexus")
+                .about(None)
+                .separator()
+                .item(&PredefinedMenuItem::quit(app, None)?)
+                .build()?;
+
+            let add_app_item = MenuItemBuilder::new("Add App")
+                .accelerator("CmdOrCtrl+N")
+                .id("add-app")
+                .build(app)?;
+
+            let file_menu = SubmenuBuilder::new(app, "File")
+                .item(&add_app_item)
+                .build()?;
+
+            let toggle_sidebar_item = MenuItemBuilder::new("Toggle Sidebar")
+                .accelerator("CmdOrCtrl+B")
+                .id("toggle-sidebar")
+                .build(app)?;
+
+            let reload_item = MenuItemBuilder::new("Reload Page")
+                .accelerator("CmdOrCtrl+R")
+                .id("reload-page")
+                .build(app)?;
+
+            let view_menu = SubmenuBuilder::new(app, "View")
+                .item(&toggle_sidebar_item)
+                .item(&reload_item)
+                .build()?;
+
+            let menu = MenuBuilder::new(app)
+                .items(&[&nexus_menu, &file_menu, &view_menu])
+                .build()?;
+
+            app.set_menu(menu)?;
+
+            app.on_menu_event(move |app_handle, event| {
+                match event.id().0.as_str() {
+                    "add-app" => {
+                        if let Some(main_wv) = app_handle.get_webview("main") {
+                            let _ = main_wv
+                                .eval("window.dispatchEvent(new CustomEvent('open-add-app'))");
+                        }
+                    }
+                    "toggle-sidebar" => {
+                        if let Some(main_wv) = app_handle.get_webview("main") {
+                            let _ = main_wv
+                                .eval("window.dispatchEvent(new CustomEvent('sidebar-toggle'))");
+                        }
+                    }
+                    "reload-page" => {
+                        let active_app_id = {
+                            let state = app_handle
+                                .state::<std::sync::Mutex<crate::state::AppState>>();
+                            state.lock().ok().and_then(|st| st.active_app_id.clone())
+                        };
+                        if let Some(app_id) = active_app_id {
+                            let label = format!("app-{}", app_id);
+                            if let Some(wv) = app_handle.get_webview(&label) {
+                                let _ = wv.eval("location.reload()");
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            });
+
             let app_handle_sc = app.handle().clone();
             app.handle().plugin(
                 tauri_plugin_global_shortcut::Builder::new()
                     .with_handler(move |_app, shortcut, event| {
                         if event.state() != ShortcutState::Pressed {
+                            return;
+                        }
+                        // Cmd+N -> open add-app form in command palette
+                        if shortcut.key == Code::KeyN && shortcut.mods == Modifiers::SUPER {
+                            if let Some(main_wv) = app_handle_sc.get_webview("main") {
+                                let _ = main_wv
+                                    .eval("window.dispatchEvent(new CustomEvent('open-add-app'))");
+                            }
                             return;
                         }
                         // Cmd+B -> emit sidebar-toggle to frontend
@@ -111,6 +188,8 @@ pub fn run() {
                 .register(Shortcut::new(Some(Modifiers::SUPER), Code::KeyR))?;
             app.global_shortcut()
                 .register(Shortcut::new(Some(Modifiers::SUPER), Code::KeyK))?;
+            app.global_shortcut()
+                .register(Shortcut::new(Some(Modifiers::SUPER), Code::KeyN))?;
 
             // Resize the active child webview whenever the main window is resized.
             let app_handle_resize = app.handle().clone();
@@ -158,7 +237,7 @@ pub fn run() {
             commands::webview::resize_active_webview,
             commands::webview::destroy_webview,
             commands::webview::reload_active_webview,
-        commands::webview::reload_webview,
+            commands::webview::reload_webview,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
