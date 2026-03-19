@@ -13,7 +13,7 @@ Build a high-performance Tauri 2 desktop app that acts as a unified launcher for
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Tauri scaffold, config layer, session-isolated WebviewWindows, IPC boundary
-- [ ] **Phase 2: Sidebar & Navigation** - Sidebar UI, app switching, keyboard shortcuts, dark mode
+- [x] **Phase 2: Sidebar & Navigation** - Sidebar UI, app switching, keyboard shortcuts, dark mode (completed 2026-03-19)
 - [ ] **Phase 3: Command Palette & Config Management** - Cmd+K palette, add/remove apps in-app, drag-drop reorder
 - [ ] **Phase 4: Performance & Activity** - Lazy loading, LRU pool, activity badge dots, perf validation
 - [ ] **Phase 5: Cross-Platform Distribution** - macOS intel, Linux, Windows builds and installers
@@ -46,7 +46,7 @@ Plans:
   3. User can press Cmd+B to collapse the sidebar, and the webview expands to fill the full window; pressing Cmd+B again restores the sidebar
   4. User can press Cmd+R to reload the currently active app webview
   5. Apps are visually grouped in the sidebar under collapsible group labels matching their `group` field in the config
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans complete
 Plans:
 - [x] 02-01-PLAN.md — Extend config schema (Rust + TS) and add save_config command
 - [ ] 02-02-PLAN.md — Sidebar UI refactor with groups, Arc dark mode aesthetic
@@ -94,7 +94,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete    | 2026-03-19 |
-| 2. Sidebar & Navigation | 3/4 | In Progress|  |
+| 2. Sidebar & Navigation | 3/4 | Complete    | 2026-03-19 |
 | 3. Command Palette & Config Management | 0/TBD | Not started | - |
 | 4. Performance & Activity | 0/TBD | Not started | - |
 | 5. Cross-Platform Distribution | 0/TBD | Not started | - |
