@@ -22,6 +22,24 @@ pub fn destroy_webview(
     Ok(())
 }
 
+#[tauri::command]
+pub fn reload_active_webview(
+    state: State<'_, Mutex<AppState>>,
+    app_handle: AppHandle,
+) -> Result<(), String> {
+    let app_id = {
+        let st = state.lock().map_err(|e| e.to_string())?;
+        st.active_app_id.clone()
+    };
+    if let Some(id) = app_id {
+        let label = format!("app-{}", id);
+        if let Some(wv) = app_handle.get_webview(&label) {
+            wv.eval("location.reload()").map_err(|e| e.to_string())?;
+        }
+    }
+    Ok(())
+}
+
 use crate::routing::{extract_base_domain, is_oauth_provider, is_subdomain_of, make_store_id};
 use crate::state::AppState;
 

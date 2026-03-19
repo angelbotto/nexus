@@ -33,6 +33,13 @@ pub fn run() {
                             }
                             return;
                         }
+                        // Cmd+K -> open command palette
+                        if shortcut.key == Code::KeyK && shortcut.mods == Modifiers::SUPER {
+                            if let Some(main_wv) = app_handle_sc.get_webview("main") {
+                                let _ = main_wv.eval("window.dispatchEvent(new CustomEvent('open-palette'))");
+                            }
+                            return;
+                        }
                         // Cmd+R -> reload active webview (embedded in main window)
                         if shortcut.key == Code::KeyR && shortcut.mods == Modifiers::SUPER {
                             let state = app_handle_sc
@@ -102,6 +109,8 @@ pub fn run() {
                 .register(Shortcut::new(Some(Modifiers::SUPER), Code::KeyB))?;
             app.global_shortcut()
                 .register(Shortcut::new(Some(Modifiers::SUPER), Code::KeyR))?;
+            app.global_shortcut()
+                .register(Shortcut::new(Some(Modifiers::SUPER), Code::KeyK))?;
 
             // Resize the active child webview whenever the main window is resized.
             let app_handle_resize = app.handle().clone();
@@ -148,6 +157,7 @@ pub fn run() {
             commands::webview::switch_app,
             commands::webview::resize_active_webview,
             commands::webview::destroy_webview,
+            commands::webview::reload_active_webview,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
