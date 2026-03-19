@@ -16,6 +16,7 @@ pub fn destroy_webview(
     }
     let mut st = state.lock().map_err(|e| e.to_string())?;
     st.webviews_created.remove(&app_id);
+    st.lru_order.retain(|id| id != &app_id);
     if st.active_app_id.as_deref() == Some(app_id.as_str()) {
         st.active_app_id = None;
     }
@@ -50,7 +51,7 @@ pub fn reload_active_webview(
 }
 
 use crate::routing::{extract_base_domain, is_oauth_provider, is_subdomain_of, make_store_id};
-use crate::state::AppState;
+use crate::state::{AppState, LRU_POOL_SIZE};
 
 // Sidebar is 220px wide.
 const SIDEBAR_WIDTH: f64 = 220.0;
@@ -200,10 +201,35 @@ pub fn switch_app_impl(
         }
     }
 
-    // Update active app
-    {
+    // Update active app, track LRU order, and collect evicted IDs
+    let evicted_ids: Vec<String> = {
         let mut st = state.lock().map_err(|e| e.to_string())?;
         st.active_app_id = Some(app_id.clone());
+        // Move app_id to the back (most recently used)
+        st.lru_order.retain(|id| id != &app_id);
+        st.lru_order.push_back(app_id.clone());
+        // Evict oldest entries beyond pool size, never evict the active app
+        let mut evicted = Vec::new();
+        while st.lru_order.len() > LRU_POOL_SIZE {
+            if let Some(candidate) = st.lru_order.pop_front() {
+                if st.active_app_id.as_deref() == Some(candidate.as_str()) {
+                    // Active app must not be evicted — push it back and stop
+                    st.lru_order.push_front(candidate);
+                    break;
+                }
+                st.webviews_created.remove(&candidate);
+                evicted.push(candidate);
+            }
+        }
+        evicted
+    };
+
+    // Close evicted webviews OUTSIDE the lock to avoid deadlock
+    for evicted_id in evicted_ids {
+        let label = format!("app-{}", evicted_id);
+        if let Some(wv) = app_handle.get_webview(&label) {
+            let _ = wv.close();
+        }
     }
 
     // Notify the main (shell) webview about the switch via eval — Tauri events
