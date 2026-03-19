@@ -53,7 +53,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [x] **VIS-01**: App uses dark mode with minimalist Arc-inspired aesthetic
 - [x] **VIS-02**: Sidebar is thin/narrow with icons and short labels
-- [ ] **VIS-03**: Activity badge (dot) appears on sidebar icon when page title changes
+- [x] **VIS-03**: Activity badge (dot) appears on sidebar icon when page title changes
 - [x] **VIS-04**: Fullscreen webview area when sidebar is collapsed
 
 ### Performance
@@ -144,7 +144,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WEB-08 | Phase 2 | Complete |
 | VIS-01 | Phase 2 | Complete |
 | VIS-02 | Phase 2 | Complete |
-| VIS-03 | Phase 4 | Pending |
+| VIS-03 | Phase 4 | Complete |
 | VIS-04 | Phase 2 | Complete |
 | PERF-01 | Phase 4 | Complete |
 | PERF-02 | Phase 4 | Complete |

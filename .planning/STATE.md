@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 04-01-PLAN.md (LRU webview pool)
-last_updated: "2026-03-19T21:15:24.346Z"
+stopped_at: Completed 04-02-PLAN.md (activity badge dots)
+last_updated: "2026-03-19T21:19:59.560Z"
 last_activity: 2026-03-19 — Plan 03-02 complete (command palette + Cmd+K shortcut)
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 14
-  completed_plans: 12
+  completed_plans: 13
   percent: 82
 ---
 
@@ -57,6 +57,7 @@ Progress: [████████░░] 82% (Phase 3 Plan 02 done)
 | Phase 03-command-palette-config-management P02 | 8 | 2 tasks | 6 files |
 | Phase 03-command-palette-config-management P03 | 4 | 2 tasks | 7 files |
 | Phase 04-performance-activity P01 | 2 | 2 tasks | 2 files |
+| Phase 04-performance-activity P02 | 2 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,7 @@ Recent decisions affecting current work:
 - [Phase 03-command-palette-config-management]: App drag cross-group adopts target app group ID, single arrayMove keeps relative position
 - [Phase 03-command-palette-config-management]: on_menu_event reload-page uses .lock().ok().and_then() pattern to avoid E0597 lifetime error in Rust closure
 - [Phase 04-performance-activity]: LRU pool size = 8: balances RAM budget (8 webviews ~400 MB) against UX; collect-then-close anti-deadlock pattern prevents holding AppState mutex across Tauri wv.close() calls
+- [Phase 04-performance-activity]: MutationObserver on document.documentElement with subtree:true catches SPA title changes; try/catch on __TAURI_INTERNALS__.invoke makes badge best-effort
 
 ### Pending Todos
 
@@ -106,6 +108,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T21:15:24.344Z
-Stopped at: Completed 04-01-PLAN.md (LRU webview pool)
+Last session: 2026-03-19T21:19:59.558Z
+Stopped at: Completed 04-02-PLAN.md (activity badge dots)
 Resume file: None
