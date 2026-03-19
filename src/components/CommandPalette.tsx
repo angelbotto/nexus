@@ -1,0 +1,318 @@
+import { useState, useEffect, useRef } from "react";
+import Fuse from "fuse.js";
+import type { NexusConfig } from "../types";
+
+type PaletteMode = "search" | "action" | "add-form" | "edit-form";
+
+interface Action {
+  id: string;
+  label: string;
+  disabled?: boolean;
+}
+
+interface Props {
+  isOpen: boolean;
+  config: NexusConfig | null;
+  activeAppId: string | null;
+  onClose: () => void;
+  onSwitch: (id: string) => Promise<void>;
+  onAdd: (name: string, url: string) => Promise<void>;
+  onRemove: (appId: string) => Promise<void>;
+  onEdit: (appId: string, name: string, url: string) => Promise<void>;
+  onReload: () => void;
+  onToggleSidebar: () => void;
+  initialMode?: PaletteMode;
+}
+
+const ACTIONS: Action[] = [
+  { id: "add-app", label: "Add new app" },
+  { id: "remove-app", label: "Remove current app" },
+  { id: "reload-page", label: "Reload page" },
+  { id: "toggle-sidebar", label: "Toggle sidebar" },
+];
+
+export function CommandPalette({
+  isOpen,
+  config,
+  activeAppId,
+  onClose,
+  onSwitch,
+  onAdd,
+  onRemove,
+  onEdit,
+  onReload,
+  onToggleSidebar,
+  initialMode,
+}: Props) {
+  const [mode, setMode] = useState<PaletteMode>("search");
+  const [query, setQuery] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  // Add-form / edit-form state
+  const [formUrl, setFormUrl] = useState("");
+  const [formName, setFormName] = useState("");
+  const [editingAppId, setEditingAppId] = useState<string | null>(null);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  const urlRef = useRef<HTMLInputElement>(null);
+
+  // Reset state on open
+  useEffect(() => {
+    if (isOpen) {
+      const m = initialMode ?? "search";
+      setMode(m);
+      setQuery("");
+      setSelectedIndex(0);
+      setFormUrl("");
+      setFormName("");
+      setEditingAppId(null);
+
+      // Focus the right element
+      if (m === "add-form" || m === "edit-form") {
+        setTimeout(() => urlRef.current?.focus(), 10);
+      } else {
+        setTimeout(() => inputRef.current?.focus(), 10);
+      }
+    }
+  }, [isOpen, initialMode]);
+
+  // Derive mode from query prefix
+  useEffect(() => {
+    if (mode === "add-form" || mode === "edit-form") return;
+    if (query.startsWith(">")) {
+      setMode("action");
+    } else {
+      setMode("search");
+    }
+    setSelectedIndex(0);
+  }, [query, mode]);
+
+  // Fuzzy search results
+  const apps = config?.apps ?? [];
+  const fuse = new Fuse(apps, { keys: ["name"], threshold: 0.4 });
+  const searchResults = query === "" ? apps : fuse.search(query).map((r) => r.item);
+
+  // Action filtering
+  const actionQuery = query.startsWith(">") ? query.slice(1).trim() : "";
+  const filteredActions = ACTIONS.filter((a) =>
+    actionQuery === "" ? true : a.label.toLowerCase().includes(actionQuery.toLowerCase())
+  ).map((a) => ({
+    ...a,
+    disabled: a.id === "remove-app" && !activeAppId,
+  }));
+
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (mode === "add-form" || mode === "edit-form") {
+      if (e.key === "Escape") {
+        setMode("search");
+        setQuery("");
+        setTimeout(() => inputRef.current?.focus(), 10);
+      }
+      return;
+    }
+
+    const listLength = mode === "search" ? searchResults.length : filteredActions.length;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIndex((i) => Math.min(i + 1, listLength - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIndex((i) => Math.max(i - 1, 0));
+    } else if (e.key === "Escape") {
+      onClose();
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (mode === "search") {
+        const item = searchResults[selectedIndex];
+        if (item) {
+          onSwitch(item.id).then(() => onClose());
+        }
+      } else if (mode === "action") {
+        const action = filteredActions[selectedIndex];
+        if (action && !action.disabled) {
+          handleAction(action.id);
+        }
+      }
+    } else if (e.key === "Tab" && mode === "search") {
+      const item = searchResults[selectedIndex];
+      if (item) {
+        e.preventDefault();
+        setQuery(item.name);
+      }
+    }
+  }
+
+  function handleAction(actionId: string) {
+    switch (actionId) {
+      case "add-app":
+        setMode("add-form");
+        setFormUrl("");
+        setFormName("");
+        setTimeout(() => urlRef.current?.focus(), 10);
+        break;
+      case "remove-app":
+        if (activeAppId) {
+          onRemove(activeAppId).then(() => onClose());
+        }
+        break;
+      case "reload-page":
+        onReload();
+        onClose();
+        break;
+      case "toggle-sidebar":
+        onToggleSidebar();
+        onClose();
+        break;
+    }
+  }
+
+  function handleFormKeyDown(e: React.KeyboardEvent, field: "url" | "name") {
+    if (e.key === "Escape") {
+      setMode("search");
+      setQuery("");
+      setTimeout(() => inputRef.current?.focus(), 10);
+    } else if (e.key === "Enter") {
+      if (field === "url") {
+        // Move focus to name field
+        (e.currentTarget.closest("form")?.elements.namedItem("name") as HTMLInputElement | null)?.focus();
+      } else {
+        e.preventDefault();
+        handleFormSubmit();
+      }
+    }
+  }
+
+  function handleFormSubmit() {
+    if (!formUrl.trim() || !formName.trim()) return;
+    if (mode === "edit-form" && editingAppId) {
+      onEdit(editingAppId, formName.trim(), formUrl.trim()).then(() => onClose());
+    } else {
+      onAdd(formName.trim(), formUrl.trim()).then(() => onClose());
+    }
+  }
+
+  function getFaviconUrl(url: string) {
+    try {
+      const parsed = new URL(url);
+      return `https://www.google.com/s2/favicons?domain=${parsed.hostname}&sz=32`;
+    } catch {
+      return undefined;
+    }
+  }
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh]"
+      style={{ background: "rgba(0,0,0,0.45)" }}
+      onClick={onClose}
+    >
+      <div
+        className="w-[560px] rounded-xl bg-[#1c1c21] shadow-2xl ring-1 ring-white/10"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Search / Action input */}
+        {mode !== "add-form" && mode !== "edit-form" && (
+          <input
+            ref={inputRef}
+            className="w-full bg-transparent px-4 py-3 text-sm text-white outline-none placeholder:text-gray-500"
+            placeholder={mode === "action" ? "> type an action..." : "Search apps..."}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+        )}
+
+        {/* Add / Edit form */}
+        {(mode === "add-form" || mode === "edit-form") && (
+          <form
+            className="flex flex-col gap-2 px-4 py-3"
+            onSubmit={(e) => { e.preventDefault(); handleFormSubmit(); }}
+          >
+            <input
+              ref={urlRef}
+              name="url"
+              className="w-full bg-transparent text-sm text-white outline-none placeholder:text-gray-500 border-b border-white/10 pb-2"
+              placeholder="URL (e.g. https://linear.app)"
+              value={formUrl}
+              onChange={(e) => setFormUrl(e.target.value)}
+              onKeyDown={(e) => handleFormKeyDown(e, "url")}
+            />
+            <input
+              name="name"
+              className="w-full bg-transparent text-sm text-white outline-none placeholder:text-gray-500"
+              placeholder="Name (e.g. Linear)"
+              value={formName}
+              onChange={(e) => setFormName(e.target.value)}
+              onKeyDown={(e) => handleFormKeyDown(e, "name")}
+            />
+            <p className="text-xs text-gray-600">Press Enter to {mode === "edit-form" ? "save" : "add"} · Escape to cancel</p>
+          </form>
+        )}
+
+        {/* Divider */}
+        {(mode === "search" && searchResults.length > 0) ||
+        (mode === "action" && filteredActions.length > 0) ? (
+          <div className="border-t border-white/5" />
+        ) : null}
+
+        {/* Search results */}
+        {mode === "search" && (
+          <ul className="max-h-[300px] overflow-y-auto py-1">
+            {searchResults.map((app, i) => (
+              <li
+                key={app.id}
+                className={`flex cursor-pointer items-center gap-3 px-4 py-2 text-sm transition-colors ${
+                  i === selectedIndex ? "bg-white/10 text-white" : "text-gray-300 hover:bg-white/5"
+                }`}
+                onClick={() => { onSwitch(app.id).then(() => onClose()); }}
+                onMouseEnter={() => setSelectedIndex(i)}
+              >
+                <img
+                  src={getFaviconUrl(app.url)}
+                  className="h-4 w-4 rounded-sm object-contain"
+                  alt=""
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                />
+                <span>{app.name}</span>
+                {app.id === activeAppId && (
+                  <span className="ml-auto text-xs text-gray-600">active</span>
+                )}
+              </li>
+            ))}
+            {searchResults.length === 0 && query !== "" && (
+              <li className="px-4 py-3 text-sm text-gray-600">No apps match "{query}"</li>
+            )}
+          </ul>
+        )}
+
+        {/* Action list */}
+        {mode === "action" && (
+          <ul className="max-h-[300px] overflow-y-auto py-1">
+            {filteredActions.map((action, i) => (
+              <li
+                key={action.id}
+                className={`flex cursor-pointer items-center gap-3 px-4 py-2 text-sm transition-colors ${
+                  action.disabled
+                    ? "cursor-default text-gray-600"
+                    : i === selectedIndex
+                    ? "bg-white/10 text-white"
+                    : "text-gray-300 hover:bg-white/5"
+                }`}
+                onClick={() => { if (!action.disabled) handleAction(action.id); }}
+                onMouseEnter={() => { if (!action.disabled) setSelectedIndex(i); }}
+              >
+                {action.label}
+              </li>
+            ))}
+            {filteredActions.length === 0 && (
+              <li className="px-4 py-3 text-sm text-gray-600">No actions match</li>
+            )}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
