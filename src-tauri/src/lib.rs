@@ -1,6 +1,6 @@
 use std::sync::Mutex;
 
-use tauri::{Emitter, Manager};
+use tauri::Manager;
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 
 mod commands;
@@ -158,6 +158,7 @@ pub fn run() {
             commands::webview::resize_active_webview,
             commands::webview::destroy_webview,
             commands::webview::reload_active_webview,
+        commands::webview::reload_webview,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

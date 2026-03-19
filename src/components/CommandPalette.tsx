@@ -22,6 +22,7 @@ interface Props {
   onReload: () => void;
   onToggleSidebar: () => void;
   initialMode?: PaletteMode;
+  editingAppId?: string | null;
 }
 
 const ACTIONS: Action[] = [
@@ -43,6 +44,7 @@ export function CommandPalette({
   onReload,
   onToggleSidebar,
   initialMode,
+  editingAppId: editingAppIdProp,
 }: Props) {
   const [mode, setMode] = useState<PaletteMode>("search");
   const [query, setQuery] = useState("");
@@ -65,7 +67,17 @@ export function CommandPalette({
       setSelectedIndex(0);
       setFormUrl("");
       setFormName("");
-      setEditingAppId(null);
+
+      if (m === "edit-form" && editingAppIdProp) {
+        setEditingAppId(editingAppIdProp);
+        const app = config?.apps.find((a) => a.id === editingAppIdProp);
+        if (app) {
+          setFormUrl(app.url);
+          setFormName(app.name);
+        }
+      } else {
+        setEditingAppId(null);
+      }
 
       // Focus the right element
       if (m === "add-form" || m === "edit-form") {
@@ -74,7 +86,7 @@ export function CommandPalette({
         setTimeout(() => inputRef.current?.focus(), 10);
       }
     }
-  }, [isOpen, initialMode]);
+  }, [isOpen, initialMode, editingAppIdProp, config]);
 
   // Derive mode from query prefix
   useEffect(() => {

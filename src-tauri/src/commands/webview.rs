@@ -23,6 +23,15 @@ pub fn destroy_webview(
 }
 
 #[tauri::command]
+pub fn reload_webview(app_id: String, app_handle: AppHandle) -> Result<(), String> {
+    let label = format!("app-{}", app_id);
+    if let Some(wv) = app_handle.get_webview(&label) {
+        wv.eval("location.reload()").map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
+#[tauri::command]
 pub fn reload_active_webview(
     state: State<'_, Mutex<AppState>>,
     app_handle: AppHandle,
