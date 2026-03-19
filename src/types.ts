@@ -14,6 +14,6 @@ export interface GroupConfig {
 export interface NexusConfig {
   groups: GroupConfig[];
   apps: AppConfig[];
-  lastActiveAppId: string | null;
+  lastActiveAppId?: string | null;
   sidebarCollapsed: boolean;
 }
