@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Phase 3 planned and verified
-last_updated: "2026-03-19T09:15:14.869Z"
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-03-19T09:22:23.306Z"
 last_activity: 2026-03-19 — Plan 02-01 complete (config schema extension + save_config + switch_app_impl)
 progress:
   total_phases: 5
   completed_phases: 2
   total_plans: 11
-  completed_plans: 7
+  completed_plans: 8
   percent: 57
 ---
 
@@ -53,6 +53,7 @@ Progress: [████░░░░░░] 57% (Phase 2 in progress — Plan 02-
 *Updated after each plan completion*
 | Phase 02-sidebar-navigation P02 | 8 | 2 tasks | 4 files |
 | Phase 02-sidebar-navigation P03 | 3 | 2 tasks | 7 files |
+| Phase 03-command-palette-config-management P01 | 4 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -80,6 +81,8 @@ Recent decisions affecting current work:
 - [Phase 02-sidebar-navigation]: shortcut.mods is Modifiers (not Option<Modifiers>) in tauri-plugin-global-shortcut v2.3.1 — direct equality, no Some() wrapping
 - [Phase 02-sidebar-navigation]: configRef pattern: useRef<NexusConfig | null> provides always-current config inside event listener closures without re-registering
 - [Phase 02-sidebar-navigation]: requestAnimationFrame for save_config after toggle: avoids async inside functional setState
+- [Phase 03-01]: Pure config mutations as standalone functions — NexusConfig in → NexusConfig out, no side effects, fully testable
+- [Phase 03-01]: menu permissions in Tauri v2 capabilities require core: prefix (core:menu:allow-new, not menu:allow-new)
 
 ### Pending Todos
 
@@ -93,6 +96,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-19T09:15:14.863Z
-Stopped at: Phase 3 planned and verified
-Resume file: .planning/phases/03-command-palette-config-management/03-01-PLAN.md
+Last session: 2026-03-19T09:22:23.304Z
+Stopped at: Completed 03-01-PLAN.md
+Resume file: None

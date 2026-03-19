@@ -10,10 +10,10 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Configuration
 
 - [x] **CONF-01**: User can define apps in `~/.nexus/apps.json` with id, name, url, icon, and group fields
-- [ ] **CONF-02**: User can add a new app from within the app (UI form or command palette) without editing JSON manually
-- [ ] **CONF-03**: User can remove an app from within the app
+- [x] **CONF-02**: User can add a new app from within the app (UI form or command palette) without editing JSON manually
+- [x] **CONF-03**: User can remove an app from within the app
 - [x] **CONF-04**: App reads and watches `~/.nexus/apps.json` for external changes and reloads automatically
-- [ ] **CONF-05**: Drag & drop reorder in sidebar persists new order back to `apps.json`
+- [x] **CONF-05**: Drag & drop reorder in sidebar persists new order back to `apps.json`
 
 ### Navigation
 
@@ -22,7 +22,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **NAV-03**: Apps are visually grouped in sidebar by their `group` field (collapsible sections)
 - [x] **NAV-04**: User can click an app in sidebar to switch to its webview
 - [x] **NAV-05**: Active app is visually highlighted in sidebar
-- [ ] **NAV-06**: User can drag and drop apps to reorder them within the sidebar
+- [x] **NAV-06**: User can drag and drop apps to reorder them within the sidebar
 
 ### Keyboard Shortcuts
 
@@ -35,8 +35,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **CMD-01**: User can open a command palette overlay with Cmd+K
 - [ ] **CMD-02**: User can fuzzy search across all app names to quickly switch
-- [ ] **CMD-03**: User can add a new app URL from the command palette
-- [ ] **CMD-04**: User can access quick actions (reload, remove app) from command palette
+- [x] **CMD-03**: User can add a new app URL from the command palette
+- [x] **CMD-04**: User can access quick actions (reload, remove app) from command palette
 
 ### WebView
 
@@ -116,24 +116,24 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | CONF-01 | Phase 1 | Done (01-01) |
-| CONF-02 | Phase 3 | Pending |
-| CONF-03 | Phase 3 | Pending |
+| CONF-02 | Phase 3 | Complete |
+| CONF-03 | Phase 3 | Complete |
 | CONF-04 | Phase 1 | Complete |
-| CONF-05 | Phase 3 | Pending |
+| CONF-05 | Phase 3 | Complete |
 | NAV-01 | Phase 2 | Complete |
 | NAV-02 | Phase 2 | Complete |
 | NAV-03 | Phase 2 | Complete |
 | NAV-04 | Phase 2 | Complete |
 | NAV-05 | Phase 2 | Complete |
-| NAV-06 | Phase 3 | Pending |
+| NAV-06 | Phase 3 | Complete |
 | KEY-01 | Phase 2 | Complete |
 | KEY-02 | Phase 2 | Complete |
 | KEY-03 | Phase 2 | Complete |
 | KEY-04 | Phase 2 | Pending |
 | CMD-01 | Phase 3 | Pending |
 | CMD-02 | Phase 3 | Pending |
-| CMD-03 | Phase 3 | Pending |
-| CMD-04 | Phase 3 | Pending |
+| CMD-03 | Phase 3 | Complete |
+| CMD-04 | Phase 3 | Complete |
 | WEB-01 | Phase 1 | Done (01-02) |
 | WEB-02 | Phase 4 | Pending |
 | WEB-03 | Phase 4 | Pending |
