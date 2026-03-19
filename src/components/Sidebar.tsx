@@ -8,6 +8,7 @@ import type { NexusConfig, AppConfig, GroupConfig } from "../types";
 interface SidebarProps {
   config: NexusConfig;
   activeAppId: string | null;
+  badgeAppIds: Set<string>;
   switchApp: (id: string) => Promise<void>;
   removeApp: (appId: string) => Promise<void>;
   editApp: (appId: string) => void;
@@ -26,6 +27,7 @@ function getFaviconUrl(appUrl: string): string {
 interface SortableAppItemProps {
   app: AppConfig;
   isActive: boolean;
+  hasBadge: boolean;
   switchApp: (id: string) => Promise<void>;
   removeApp: (appId: string) => Promise<void>;
   editApp: (appId: string) => void;
@@ -35,6 +37,7 @@ interface SortableAppItemProps {
 function SortableAppItem({
   app,
   isActive,
+  hasBadge,
   switchApp,
   removeApp,
   editApp,
@@ -88,6 +91,9 @@ function SortableAppItem({
           className="flex-shrink-0 rounded-sm"
         />
         <span className="truncate">{app.name}</span>
+        {hasBadge && !isActive && (
+          <span className="ml-auto h-1.5 w-1.5 flex-shrink-0 rounded-full bg-white opacity-90" />
+        )}
       </button>
     </li>
   );
@@ -140,6 +146,7 @@ function SortableGroupHeader({ group, isCollapsed, onToggle }: SortableGroupHead
 export function Sidebar({
   config,
   activeAppId,
+  badgeAppIds,
   switchApp,
   removeApp,
   editApp,
@@ -190,6 +197,7 @@ export function Sidebar({
                           key={app.id}
                           app={app}
                           isActive={app.id === activeAppId}
+                          hasBadge={badgeAppIds.has(app.id)}
                           switchApp={switchApp}
                           removeApp={removeApp}
                           editApp={editApp}
@@ -215,6 +223,7 @@ export function Sidebar({
                   key={app.id}
                   app={app}
                   isActive={app.id === activeAppId}
+                  hasBadge={badgeAppIds.has(app.id)}
                   switchApp={switchApp}
                   removeApp={removeApp}
                   editApp={editApp}

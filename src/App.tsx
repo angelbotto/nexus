@@ -21,6 +21,7 @@ function App() {
     config,
     activeAppId,
     sidebarVisible,
+    badgeAppIds,
     switchApp,
     addApp,
     removeApp,
@@ -198,6 +199,7 @@ function App() {
           <Sidebar
             config={config}
             activeAppId={activeAppId}
+            badgeAppIds={badgeAppIds}
             switchApp={switchApp}
             removeApp={removeApp}
             editApp={handleEditApp}

@@ -15,6 +15,7 @@ interface UseAppsConfigResult {
   config: NexusConfig | null;
   activeAppId: string | null;
   sidebarVisible: boolean;
+  badgeAppIds: Set<string>;
   switchApp: (id: string) => Promise<void>;
   setActiveAppId: (id: string | null) => void;
   addApp: (name: string, url: string) => Promise<void>;
@@ -29,6 +30,7 @@ export function useAppsConfig(): UseAppsConfigResult {
   const [config, setConfig] = useState<NexusConfig | null>(null);
   const [activeAppId, setActiveAppId] = useState<string | null>(null);
   const [sidebarVisible, setSidebarVisible] = useState(true);
+  const [badgeAppIds, setBadgeAppIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
   // Keep a ref to the latest config so mutation callbacks always see fresh state
@@ -80,6 +82,12 @@ export function useAppsConfig(): UseAppsConfigResult {
       const detail = (e as CustomEvent).detail;
       if (typeof detail === "string") {
         setActiveAppId(detail);
+        setBadgeAppIds(prev => {
+          if (!prev.has(detail)) return prev;
+          const next = new Set(prev);
+          next.delete(detail);
+          return next;
+        });
       }
     }
 
@@ -91,11 +99,22 @@ export function useAppsConfig(): UseAppsConfigResult {
       });
     }
 
+    function handleTitleChanged(e: Event) {
+      const { appId } = (e as CustomEvent<{ appId: string; title: string }>).detail;
+      setBadgeAppIds(prev => {
+        const next = new Set(prev);
+        next.add(appId);
+        return next;
+      });
+    }
+
     window.addEventListener("app-switched", handleAppSwitched);
     window.addEventListener("sidebar-toggle", handleSidebarToggle);
+    window.addEventListener("app-title-changed", handleTitleChanged);
     cleanupFns.push(() => {
       window.removeEventListener("app-switched", handleAppSwitched);
       window.removeEventListener("sidebar-toggle", handleSidebarToggle);
+      window.removeEventListener("app-title-changed", handleTitleChanged);
     });
 
     return () => {
@@ -105,6 +124,12 @@ export function useAppsConfig(): UseAppsConfigResult {
   }, []);
 
   async function switchApp(id: string): Promise<void> {
+    setBadgeAppIds(prev => {
+      if (!prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
     await invoke("switch_app", { appId: id });
     setActiveAppId(id);
   }
@@ -158,6 +183,7 @@ export function useAppsConfig(): UseAppsConfigResult {
     config,
     activeAppId,
     sidebarVisible,
+    badgeAppIds,
     switchApp,
     setActiveAppId,
     addApp,
