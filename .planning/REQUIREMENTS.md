@@ -40,12 +40,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### WebView
 
-- [ ] **WEB-01**: Each app loads its URL in a dedicated webview
+- [x] **WEB-01**: Each app loads its URL in a dedicated webview
 - [ ] **WEB-02**: Webviews use lazy loading — only created on first visit, not at startup
 - [ ] **WEB-03**: Recently used webviews stay alive (LRU cache), inactive ones are unloaded
 - [ ] **WEB-04**: Switching between cached webviews feels instant (no reload)
-- [ ] **WEB-05**: Sessions (cookies, login state) persist across app restarts
-- [ ] **WEB-06**: Each app has isolated session storage (separate data directory)
+- [x] **WEB-05**: Sessions (cookies, login state) persist across app restarts
+- [x] **WEB-06**: Each app has isolated session storage (separate data directory)
 - [ ] **WEB-07**: External links (different domain) open in system default browser
 - [ ] **WEB-08**: User can reload current webview with Cmd+R
 
@@ -134,12 +134,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CMD-02 | Phase 3 | Pending |
 | CMD-03 | Phase 3 | Pending |
 | CMD-04 | Phase 3 | Pending |
-| WEB-01 | Phase 1 | Pending |
+| WEB-01 | Phase 1 | Done (01-02) |
 | WEB-02 | Phase 4 | Pending |
 | WEB-03 | Phase 4 | Pending |
 | WEB-04 | Phase 4 | Pending |
-| WEB-05 | Phase 1 | Pending |
-| WEB-06 | Phase 1 | Pending |
+| WEB-05 | Phase 1 | Done (01-02) |
+| WEB-06 | Phase 1 | Done (01-02) |
 | WEB-07 | Phase 1 | Pending |
 | WEB-08 | Phase 2 | Pending |
 | VIS-01 | Phase 2 | Pending |

@@ -33,7 +33,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans:** 3 plans
 Plans:
 - [x] 01-01-PLAN.md — Scaffold Tauri 2 project and build config layer with tests
-- [ ] 01-02-PLAN.md — WebviewWindow management with session isolation and sidebar UI
+- [x] 01-02-PLAN.md — WebviewWindow management with session isolation and sidebar UI
 - [ ] 01-03-PLAN.md — Config file watcher, hot-reload, and full Phase 1 verification
 
 ### Phase 2: Sidebar & Navigation
@@ -88,7 +88,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 1/3 | In progress | - |
+| 1. Foundation | 2/3 | In progress | - |
 | 2. Sidebar & Navigation | 0/TBD | Not started | - |
 | 3. Command Palette & Config Management | 0/TBD | Not started | - |
 | 4. Performance & Activity | 0/TBD | Not started | - |
