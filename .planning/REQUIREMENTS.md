@@ -26,9 +26,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Keyboard Shortcuts
 
-- [ ] **KEY-01**: User can press Cmd+1..9 to jump to apps by position
-- [ ] **KEY-02**: User can press Cmd+R to reload the active webview
-- [ ] **KEY-03**: User can press Cmd+B to toggle sidebar
+- [x] **KEY-01**: User can press Cmd+1..9 to jump to apps by position
+- [x] **KEY-02**: User can press Cmd+R to reload the active webview
+- [x] **KEY-03**: User can press Cmd+B to toggle sidebar
 - [ ] **KEY-04**: User can press Cmd+K to open command palette
 
 ### Command Palette
@@ -47,7 +47,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **WEB-05**: Sessions (cookies, login state) persist across app restarts
 - [x] **WEB-06**: Each app has isolated session storage (separate data directory)
 - [x] **WEB-07**: External links (different domain) open in system default browser
-- [ ] **WEB-08**: User can reload current webview with Cmd+R
+- [x] **WEB-08**: User can reload current webview with Cmd+R
 
 ### Visual
 
@@ -126,9 +126,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | NAV-04 | Phase 2 | Complete |
 | NAV-05 | Phase 2 | Complete |
 | NAV-06 | Phase 3 | Pending |
-| KEY-01 | Phase 2 | Pending |
-| KEY-02 | Phase 2 | Pending |
-| KEY-03 | Phase 2 | Pending |
+| KEY-01 | Phase 2 | Complete |
+| KEY-02 | Phase 2 | Complete |
+| KEY-03 | Phase 2 | Complete |
 | KEY-04 | Phase 2 | Pending |
 | CMD-01 | Phase 3 | Pending |
 | CMD-02 | Phase 3 | Pending |
@@ -141,7 +141,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | WEB-05 | Phase 1 | Done (01-02) |
 | WEB-06 | Phase 1 | Done (01-02) |
 | WEB-07 | Phase 1 | Complete |
-| WEB-08 | Phase 2 | Pending |
+| WEB-08 | Phase 2 | Complete |
 | VIS-01 | Phase 2 | Complete |
 | VIS-02 | Phase 2 | Complete |
 | VIS-03 | Phase 4 | Pending |
