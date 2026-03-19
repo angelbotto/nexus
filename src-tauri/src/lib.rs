@@ -19,7 +19,10 @@ pub fn run() {
             app.manage(Mutex::new(AppState::new(config)));
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![commands::config::load_config,])
+        .invoke_handler(tauri::generate_handler![
+            commands::config::load_config,
+            commands::webview::switch_app,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -1,17 +1,50 @@
 pub fn extract_base_domain(url: &str) -> String {
-    todo!()
+    let host = url
+        .trim_start_matches("https://")
+        .trim_start_matches("http://")
+        .split('/')
+        .next()
+        .unwrap_or("");
+    let parts: Vec<&str> = host.split('.').collect();
+    if parts.len() >= 2 {
+        format!("{}.{}", parts[parts.len() - 2], parts[parts.len() - 1])
+    } else {
+        host.to_string()
+    }
 }
 
 pub fn is_subdomain_of(candidate: &str, base: &str) -> bool {
-    todo!()
+    candidate.ends_with(&format!(".{}", base))
 }
 
 pub fn is_oauth_provider(url: &str) -> bool {
-    todo!()
+    let oauth_domains = [
+        "accounts.google.com",
+        "login.microsoftonline.com",
+        "auth0.com",
+        "okta.com",
+        "appleid.apple.com",
+    ];
+    let without_scheme = url
+        .trim_start_matches("https://")
+        .trim_start_matches("http://");
+    let host = without_scheme.split('/').next().unwrap_or("");
+    let path = without_scheme.get(host.len()..).unwrap_or("");
+
+    for domain in &oauth_domains {
+        if host == *domain || host.ends_with(&format!(".{}", domain)) {
+            return true;
+        }
+    }
+    // Special case: github.com/login/*
+    if host == "github.com" && path.starts_with("/login") {
+        return true;
+    }
+    false
 }
 
 pub fn make_store_id(app_id: &str) -> [u8; 16] {
-    todo!()
+    md5::compute(app_id.as_bytes()).0
 }
 
 #[cfg(test)]
