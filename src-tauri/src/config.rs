@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct AppConfig {
     pub id: String,
     pub name: String,
@@ -11,15 +12,23 @@ pub struct AppConfig {
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct GroupConfig {
     pub id: String,
     pub name: String,
+    #[serde(default)]
+    pub collapsed: bool,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
 pub struct NexusConfig {
     pub groups: Vec<GroupConfig>,
     pub apps: Vec<AppConfig>,
+    #[serde(default)]
+    pub last_active_app_id: Option<String>,
+    #[serde(default)]
+    pub sidebar_collapsed: bool,
 }
 
 pub fn config_path() -> PathBuf {
@@ -35,10 +44,12 @@ pub fn default_config() -> NexusConfig {
             GroupConfig {
                 id: "mis-productos".to_string(),
                 name: "Mis Productos".to_string(),
+                collapsed: false,
             },
             GroupConfig {
                 id: "tools".to_string(),
                 name: "Tools".to_string(),
+                collapsed: false,
             },
         ],
         apps: vec![
@@ -67,6 +78,8 @@ pub fn default_config() -> NexusConfig {
                 group: "tools".to_string(),
             },
         ],
+        last_active_app_id: None,
+        sidebar_collapsed: false,
     }
 }
 
@@ -140,6 +153,7 @@ mod tests {
             groups: vec![GroupConfig {
                 id: "custom".to_string(),
                 name: "Custom Group".to_string(),
+                collapsed: false,
             }],
             apps: vec![AppConfig {
                 id: "custom-app".to_string(),
@@ -147,6 +161,8 @@ mod tests {
                 url: "https://example.com".to_string(),
                 group: "custom".to_string(),
             }],
+            last_active_app_id: None,
+            sidebar_collapsed: false,
         };
 
         let json = serde_json::to_string_pretty(&custom_config).unwrap();
@@ -229,5 +245,72 @@ mod tests {
         assert!(ids.contains(&"linear"), "should have linear app");
         assert!(ids.contains(&"gmail"), "should have gmail app");
         assert!(ids.contains(&"github"), "should have github app");
+    }
+
+    #[test]
+    fn test_group_config_collapsed_defaults_to_false_when_missing() {
+        // Old JSON without "collapsed" field — should deserialize with collapsed=false
+        let json = r#"{"id": "tools", "name": "Tools"}"#;
+        let group: GroupConfig = serde_json::from_str(json).expect("deserialize failed");
+        assert_eq!(group.collapsed, false, "collapsed should default to false");
+    }
+
+    #[test]
+    fn test_nexus_config_new_fields_default_when_missing() {
+        // Old apps.json without lastActiveAppId/sidebarCollapsed — backward compatible
+        let json = r#"{
+            "groups": [{"id": "g1", "name": "G1"}],
+            "apps": [{"id": "a1", "name": "A1", "url": "https://a1.com", "group": "g1"}]
+        }"#;
+        let config: NexusConfig = serde_json::from_str(json).expect("deserialize failed");
+        assert_eq!(config.last_active_app_id, None, "lastActiveAppId should default to None");
+        assert_eq!(config.sidebar_collapsed, false, "sidebarCollapsed should default to false");
+    }
+
+    #[test]
+    fn test_nexus_config_new_fields_round_trip() {
+        let config = NexusConfig {
+            groups: vec![GroupConfig {
+                id: "g1".to_string(),
+                name: "G1".to_string(),
+                collapsed: true,
+            }],
+            apps: vec![AppConfig {
+                id: "a1".to_string(),
+                name: "A1".to_string(),
+                url: "https://a1.com".to_string(),
+                group: "g1".to_string(),
+            }],
+            last_active_app_id: Some("a1".to_string()),
+            sidebar_collapsed: true,
+        };
+        let json = serde_json::to_string_pretty(&config).expect("serialize failed");
+        // Verify camelCase field names in JSON output
+        assert!(json.contains("lastActiveAppId"), "JSON should use camelCase");
+        assert!(json.contains("sidebarCollapsed"), "JSON should use camelCase");
+        let restored: NexusConfig = serde_json::from_str(&json).expect("deserialize failed");
+        assert_eq!(config, restored, "round-trip should preserve all fields");
+    }
+
+    #[test]
+    fn test_backward_compat_old_apps_json_loads() {
+        // Simulates a real old-format apps.json from Phase 1
+        let old_json = r#"{
+            "groups": [
+                {"id": "mis-productos", "name": "Mis Productos"},
+                {"id": "tools", "name": "Tools"}
+            ],
+            "apps": [
+                {"id": "plane", "name": "Plane", "url": "https://plane.botto.is", "group": "mis-productos"},
+                {"id": "gmail", "name": "Gmail", "url": "https://mail.google.com", "group": "tools"}
+            ]
+        }"#;
+        let config: NexusConfig = serde_json::from_str(old_json).expect("old format should load");
+        assert_eq!(config.groups.len(), 2);
+        assert_eq!(config.apps.len(), 2);
+        assert_eq!(config.sidebar_collapsed, false);
+        assert_eq!(config.last_active_app_id, None);
+        assert_eq!(config.groups[0].collapsed, false);
+        assert_eq!(config.groups[1].collapsed, false);
     }
 }

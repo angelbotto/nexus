@@ -21,3 +21,16 @@ pub fn reload_config(state: State<'_, Mutex<AppState>>) -> Result<NexusConfig, S
     locked.config = new_config.clone();
     Ok(new_config)
 }
+
+#[tauri::command]
+pub fn save_config(
+    config: NexusConfig,
+    state: State<'_, Mutex<AppState>>,
+) -> Result<(), String> {
+    let path = config::config_path();
+    let json = serde_json::to_string_pretty(&config).map_err(|e| e.to_string())?;
+    std::fs::write(path, json).map_err(|e| e.to_string())?;
+    let mut locked = state.lock().map_err(|e| e.to_string())?;
+    locked.config = config;
+    Ok(())
+}
