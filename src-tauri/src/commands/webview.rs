@@ -4,6 +4,24 @@ use tauri::webview::WebviewBuilder;
 use tauri::{AppHandle, LogicalPosition, LogicalSize, Manager, State, WebviewUrl};
 use tauri_plugin_opener::OpenerExt;
 
+#[tauri::command]
+pub fn destroy_webview(
+    app_id: String,
+    state: State<'_, Mutex<AppState>>,
+    app_handle: AppHandle,
+) -> Result<(), String> {
+    let label = format!("app-{}", app_id);
+    if let Some(wv) = app_handle.get_webview(&label) {
+        wv.close().map_err(|e| e.to_string())?;
+    }
+    let mut st = state.lock().map_err(|e| e.to_string())?;
+    st.webviews_created.remove(&app_id);
+    if st.active_app_id.as_deref() == Some(app_id.as_str()) {
+        st.active_app_id = None;
+    }
+    Ok(())
+}
+
 use crate::routing::{extract_base_domain, is_oauth_provider, is_subdomain_of, make_store_id};
 use crate::state::AppState;
 

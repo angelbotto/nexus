@@ -147,6 +147,7 @@ pub fn run() {
             commands::config::save_config,
             commands::webview::switch_app,
             commands::webview::resize_active_webview,
+            commands::webview::destroy_webview,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
