@@ -98,9 +98,7 @@ pub fn calc_webview_rect(
     main_window: &tauri::Window,
     sidebar_visible: bool,
 ) -> Result<(f64, f64, f64, f64), String> {
-    let size = main_window
-        .inner_size()
-        .map_err(|e| e.to_string())?;
+    let size = main_window.inner_size().map_err(|e| e.to_string())?;
     let scale = main_window.scale_factor().unwrap_or(1.0);
     let win_w = size.width as f64 / scale;
     let win_h = size.height as f64 / scale;
@@ -186,9 +184,7 @@ pub fn switch_app_impl(
                 use tauri::webview::NewWindowResponse;
                 let host = nav_url.host_str().unwrap_or("");
                 // Same domain or subdomain → allow in webview
-                if host == base_domain_new_win
-                    || is_subdomain_of(host, &base_domain_new_win)
-                {
+                if host == base_domain_new_win || is_subdomain_of(host, &base_domain_new_win) {
                     return NewWindowResponse::Allow;
                 }
                 // OAuth providers → allow in webview

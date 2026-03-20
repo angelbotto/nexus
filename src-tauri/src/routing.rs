@@ -78,12 +78,18 @@ mod tests {
 
     #[test]
     fn test_extract_base_domain_gmail() {
-        assert_eq!(extract_base_domain("https://mail.google.com/inbox"), "google.com");
+        assert_eq!(
+            extract_base_domain("https://mail.google.com/inbox"),
+            "google.com"
+        );
     }
 
     #[test]
     fn test_extract_base_domain_custom_tld() {
-        assert_eq!(extract_base_domain("https://plane.botto.is/projects"), "botto.is");
+        assert_eq!(
+            extract_base_domain("https://plane.botto.is/projects"),
+            "botto.is"
+        );
     }
 
     #[test]
@@ -113,7 +119,9 @@ mod tests {
 
     #[test]
     fn test_is_oauth_provider_microsoft() {
-        assert!(is_oauth_provider("https://login.microsoftonline.com/common"));
+        assert!(is_oauth_provider(
+            "https://login.microsoftonline.com/common"
+        ));
     }
 
     #[test]

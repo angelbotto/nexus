@@ -208,7 +208,11 @@ mod tests {
     fn test_default_config_contains_exactly_4_apps_in_2_groups() {
         let config = default_config();
         assert_eq!(config.apps.len(), 4, "should have exactly 4 default apps");
-        assert_eq!(config.groups.len(), 2, "should have exactly 2 default groups");
+        assert_eq!(
+            config.groups.len(),
+            2,
+            "should have exactly 2 default groups"
+        );
     }
 
     #[test]
@@ -279,8 +283,14 @@ mod tests {
             "apps": [{"id": "a1", "name": "A1", "url": "https://a1.com", "group": "g1"}]
         }"#;
         let config: NexusConfig = serde_json::from_str(json).expect("deserialize failed");
-        assert_eq!(config.last_active_app_id, None, "lastActiveAppId should default to None");
-        assert_eq!(config.sidebar_collapsed, false, "sidebarCollapsed should default to false");
+        assert_eq!(
+            config.last_active_app_id, None,
+            "lastActiveAppId should default to None"
+        );
+        assert_eq!(
+            config.sidebar_collapsed, false,
+            "sidebarCollapsed should default to false"
+        );
     }
 
     #[test]
@@ -302,8 +312,14 @@ mod tests {
         };
         let json = serde_json::to_string_pretty(&config).expect("serialize failed");
         // Verify camelCase field names in JSON output
-        assert!(json.contains("lastActiveAppId"), "JSON should use camelCase");
-        assert!(json.contains("sidebarCollapsed"), "JSON should use camelCase");
+        assert!(
+            json.contains("lastActiveAppId"),
+            "JSON should use camelCase"
+        );
+        assert!(
+            json.contains("sidebarCollapsed"),
+            "JSON should use camelCase"
+        );
         let restored: NexusConfig = serde_json::from_str(&json).expect("deserialize failed");
         assert_eq!(config, restored, "round-trip should preserve all fields");
     }
