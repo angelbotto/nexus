@@ -1,8 +1,8 @@
 # Feature Research
 
 **Domain:** Desktop web-app browser (unified launcher for web apps)
-**Researched:** 2026-03-18
-**Confidence:** HIGH (based on direct competitor analysis: Station, Wavebox, Ferdium, Franz, Shift, Rambox, WebCatalog, Arc)
+**Researched:** 2026-03-18 (v1.0) / 2026-03-20 (v2.0 update)
+**Confidence:** HIGH (based on direct competitor analysis: Station, Wavebox, Ferdium, Franz, Shift, Rambox, WebCatalog, Arc; Tauri 2 official docs and GitHub issues verified)
 
 ---
 
@@ -47,15 +47,13 @@ Features that seem good but create problems.
 
 | Feature | Why Requested | Why Problematic | Alternative |
 |---------|---------------|-----------------|-------------|
-| Native OS notifications | Users want alerts from Slack, Gmail, etc. without switching | Requires per-app notification scraping or webview JS injection. Notification permission dialogs differ per platform. Creates noise and notification fatigue. Opens security surface for JS injection. v1 scope creep. | Silent sidebar badge (title-change dot). Let v1 ship without this; add in v2 when the notification architecture is well-understood. |
-| Spaces / profiles (multiple sets of apps) | Power users want work vs personal switching | Massive state complexity: separate session stores, separate configs, UI for switching. Arc built this and it became their hardest feature to maintain. | Defer to v2. JSON config is simple to extend with a `spaces` array later. |
-| Built-in ad blocker / privacy features | Users want tracker blocking in webviews | Requires content script injection or webview request interception. Hard to maintain filter lists. Network-layer blocking in Tauri is possible via `on_navigation` but increases complexity significantly. | Document how to use system-level blockers (e.g. Little Snitch, Pi-hole). Consider as v2 plugin. |
+| Cloud sync for spaces/preferences | Users want settings across machines | Requires backend, auth, conflict resolution — directly violates the "zero backend" architecture decision | JSON config is a file — users can sync it themselves with Dropbox/iCloud/git (already in PROJECT.md as explicit out-of-scope) |
+| Tabs within a space | Users want browser-style tabs per app | Exponential UI complexity; turns Nexus into a full browser; LRU pool math breaks; competes with the OS browser | Spaces handle the context-switching use case; tabs are what the system browser is for |
 | App marketplace / recipes catalog | Franz/Ferdium model: curated list of "recipes" for 100+ apps | Massively increases maintenance surface. Recipes break when apps update their HTML. Becomes a full-time job. Franz/Ferdi both struggled with recipe maintenance as a core pain point. | JSON config with a simple `url` field. Users add any URL. No recipes needed. |
-| Multi-account support (two Gmail instances) | Many users run work + personal | Requires separate cookie stores per instance of the same app. WebKit doesn't support multiple partitioned webviews with different origins easily. Wavebox does this but it's their most complex feature. | Defer to v2. Use separate data partition names as a v2 config option. |
 | Browser extension support | Users want 1Password, Bitwarden, Grammarly in webviews | Platform webviews (WebKit, WebView2) do NOT support browser extensions the same way Chromium does. Station/Wavebox do this by embedding full Chromium, which destroys the RAM advantage. | Not feasible without abandoning Tauri's native-webview model. Document explicitly in README. |
-| OAuth / account system (cloud sync) | Users want their config to sync across machines | Cloud sync = server infrastructure, auth, encryption, privacy liability. Destroys the "zero backend" architecture. | JSON config is a file — users can sync it themselves with Dropbox/iCloud/git. Document this pattern. |
-| In-app browser for external links | Users sometimes want to stay in Nexus context | Defeats the entire design principle. Nexus is for web apps, not general browsing. Creates a half-baked browser experience. | Always system browser for external navigation. No exceptions in v1. |
-| Smooth animations / transitions | Polished feel | Requires significant engineering for cross-platform consistency. CSS transitions on WebKit vs WebView2 behave differently. Low ROI for v1. | Ship with instant state changes. Add transitions in v2 as a "polish" phase after core is stable. |
+| OAuth / account system (cloud sync) | Users want their config to sync across machines | Cloud sync = server infrastructure, auth, encryption, privacy liability. Destroys the "zero backend" architecture. | JSON config is a file — users can sync it themselves with Dropbox/iCloud/git |
+| In-app browser for external links | Users sometimes want to stay in Nexus context | Defeats the entire design principle. Nexus is for web apps, not general browsing. Creates a half-baked browser experience. | Always system browser for external navigation. No exceptions. |
+| Full screen / per-app window | Some users want each app maximized separately | Defeats the unified launcher value proposition; turns Nexus into just a process launcher | Split view handles the "see more" use case |
 
 ---
 
@@ -100,6 +98,50 @@ Features that seem good but create problems.
     └──requires──> [Lazy Loading / Sleep]
     └──conflicts──> [Pre-loading all webviews on startup]
     └──conflicts──> [Extension support] (requires Chromium = kills RAM advantage)
+
+--- v2.0 additions ---
+
+[Spaces]
+    └──requires──> [JSON config extension (spaces array)]
+    └──requires──> [Sidebar UI: space switcher component]
+    └──enhances──> [Multi-account] (accounts are naturally per-space)
+    └──enhances──> [Keyboard shortcuts] (per-space index navigation)
+
+[Multi-account]
+    └──requires──> [Session isolation per account instance (data_directory workaround)]
+    └──depends-on──> [Spaces] (accounts live within a space context)
+    └──NOTE: Tauri browser profiles (#9285) open/unimplemented — workaround path only
+
+[Split view]
+    └──requires──> [Tauri unstable multi-webview API — validate first]
+    └──requires──> [LRU pool adjustment (split uses 2 slots simultaneously)]
+    └──conflicts──> [Single active app model (state machine change needed)]
+
+[Notifications]
+    └──requires──> [tauri-plugin-notification installed + permissions]
+    └──requires──> [Webview Notification API interception (JS bridge)]
+    └──enhances──> [Dock badge count]
+
+[Dock badge count]
+    └──requires──> [Tauri setBadgeCount() — verify bug status #13905]
+    └──depends-on──> [Notifications OR unread count badge (source of count)]
+
+[Preferences panel]
+    └──requires──> [preferences.json schema + file persistence]
+    └──enhances──> [Themes (CSS variable switching)]
+    └──independent-of──> [Spaces/Multi-account]
+
+[Code signing]
+    └──requires──> [Apple Developer account ($99/yr) for macOS notarization]
+    └──requires──> [Windows: Azure Trusted Signing or OV cert (geo-gated)]
+    └──independent-of──> [all feature flags — ops-only change]
+    └──blocks──> [Polished distribution UX on macOS and Windows]
+
+[Animations / Polish]
+    └──requires──> [Motion (framer-motion) library]
+    └──enhances──> [Spaces] (space switch transition)
+    └──enhances──> [Preferences panel] (open/close animation)
+    └──independent-of──> [core features]
 ```
 
 ### Dependency Notes
@@ -108,124 +150,137 @@ Features that seem good but create problems.
 - **Lazy Loading requires LRU cache:** Simply destroying all inactive webviews creates bad UX (slow restore). Keep the last N (e.g., 3-5) webviews alive, destroy the rest.
 - **Startup < 1s conflicts with pre-loading:** Don't create webviews at startup. Create the webview on first user click to that app. Show a loading indicator.
 - **Extension support conflicts with native webview:** This is a hard architectural conflict. Supporting extensions requires Chromium, which eliminates the RAM and startup advantages.
-- **File-based config is a foundation dependency:** App groups, drag-and-drop, add/remove, and any future spaces/profiles all read from and write to the same JSON file. The schema must be designed for forward-compatibility.
+- **File-based config is a foundation dependency:** App groups, drag-and-drop, add/remove, and spaces/profiles all read from and write to the same JSON file. The schema must be designed for forward-compatibility.
+- **Multi-account requires workaround, not clean API:** Tauri browser profiles (#9285) is open and unimplemented. The `data_directory` per-instance workaround may have edge cases on macOS. Needs hands-on prototype validation before committing to a phase.
+- **Split view requires unstable Tauri API:** PR #8280 merged Jan 2024, but positioned behind `unstable` flag with known z-index/positioning bugs (#10420). Achievable (Bushido browser does it) but requires a validation spike.
 
 ---
 
 ## MVP Definition
 
-### Launch With (v1)
+### v1.0 (Already Shipped)
 
-Minimum viable product — what's needed to validate the concept.
+- [x] Sidebar with icons + labels
+- [x] App groups in sidebar
+- [x] WebView per app with lazy loading, LRU pool (8 max)
+- [x] Persistent sessions (per-app isolation)
+- [x] File-based config (`~/.nexus/apps.json`)
+- [x] Keyboard shortcuts (Cmd+1-9, Cmd+B, Cmd+R, Cmd+K)
+- [x] Command palette with fuzzy search
+- [x] Drag & drop reorder
+- [x] External links to system browser
+- [x] Activity badge (dot on title change)
+- [x] Dark mode + Arc-inspired minimal aesthetic
+- [x] Cross-platform: macOS universal, Linux .deb/.AppImage, Windows NSIS
+- [x] Auto-updates via tauri-plugin-updater
 
-- [ ] Sidebar with icons + labels — core navigation paradigm; product doesn't exist without this
-- [ ] App groups in sidebar — users with 5+ apps immediately need this for sanity
-- [ ] WebView per app with lazy loading — without sleep, RAM blows up on 5+ apps
-- [ ] Persistent sessions — users must stay logged in across restarts; this is the #1 reason to use the app
-- [ ] File-based config (`~/.nexus/apps.json`) — the entire customization model; hardcoded list is not a product
-- [ ] Keyboard shortcuts (Cmd+1..9, Cmd+R, Cmd+B) — power users require this; missing = won't adopt
-- [ ] Command palette (Cmd+K) — fuzzy app switching is table stakes once you have >5 apps
-- [ ] Drag & drop reorder — users need to curate order; without this the app feels unfinished
-- [ ] External links to system browser — missing this = Nexus becomes a broken general browser
-- [ ] Activity badge (title-change dot) — silent notification is a key differentiator over just bookmarks
-- [ ] Dark mode + Arc-inspired minimal aesthetic — first impression; competitive bar is high
-- [ ] Cross-platform: macOS arm64 + intel, Linux, Windows — Tauri's core value prop
+### v2.0 Core (Current Milestone — Ship These)
 
-### Add After Validation (v1.x)
+Must ship for this milestone to deliver on "workspace manager" evolution:
 
-Features to add once core is working.
+- [ ] Spaces — foundational workspace concept; all other v2 features build on this
+- [ ] Preferences panel — appearance customization; CSS variables + preferences.json
+- [ ] Smooth animations — polish pass; low cost, high perception value
+- [ ] Unread count badge (numeric) — extend existing dot-badge; title parse for numbers
+- [ ] Native OS notifications — `tauri-plugin-notification` + JS bridge injection
+- [ ] Code signing (macOS) — notarization for clean install; Apple Developer account required
 
-- [ ] Unread count in badge (not just dot) — when title parsing is stable, surface the number
-- [ ] Per-app mute / DND toggle — let users silence specific apps without removing them
-- [ ] App-level zoom controls — some apps are designed for larger screens; zoom helps usability
-- [ ] Import / export config — power users want to share or backup their `apps.json` from within the UI
+### v2.0 Conditional (Validate Before Committing)
 
-### Future Consideration (v2+)
+These require technical validation spikes before committing to a phase:
 
-Features to defer until product-market fit is established.
+- [ ] Multi-account — validate `data_directory` workaround on macOS/Windows/Linux; Tauri profiles API not ready
+- [ ] Split view — validate Tauri unstable multi-webview API on all 3 platforms; known positioning bugs
 
-- [ ] Spaces / profiles — massive complexity; validate single-workspace first
-- [ ] Split view (two apps side by side) — needed, but complex layout management; defer
-- [ ] Native OS notifications — requires careful per-app opt-in architecture; notification fatigue risk
-- [ ] Multi-account support (same app, two logins) — requires partitioned sessions; significant complexity
-- [ ] Smooth animations — polish phase; ship correctness before aesthetics
-- [ ] Per-app theming / custom CSS injection — power user feature; high risk of maintenance burden
+### v2.x Add-ons (After Core Stable)
+
+- [ ] Code signing (Windows) — Azure Trusted Signing geo-gated (US/Canada only); document OV cert fallback
+- [ ] Dock badge count — verify `setBadgeCount` bug (#13905) resolution before relying on it
+- [ ] Per-space themes — Spaces must be stable before per-space visual differentiation adds value
 
 ---
 
-## Feature Prioritization Matrix
+## Feature Prioritization Matrix (v2.0 Scope)
 
 | Feature | User Value | Implementation Cost | Priority |
 |---------|------------|---------------------|----------|
-| Persistent sessions | HIGH | MEDIUM | P1 |
-| Sidebar navigation | HIGH | LOW | P1 |
-| Lazy loading / sleep | HIGH | HIGH | P1 |
-| File-based config (apps.json) | HIGH | LOW | P1 |
-| Keyboard shortcuts | HIGH | LOW | P1 |
-| External links to system browser | HIGH | LOW | P1 |
-| App groups in sidebar | HIGH | LOW | P1 |
-| Command palette (Cmd+K) | HIGH | MEDIUM | P1 |
-| Cross-platform build | HIGH | HIGH | P1 |
-| Drag & drop reorder | MEDIUM | MEDIUM | P2 |
-| Activity badge (dot) | MEDIUM | MEDIUM | P2 |
-| Dark mode | MEDIUM | LOW | P2 |
-| Collapsible sidebar (Cmd+B) | MEDIUM | LOW | P2 |
-| Startup < 1s | HIGH | HIGH | P2 |
-| Unread count in badge | MEDIUM | MEDIUM | P2 |
-| Per-app mute / DND | LOW | LOW | P3 |
-| App-level zoom controls | LOW | LOW | P3 |
-| Spaces / profiles | HIGH | HIGH | P3 |
-| Native OS notifications | MEDIUM | HIGH | P3 |
-| Multi-account support | MEDIUM | HIGH | P3 |
-| Extension support | MEDIUM | VERY HIGH (arch change) | NEVER (v1) |
+| Spaces | HIGH | MEDIUM | P1 |
+| Preferences panel | HIGH | LOW | P1 |
+| Native OS notifications | HIGH | MEDIUM | P1 |
+| Smooth animations / polish | MEDIUM | LOW | P1 |
+| Unread count badge (numeric) | MEDIUM | LOW | P1 |
+| Code signing (macOS) | HIGH (distribution) | LOW-MEDIUM (ops) | P1 |
+| Multi-account | HIGH | HIGH | P2 — validate first |
+| Split view | MEDIUM | HIGH | P2 — validate API stability |
+| Dock badge count | LOW-MEDIUM | LOW | P2 — depends on notifications |
+| Code signing (Windows) | MEDIUM | MEDIUM | P2 — geo-gated option |
 
 **Priority key:**
-- P1: Must have for launch
-- P2: Should have, add when possible
+- P1: Must have for v2.0 release
+- P2: Should have, add when core is stable
 - P3: Nice to have, future consideration
 
 ---
 
 ## Competitor Feature Analysis
 
-| Feature | Station | Wavebox | Ferdium | Shift | Rambox | Nexus approach |
-|---------|---------|---------|---------|-------|--------|----------------|
-| Sidebar navigation | Yes | Yes | Yes | Yes | Yes | Yes — Arc-inspired thin vertical bar |
-| App groups | Yes (smart grouping) | Yes (containers) | Yes | Yes (workspaces) | Yes | Yes — JSON-defined, collapsible |
-| Lazy loading / sleep | Yes ("autosleep") | Yes (15-min default) | Yes ("hibernation") | Yes | Yes | Yes — LRU with configurable N |
-| Multi-account | Yes | Yes (core feature) | Yes | Yes | Yes | No v1 — deferred to v2 |
-| Command palette | Yes ("Quick Switch") | No | No | No | Yes ("Quick Search") | Yes — Cmd+K fuzzy search |
-| Native notifications | Yes | Yes | Yes | Yes | Yes | No v1 — silent badge only |
-| Extension support | Limited | Yes (Chromium-based) | Yes (Electron) | Yes (Chromium) | No | No — not possible with native webviews |
-| File-based config | No | No | No | No | No | Yes — unique differentiator |
-| Startup speed | Slow (Electron) | Slow (Electron/Chrome) | Slow (Electron) | Slow (Electron) | Slow (Electron) | Fast (<1s, Tauri) |
-| RAM usage | High (Electron) | High (Chrome-based) | High (Electron) | High (Chrome) | Medium | Low (native webviews, lazy load) |
-| Open source | Yes (MIT) | No | Yes | No | Freemium | Yes (planned) |
-| Price | Free | Freemium ($20/yr) | Free | Freemium ($100/yr) | Freemium | Free (open source) |
-| Cross-platform | Mac/Win | Mac/Win | Mac/Win/Linux | Mac/Win | Mac/Win/Linux | Mac/Win/Linux |
+| Feature | Arc Browser | Wavebox | Franz/Rambox | Nexus v2.0 Approach |
+|---------|-------------|---------|--------------|---------------------|
+| Spaces / workspaces | Yes — icon dots at sidebar bottom, Cmd+S switch, per-space profile | Yes — full workspace isolation with cookie separation | Yes (Workspaces) | Named spaces in sidebar footer, JSON-backed, keyboard shortcut switching |
+| Multi-account | Yes — per-space profiles | Yes — headline feature, multiple logins per app | Yes (instances) | Per-account `data_directory` isolation; Tauri profiles feature pending |
+| Split view | Yes — side-by-side tabs | No | No | Two-webview layout via Tauri unstable multi-webview API |
+| Native notifications | Yes (browser) | Yes | Yes | `tauri-plugin-notification` + JS bridge in webviews |
+| Dock badge count | macOS only | Yes | Yes | `setBadgeCount()` (verify bug #13905 status) |
+| Preferences / themes | Yes — per-space colors | Yes — themes | Limited | CSS variables + preferences panel + JSON persistence |
+| Code signing | N/A (Electron-based) | N/A | N/A | macOS notarization + Windows Azure Trusted Signing |
+| Binary size | ~200MB (Chromium) | ~150MB | ~120MB | ~5MB (Tauri native webview) — major differentiator |
 
-**Key insight:** No competitor uses native webviews + file-based config + low RAM as a unified value prop. Nexus's differentiator is the combination of (1) Tauri native webviews for RAM/speed, (2) JSON config for power users, and (3) Arc-quality UX aesthetics. Extension support and multi-account are the features Nexus deliberately sacrifices to achieve this.
+**Key insight:** No competitor uses native webviews + file-based config + low RAM as a unified value prop. Nexus's differentiator is the combination of (1) Tauri native webviews for RAM/speed, (2) JSON config for power users, and (3) Arc-quality UX aesthetics.
+
+---
+
+## v2.0 Implementation Risk Notes
+
+### Multi-account: Tauri browser profiles not ready
+Tauri issue #9285 (browser profiles) is open and unimplemented as of March 2026. Implementation requires upstream work in the `wry` crate. Current workaround is separate `data_directory` per account instance. This works for session persistence but may have edge cases on macOS where `WKWebsiteDataStore` behavior is not fully controllable via directory path alone. **Recommendation:** Build a prototype and validate before committing to a shipping phase.
+
+### Split view: Unstable API with known bugs
+Tauri's multi-webview-in-one-window feature (PR #8280, merged Jan 2024) is behind the `unstable` feature flag. Known issue #10420 documents child webviews overlaying each other with z-index problems. The Bushido browser project demonstrates 4-pane recursive split is achievable, but it requires explicit engineering effort. LRU pool logic also needs updating since split view requires 2 active webviews simultaneously. **Recommendation:** Dedicate a research spike at phase start before committing to design.
+
+### Code signing (Windows): Geography and cost constraints
+Azure Trusted Signing (the preferred no-SmartScreen path) is currently available only to US/Canada organizations with 3+ years of business history. OV certificates (cheaper) still trigger SmartScreen warnings. **Recommendation:** macOS notarization is straightforward and high-value. Windows signing is a "do when possible" item — document the right-click workaround for early users.
+
+### setBadgeCount bug (macOS)
+GitHub issue #13905 (July 2025) reports `setBadgeCount` not working on macOS. Verify against current Tauri version before including dock badge count in a committed phase.
 
 ---
 
 ## Sources
 
-- [Station features page](https://getstation.com/features/)
+### v1.0 Research Sources
 - [Station GitHub (open source)](https://github.com/getstation/desktop-app)
 - [Wavebox features](https://wavebox.io/features)
-- [Wavebox tab sleep docs](https://hub.wavebox.io/sleep-performance/)
-- [Wavebox 2025 user survey](https://hub.wavebox.io/2025-user-survey-analysis-wavebox-by-the-numbers/)
 - [Ferdium GitHub](https://github.com/ferdium/ferdium-app)
-- [Ferdium blog review 2025](https://kszenes.github.io/blog/2025/Ferdium/)
-- [Shift 2.0 launch (2025)](https://shift.com/blog/shift-2-0-launch/)
 - [Rambox features](https://rambox.app/features/)
-- [WebCatalog keyboard shortcuts](https://community.webcatalog.io/t/documentation-keyboard-shortcuts/571)
-- [Arc browser Wikipedia (maintenance mode 2025)](https://en.wikipedia.org/wiki/Arc_(web_browser))
 - [Wavebox alternatives (AlternativeTo)](https://alternativeto.net/software/wmail/)
-- [WebView2 memory management (Microsoft)](https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/performance)
-- [Tauri memory article — idle optimization](https://medium.com/@hadiyolworld007/building-tauri-apps-that-dont-hog-memory-at-idle-de516dabb938)
-- [Windows RAM bloat: Electron and WebView2 (2025)](https://www.windowslatest.com/2025/12/07/ram-prices-soar-but-popular-windows-11-apps-are-using-more-ram-due-to-electron-web-components/)
+
+### v2.0 Research Sources
+- [Tauri Notification Plugin — Official Docs](https://v2.tauri.app/plugin/notification/)
+- [Tauri Webview JS API Reference](https://v2.tauri.app/reference/javascript/api/namespacewebview/)
+- [Tauri macOS Code Signing — Official Docs](https://v2.tauri.app/distribute/sign/macos/)
+- [Tauri Windows Code Signing — Official Docs](https://v2.tauri.app/distribute/sign/windows/)
+- [PR #8280 — Multiple webviews in one window (merged Jan 2024)](https://github.com/tauri-apps/tauri/pull/8280)
+- [Issue #9285 — Browser profiles support (open, unimplemented)](https://github.com/tauri-apps/tauri/issues/9285)
+- [Issue #11491 — Enhanced WebView isolation (closed as duplicate of #9285)](https://github.com/tauri-apps/tauri/issues/11491)
+- [Commit 020ea05 — Badging API implementation](https://github.com/tauri-apps/tauri/commit/020ea05561348dcd6d2a7df358f8a5190f661ba2)
+- [Issue #13905 — setBadgeCount bug (July 2025)](https://github.com/tauri-apps/tauri/issues/13905)
+- [Wavebox Spaces — Competitor reference](https://hub.wavebox.io/spaces/)
+- [Arc Browser UX analysis — LogRocket](https://blog.logrocket.com/ux-design/ux-analysis-arc-opera-edge/)
+- [Windows code signing guide — DEV Community](https://dev.to/tomtomdu73/ship-your-tauri-v2-app-like-a-pro-code-signing-for-macos-and-windows-part-12-3o9n)
+- [Windows code signing Certum HSM — Defguard](https://defguard.net/blog/windows-codesign-certum-hsm/)
+- [Motion (Framer Motion) official site](https://motion.dev/)
 
 ---
-*Feature research for: Desktop web-app browser (unified launcher)*
-*Researched: 2026-03-18*
+
+*Feature research for: Desktop web-app browser (unified launcher) — v1.0 + v2.0 Power Features*
+*Researched: 2026-03-18 (v1.0) / 2026-03-20 (v2.0 update)*
