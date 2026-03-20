@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 05-02-PLAN.md
-last_updated: "2026-03-20T06:32:26.093Z"
-last_activity: 2026-03-19 — Plan 04-03 complete (Phase 4 performance contract verified)
+status: completed
+stopped_at: Completed 05-03-PLAN.md
+last_updated: "2026-03-20T06:35:18.503Z"
+last_activity: 2026-03-20 — Plan 05-02 complete (tauri-plugin-updater with non-blocking banner)
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 18
-  completed_plans: 16
-  percent: 97
+  completed_plans: 17
+  percent: 89
 ---
 
 # Project State
@@ -60,6 +60,7 @@ Progress: [█████████░] 89% (Phase 5 in progress, 2/4 plans d
 | Phase 04-performance-activity P02 | 2 | 2 tasks | 6 files |
 | Phase 05-cross-platform-distribution P01 | 4 | 2 tasks | 8 files |
 | Phase 05-cross-platform-distribution P02 | 3 | 2 tasks | 9 files |
+| Phase 05-cross-platform-distribution P03 | 3 | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -102,6 +103,9 @@ Recent decisions affecting current work:
 - [Phase 05-cross-platform-distribution]: process:allow-restart is correct Tauri v2 capability permission (not process:allow-relaunch)
 - [Phase 05-cross-platform-distribution]: tauri add CLI creates desktop.json for platform-specific capabilities — kept separate from default.json
 - [Phase 05-cross-platform-distribution]: UpdateBanner calls check() twice (mount + Restart) to avoid stale closure on the update object
+- [Phase 05-cross-platform-distribution]: fail-fast: false in publish.yml matrix so one platform build failure does not cancel other platform builds
+- [Phase 05-cross-platform-distribution]: releaseDraft: true in publish.yml — user manually reviews and publishes GitHub Release after CI builds
+- [Phase 05-cross-platform-distribution]: Post-build artifact size gate in CI: stat -f%z (macOS) with stat -c%s (Linux/Windows) fallback, exits 1 if any artifact > 15 MB
 
 ### Pending Todos
 
@@ -115,6 +119,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T06:32:26.091Z
-Stopped at: Completed 05-02-PLAN.md
+Last session: 2026-03-20T06:35:18.500Z
+Stopped at: Completed 05-03-PLAN.md
 Resume file: None
