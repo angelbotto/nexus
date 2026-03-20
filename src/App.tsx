@@ -15,6 +15,7 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { useAppsConfig } from "./hooks/useAppsConfig";
 import { Sidebar } from "./components/Sidebar";
 import { CommandPalette } from "./components/CommandPalette";
+import { UpdateBanner } from "./components/UpdateBanner";
 
 function App() {
   const {
@@ -260,6 +261,7 @@ function App() {
           </div>
         )}
       </DragOverlay>
+      <UpdateBanner />
     </DndContext>
   );
 }
