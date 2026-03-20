@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A high-performance desktop app that acts as a unified browser for your favorite web apps. Built with Tauri 2, it provides a minimal Arc-inspired sidebar for navigation, persistent sessions, and a command palette — all while keeping RAM usage low and startup instant. Cross-platform: macOS, Linux, Windows.
+A high-performance desktop app that acts as a unified browser for your daily web apps. Built with Tauri 2 — sidebar navigation, persistent sessions, command palette, activity badges, auto-updates. Ships on macOS, Linux, and Windows at ~5MB.
 
 ## Core Value
 
@@ -12,23 +12,23 @@ Switching between your daily web apps must feel instant and seamless — zero de
 
 ### Validated
 
-(None yet — ship to validate)
+- Collapsible sidebar with icons + labels, app groups, drag & drop reorder — v1.0
+- WebView per app with lazy loading, LRU pool (8 max), instant switching — v1.0
+- Persistent sessions (cookies/login survive restart) with per-app isolation — v1.0
+- JSON config at ~/.nexus/apps.json with hot-reload, add/remove from UI — v1.0
+- Keyboard shortcuts: Cmd+1-9, Cmd+B, Cmd+R, Cmd+K — v1.0
+- Command Palette with fuzzy search, quick actions, add new app URL — v1.0
+- External links open in system default browser — v1.0
+- Badge dot on sidebar icon when page title changes — v1.0
+- Dark mode, minimalist Arc-inspired aesthetic — v1.0
+- Startup < 1s, switching < 100ms, RAM < 500MB with 10 apps, binary ~5MB — v1.0
+- Cross-platform: macOS universal, Linux .deb/.AppImage, Windows NSIS — v1.0
+- Auto-updates via tauri-plugin-updater with non-blocking launch check — v1.0
+- GitHub Actions CI/CD with tag-triggered 3-platform builds — v1.0
 
 ### Active
 
-- [ ] Collapsible sidebar with icons + labels for each app (Cmd+B toggle)
-- [ ] App groups in sidebar (e.g., "Mis Productos", "Social", "News")
-- [ ] WebView per app — lazy loaded, only active/recent apps keep webview alive
-- [ ] Persistent sessions (cookies/login survive app restart)
-- [ ] JSON config at ~/.nexus/apps.json — add/remove apps without recompiling
-- [ ] Keyboard shortcuts: Cmd+1..9 to jump between apps, Cmd+R to reload active webview
-- [ ] Command Palette (Cmd+K) — fuzzy search apps, quick actions, add new URL
-- [ ] Drag & drop reorder apps in sidebar (persisted to JSON)
-- [ ] External links open in system default browser
-- [ ] Badge dot on sidebar icon when page title changes (silent notification)
-- [ ] Dark mode, minimalist Arc-inspired aesthetic
-- [ ] Startup < 1 second, instant app switching, low RAM footprint, small binary
-- [ ] Cross-platform: macOS (arm64 + intel), Linux, Windows
+(None yet — define for next milestone)
 
 ### Out of Scope
 
@@ -38,16 +38,18 @@ Switching between your daily web apps must feel instant and seamless — zero de
 - Native macOS notifications — v1 uses silent badge only
 - OAuth/account system — no login, purely local config
 - App store/marketplace — JSON config is the interface
-- In-webview navigation for external links — always opens system browser
+- Browser extension support — incompatible with Tauri's native webview
 - Mobile platform support — desktop only
+- Light mode — dark mode only for now
+- Code signing — unsigned for v1 (macOS/Windows)
 
 ## Context
 
-- Tauri 2 provides native webviews per-platform (WebKit on macOS, WebKitGTK on Linux, WebView2 on Windows) — much lighter than Electron's bundled Chromium
-- Lazy loading strategy: only visible + N recently used apps keep webview alive, others are unloaded to free RAM
-- Arc browser is the primary aesthetic inspiration: thin vertical sidebar, clean grouping, keyboard-first navigation
-- Config is file-based (~/.nexus/apps.json) — power-user friendly, scriptable, version-controllable
-- Drag & drop reorder writes back to the JSON config file
+Shipped v1.0 with 96 commits, ~25K lines across 105 files.
+Tech stack: Tauri 2 (Rust) + React 18 + TypeScript + Vite + Tailwind CSS.
+Binary: 4.8 MB on macOS. 2.9 MB .deb on Linux.
+CI: GitHub Actions matrix (macOS universal, Ubuntu 22.04, Windows).
+Auto-updater: tauri-plugin-updater with GitHub Releases endpoint.
 
 ## Constraints
 
@@ -61,12 +63,15 @@ Switching between your daily web apps must feel instant and seamless — zero de
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Tauri 2 over Electron | Native webviews = less RAM, smaller binary, better performance | — Pending |
-| Lazy loading webviews | Balance between instant switching and RAM usage | — Pending |
-| JSON config over GUI settings | Power-user target audience, scriptable, simple to implement | — Pending |
-| Core features first, Arc polish in v2 | Ship a solid foundation before adding Spaces/Split/Animations | — Pending |
-| Silent badge over native notifications | Simpler v1, less intrusive, notification fatigue avoidance | — Pending |
-| External links to system browser | Nexus is for app webviews, not general browsing | — Pending |
+| Tauri 2 over Electron | Native webviews = less RAM, smaller binary | Good — 4.8MB binary, <500MB RAM |
+| Lazy loading webviews | Balance switching speed vs RAM | Good — sub-1s startup, instant cached switching |
+| JSON config over GUI settings | Power-user target, scriptable, simple | Good — hot-reload + UI editing works well |
+| LRU pool of 8 webviews | Cap RAM while keeping recent apps fast | Good — stays under 500MB with 10 apps |
+| data_store_identifier on macOS | Per-app session isolation via WKWebView | Good — sessions survive restarts |
+| Platform-native title bar | macOS overlay, Windows/Linux native | Good — feels native on each OS |
+| Unsigned for v1 | Zero cost, add signing when user base justifies | Acceptable — right-click Open bypass works |
+| MutationObserver for badges | Detect SPA title changes in background apps | Good — catches Gmail, Linear, Slack updates |
+| tauri-plugin-updater | In-app auto-updates from GitHub Releases | Good — non-blocking, silent fail on error |
 
 ---
-*Last updated: 2025-03-18 after initialization*
+*Last updated: 2026-03-20 after v1.0 milestone*
