@@ -88,13 +88,41 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (filled by roadmapper) | | |
+| NOTF-01 | Phase 6 | Pending |
+| NOTF-02 | Phase 6 | Pending |
+| NOTF-03 | Phase 6 | Pending |
+| PLSH-01 | Phase 7 | Pending |
+| PLSH-02 | Phase 7 | Pending |
+| PLSH-03 | Phase 7 | Pending |
+| SIDE-01 | Phase 7 | Pending |
+| SIDE-02 | Phase 7 | Pending |
+| SIDE-03 | Phase 7 | Pending |
+| SPAC-01 | Phase 8 | Pending |
+| SPAC-02 | Phase 8 | Pending |
+| SPAC-03 | Phase 8 | Pending |
+| SPAC-04 | Phase 8 | Pending |
+| SPAC-05 | Phase 8 | Pending |
+| SPAC-06 | Phase 8 | Pending |
+| PREF-01 | Phase 9 | Pending |
+| PREF-02 | Phase 9 | Pending |
+| PREF-03 | Phase 9 | Pending |
+| PREF-04 | Phase 9 | Pending |
+| PREF-05 | Phase 9 | Pending |
+| PREF-06 | Phase 9 | Pending |
+| MULT-01 | Phase 10 | Pending |
+| MULT-02 | Phase 10 | Pending |
+| MULT-03 | Phase 10 | Pending |
+| SPLT-01 | Phase 11 | Pending |
+| SPLT-02 | Phase 11 | Pending |
+| SPLT-03 | Phase 11 | Pending |
+| SIGN-01 | Phase 12 | Pending |
+| SIGN-02 | Phase 12 | Pending |
 
 **Coverage:**
-- v2.0 requirements: 25 total
-- Mapped to phases: 0
-- Unmapped: 25
+- v2.0 requirements: 29 total
+- Mapped to phases: 29
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-20*
-*Last updated: 2026-03-20 after v2.0 definition*
+*Last updated: 2026-03-20 — traceability filled, all 29 requirements mapped to Phases 6-12*

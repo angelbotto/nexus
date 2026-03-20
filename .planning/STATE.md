@@ -2,110 +2,69 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: power-features
-status: defining
-stopped_at: Defining requirements for v2.0
-last_updated: "2026-03-20T15:54:45.599Z"
-last_activity: 2026-03-20 — Plan 05-02 complete (tauri-plugin-updater with non-blocking banner)
+status: roadmapped
+stopped_at: Roadmap created for v2.0 — 7 phases (6-12), ready to plan Phase 6
+last_updated: "2026-03-20"
+last_activity: 2026-03-20 — v2.0 roadmap created (Phases 6-12, 29 requirements mapped)
 progress:
-  total_phases: 5
+  total_phases: 12
   completed_phases: 5
   total_plans: 18
   completed_plans: 18
-  percent: 89
+  percent: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-18)
+See: .planning/PROJECT.md (updated 2026-03-20)
 
 **Core value:** Switching between your daily web apps must feel instant and seamless — zero delay, zero friction, zero bloat.
-**Current focus:** Phase 2 — Instant Switching
+**Current focus:** Phase 6 — Notifications (v2.0 start)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements for v2.0
-Last activity: 2026-03-20 — Milestone v2.0 started
+Phase: 6 of 12 (Notifications)
+Plan: — of —
+Status: Ready to plan
+Last activity: 2026-03-20 — v2.0 roadmap created, 29 requirements across 7 phases
 
-Progress: [░░░░░░░░░░] 0% (Requirements phase)
+Progress: [█████░░░░░] ~42% (v1.0 complete, v2.0 not started)
 
 ## Performance Metrics
 
-**Velocity:**
-- Total plans completed: 2
-- Average duration: 30 min
-- Total execution time: 0.98 hours
+**Velocity (v1.0):**
+- Total plans completed: 18
+- Average duration: ~25 min
+- Total execution time: ~7.5 hours
 
-**By Phase:**
+**By Phase (v1.0):**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-foundation | 3 | 74 min | 25 min |
-| 02-sidebar-navigation | 1 | 2 min | 2 min |
-
-**Recent Trend:**
-- Last 5 plans: 54 min, 5 min, 15 min
-- Trend: fast execution on well-scoped plans
+| 01-foundation | 3 | ~75 min | 25 min |
+| 02-sidebar-navigation | 4 | ~30 min | 8 min |
+| 03-command-palette | 4 | ~35 min | 9 min |
+| 04-performance-activity | 3 | ~25 min | 8 min |
+| 05-cross-platform | 4 | ~40 min | 10 min |
 
 *Updated after each plan completion*
-| Phase 02-sidebar-navigation P02 | 8 | 2 tasks | 4 files |
-| Phase 02-sidebar-navigation P03 | 3 | 2 tasks | 7 files |
-| Phase 03-command-palette-config-management P01 | 4 | 2 tasks | 8 files |
-| Phase 03-command-palette-config-management P02 | 8 | 2 tasks | 6 files |
-| Phase 03-command-palette-config-management P03 | 4 | 2 tasks | 7 files |
-| Phase 04-performance-activity P01 | 2 | 2 tasks | 2 files |
-| Phase 04-performance-activity P02 | 2 | 2 tasks | 6 files |
-| Phase 05-cross-platform-distribution P01 | 4 | 2 tasks | 8 files |
-| Phase 05-cross-platform-distribution P02 | 3 | 2 tasks | 9 files |
-| Phase 05-cross-platform-distribution P03 | 3 | 1 tasks | 1 files |
 
 ## Accumulated Context
 
 ### Decisions
 
 Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
+Critical v2.0 decisions to carry forward:
 
-- [Phase 1]: Use `WebviewWindow` per app (not unstable `multiwebview` flag) — irreversible, must be set before any webview code
-- [Phase 1]: Use `data_store_identifier([u8; 16])` NOT `data_directory` for macOS session isolation — WKWebView limitation confirmed in execution
-- [Phase 1]: Derive data_store_identifier bytes via `md5::compute(app_id).0` — deterministic, survives restarts, avoids [0;16] crash
-- [Phase 1]: All IPC flows through Rust backend (not from inside app webviews) — third-party CSP blocks `ipc.localhost`
-- [Phase 1]: Global shortcuts registered in Rust, not React — app webviews steal keyboard focus from React
-- [Plan 01-01]: Config schema: id/name/url/group per app + separate groups section — enables Phase 2 group metadata without schema migration
-- [Plan 01-02]: extract_base_domain uses last-2-segments heuristic — sufficient for Phase 1; PSL library deferred to Phase 3+
-- [Plan 01-02]: External URL handling in on_navigation calls opener before returning false — navigation cancel is immediate
-- [Plan 01-03]: reload_config keeps existing AppState on corrupt JSON — prevents partial save from overwriting good config with defaults
-- [Plan 01-03]: Frontend-owned file watcher (Option A): watch() in useEffect with 300ms debounce, invoke reload_config on event
-- [Plan 01-03]: 300ms debounce absorbs atomic editor saves (temp file → rename) without flicker
-- [Plan 02-01]: serde rename_all = "camelCase" on all config structs — JSON keys match TypeScript camelCase conventions (lastActiveAppId, sidebarCollapsed)
-- [Plan 02-01]: switch_app_impl takes &AppHandle and &Mutex<AppState> (not State<>) — only signature compatible with both IPC and shortcut handler direct calls
-- [Phase 02-02]: App.tsx owns local config state copy synced from useAppsConfig via useEffect — avoids modifying hook before Plan 02-03 handles watcher loop prevention
-- [Phase 02-02]: groupApps() silently skips groups with no matching apps; Other bucket always rendered last with no header
-- [Phase 02-02]: Tailwind v4 @theme block in index.css for custom sidebar color token (--color-sidebar: #111117)
-- [Phase 02-sidebar-navigation]: shortcut.mods is Modifiers (not Option<Modifiers>) in tauri-plugin-global-shortcut v2.3.1 — direct equality, no Some() wrapping
-- [Phase 02-sidebar-navigation]: configRef pattern: useRef<NexusConfig | null> provides always-current config inside event listener closures without re-registering
-- [Phase 02-sidebar-navigation]: requestAnimationFrame for save_config after toggle: avoids async inside functional setState
-- [Phase 03-01]: Pure config mutations as standalone functions — NexusConfig in → NexusConfig out, no side effects, fully testable
-- [Phase 03-01]: menu permissions in Tauri v2 capabilities require core: prefix (core:menu:allow-new, not menu:allow-new)
-- [Phase 03-02]: Fuse.js threshold 0.4 for app fuzzy search in command palette
-- [Phase 03-02]: Palette mode derived from '>' query prefix — single input, no mode buttons
-- [Phase 03-02]: reload_active_webview as IPC command (not eval in Rust handler) for reusability
-- [Phase 03-command-palette-config-management]: PointerSensor activationConstraint distance:5 prevents accidental drags on click
-- [Phase 03-command-palette-config-management]: App drag cross-group adopts target app group ID, single arrayMove keeps relative position
-- [Phase 03-command-palette-config-management]: on_menu_event reload-page uses .lock().ok().and_then() pattern to avoid E0597 lifetime error in Rust closure
-- [Phase 04-performance-activity]: LRU pool size = 8: balances RAM budget (8 webviews ~400 MB) against UX; collect-then-close anti-deadlock pattern prevents holding AppState mutex across Tauri wv.close() calls
-- [Phase 04-performance-activity]: MutationObserver on document.documentElement with subtree:true catches SPA title changes; try/catch on __TAURI_INTERNALS__.invoke makes badge best-effort
-- [Phase 05-cross-platform-distribution]: cmd_modifier() replaces all Modifiers::SUPER — returns SUPER on macOS, CONTROL on Windows/Linux
-- [Phase 05-cross-platform-distribution]: platform_data_dir() with #[allow(dead_code)] for cross-platform webview session isolation on Windows/Linux
-- [Phase 05-cross-platform-distribution]: process:allow-restart is correct Tauri v2 capability permission (not process:allow-relaunch)
-- [Phase 05-cross-platform-distribution]: tauri add CLI creates desktop.json for platform-specific capabilities — kept separate from default.json
-- [Phase 05-cross-platform-distribution]: UpdateBanner calls check() twice (mount + Restart) to avoid stale closure on the update object
-- [Phase 05-cross-platform-distribution]: fail-fast: false in publish.yml matrix so one platform build failure does not cancel other platform builds
-- [Phase 05-cross-platform-distribution]: releaseDraft: true in publish.yml — user manually reviews and publishes GitHub Release after CI builds
-- [Phase 05-cross-platform-distribution]: Post-build artifact size gate in CI: stat -f%z (macOS) with stat -c%s (Linux/Windows) fallback, exits 1 if any artifact > 15 MB
+- [v1.0/Phase 1]: Use `data_store_identifier([u8; 16])` NOT `data_directory` for macOS session isolation — WKWebView limitation confirmed
+- [v1.0/Phase 1]: All IPC flows through Rust backend — third-party CSP blocks `ipc.localhost` from app webviews
+- [v1.0/Phase 4]: MutationObserver on `document.documentElement` with `subtree:true` catches SPA title changes
+- [v2.0 Research]: Never enable `multiwebview` unstable Cargo feature — active bugs on all platforms (#11376, #10420)
+- [v2.0 Research]: Spaces MUST migrate webview keys to `{space_id}:{app_id}` before any Space UI wires up
+- [v2.0 Research]: `animation` must use only `opacity`/`transform` — never `width`/`height` — to honor 100ms switching contract
+- [v2.0 Research]: Preferences must use delta-patch/serialized single writer to prevent race with drag-reorder
 
 ### Pending Todos
 
@@ -113,12 +72,12 @@ None yet.
 
 ### Blockers/Concerns
 
-- [Phase 1 RESOLVED]: `data_directory` does NOT work on macOS WKWebView — confirmed during Plan 01-01 research. Use `data_store_identifier([u8; 16])` instead. macOS 14+ required; all M1/M2/M3 Macs satisfy this.
-- [Phase 3 research flag]: Badge dot via `evaluate_script` + MutationObserver on `<title>` — validate against Gmail, Linear, Slack before building (SPAs update title differently)
-- [Phase 4 research flag]: `set_memory_usage_level(Low)` on Windows WebView2 real-world savings are unbenchmarked — measure against 500 MB budget during Phase 4
+- [Phase 10 CONDITIONAL]: Multi-Account spike required — `WKWebsiteDataStore(forIdentifier:)` isolation on macOS 14+ may require a signed build; validate at phase start before committing
+- [Phase 11 CONDITIONAL]: Split View spike required — `WebviewWindow` bounds approach on Linux/Windows (resize, minimize/restore, multi-monitor) not validated in v1 codebase
+- [Phase 12 NOTE]: Code Signing has certificate lead time — begin Apple Developer + Azure Key Vault paperwork during Phase 6 in parallel
 
 ## Session Continuity
 
-Last session: 2026-03-20T06:40:09.546Z
-Stopped at: Phase 5 complete — all plans done, human verification approved
+Last session: 2026-03-20
+Stopped at: v2.0 roadmap created — 7 phases (6-12), all 29 requirements mapped, ready to plan Phase 6
 Resume file: None
