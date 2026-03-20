@@ -1,9 +1,9 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: completed
-stopped_at: Phase 5 complete — all plans done, human verification approved
+milestone: v2.0
+milestone_name: power-features
+status: defining
+stopped_at: Defining requirements for v2.0
 last_updated: "2026-03-20T15:54:45.599Z"
 last_activity: 2026-03-20 — Plan 05-02 complete (tauri-plugin-updater with non-blocking banner)
 progress:
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 
 ## Current Position
 
-Phase: 5 of 5 (Cross-Platform Distribution) — In Progress
-Plan: 2 of 4 in phase — 2 plans complete, 2 remaining
-Status: Phase 5 Plan 02 complete — updater plugin integrated, UpdateBanner component built
-Last activity: 2026-03-20 — Plan 05-02 complete (tauri-plugin-updater with non-blocking banner)
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements for v2.0
+Last activity: 2026-03-20 — Milestone v2.0 started
 
-Progress: [█████████░] 89% (Phase 5 in progress, 2/4 plans done)
+Progress: [░░░░░░░░░░] 0% (Requirements phase)
 
 ## Performance Metrics
 

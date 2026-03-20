@@ -28,20 +28,21 @@ Switching between your daily web apps must feel instant and seamless — zero de
 
 ### Active
 
-(None yet — define for next milestone)
+- [ ] Spaces — multiple workspace contexts with independent app sets
+- [ ] Multi-account — same app with different sessions (Gmail personal + work)
+- [ ] Split view — two apps side by side in the same window
+- [ ] Notifications — native OS notifications from webview apps
+- [ ] Polish — smooth animations, unread count badge, settings panel, sidebar toggle button
+- [ ] Preferences — customizable appearance (border-radius, colors, gap, themes)
+- [ ] Code signing — macOS notarization + Windows certificate for clean install UX
 
 ### Out of Scope
 
-- Spaces/profiles (switch between different sets of apps) — v2 feature
-- Split view (two apps side by side) — v2 feature
-- Smooth animations/transitions — v2 polish
-- Native macOS notifications — v1 uses silent badge only
 - OAuth/account system — no login, purely local config
 - App store/marketplace — JSON config is the interface
 - Browser extension support — incompatible with Tauri's native webview
 - Mobile platform support — desktop only
-- Light mode — dark mode only for now
-- Code signing — unsigned for v1 (macOS/Windows)
+- Cloud sync — zero backend architecture; users sync JSON via Dropbox/iCloud/git
 
 ## Context
 
@@ -73,5 +74,17 @@ Auto-updater: tauri-plugin-updater with GitHub Releases endpoint.
 | MutationObserver for badges | Detect SPA title changes in background apps | Good — catches Gmail, Linear, Slack updates |
 | tauri-plugin-updater | In-app auto-updates from GitHub Releases | Good — non-blocking, silent fail on error |
 
+## Current Milestone: v2.0 Power Features
+
+**Goal:** Nexus evolves from a simple app switcher to a full workspace manager — spaces for context switching, multi-account support, split view for productivity, native notifications, and premium visual polish.
+
+**Target features:**
+- Spaces (independent app sets per workspace context)
+- Multi-account (same app, multiple isolated sessions)
+- Split view (two apps side by side)
+- Native OS notifications from webviews
+- Visual polish (animations, unread count, preferences panel)
+- Code signing for clean install experience
+
 ---
-*Last updated: 2026-03-20 after v1.0 milestone*
+*Last updated: 2026-03-20 after v2.0 milestone start*
