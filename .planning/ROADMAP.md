@@ -93,7 +93,12 @@ Plans:
   2. Linux .deb and .AppImage run on Ubuntu 22.04 and Fedora 39+ without additional dependencies
   3. Windows NSIS installer runs on Windows 10 and 11 and all features (global shortcuts, session persistence, external link handling) work correctly
   4. Final app bundle size is under 15 MB on all platforms
-**Plans**: TBD
+**Plans:** 4 plans
+Plans:
+- [ ] 05-01-PLAN.md — Platform-conditional Rust code, config paths, session isolation, release profile
+- [ ] 05-02-PLAN.md — Auto-updater integration (tauri-plugin-updater + UpdateBanner UI)
+- [ ] 05-03-PLAN.md — GitHub Actions CI/CD workflow for 3-platform builds
+- [ ] 05-04-PLAN.md — Human verification of Phase 5 cross-platform readiness
 
 ## Progress
 
@@ -106,4 +111,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Sidebar & Navigation | 3/4 | Complete    | 2026-03-19 |
 | 3. Command Palette & Config Management | 3/4 | Complete    | 2026-03-19 |
 | 4. Performance & Activity | 3/3 | Complete   | 2026-03-19 |
-| 5. Cross-Platform Distribution | 0/TBD | Not started | - |
+| 5. Cross-Platform Distribution | 0/4 | In Progress | - |
