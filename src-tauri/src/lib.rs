@@ -23,6 +23,8 @@ fn cmd_modifier() -> Modifiers {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
@@ -31,7 +33,8 @@ pub fn run() {
 
             // Set window background to match the app dark theme (#111117)
             if let Some(main_window) = app.get_window("main") {
-                let _ = main_window.set_background_color(Some(tauri::window::Color(0x11, 0x11, 0x17, 0xFF)));
+                let _ = main_window
+                    .set_background_color(Some(tauri::window::Color(0x11, 0x11, 0x17, 0xFF)));
             }
 
             // Native macOS menu bar
@@ -71,35 +74,32 @@ pub fn run() {
 
             app.set_menu(menu)?;
 
-            app.on_menu_event(move |app_handle, event| {
-                match event.id().0.as_str() {
-                    "add-app" => {
-                        if let Some(main_wv) = app_handle.get_webview("main") {
-                            let _ = main_wv
-                                .eval("window.dispatchEvent(new CustomEvent('open-add-app'))");
-                        }
+            app.on_menu_event(move |app_handle, event| match event.id().0.as_str() {
+                "add-app" => {
+                    if let Some(main_wv) = app_handle.get_webview("main") {
+                        let _ =
+                            main_wv.eval("window.dispatchEvent(new CustomEvent('open-add-app'))");
                     }
-                    "toggle-sidebar" => {
-                        if let Some(main_wv) = app_handle.get_webview("main") {
-                            let _ = main_wv
-                                .eval("window.dispatchEvent(new CustomEvent('sidebar-toggle'))");
-                        }
-                    }
-                    "reload-page" => {
-                        let active_app_id = {
-                            let state = app_handle
-                                .state::<std::sync::Mutex<crate::state::AppState>>();
-                            state.lock().ok().and_then(|st| st.active_app_id.clone())
-                        };
-                        if let Some(app_id) = active_app_id {
-                            let label = format!("app-{}", app_id);
-                            if let Some(wv) = app_handle.get_webview(&label) {
-                                let _ = wv.eval("location.reload()");
-                            }
-                        }
-                    }
-                    _ => {}
                 }
+                "toggle-sidebar" => {
+                    if let Some(main_wv) = app_handle.get_webview("main") {
+                        let _ =
+                            main_wv.eval("window.dispatchEvent(new CustomEvent('sidebar-toggle'))");
+                    }
+                }
+                "reload-page" => {
+                    let active_app_id = {
+                        let state = app_handle.state::<std::sync::Mutex<crate::state::AppState>>();
+                        state.lock().ok().and_then(|st| st.active_app_id.clone())
+                    };
+                    if let Some(app_id) = active_app_id {
+                        let label = format!("app-{}", app_id);
+                        if let Some(wv) = app_handle.get_webview(&label) {
+                            let _ = wv.eval("location.reload()");
+                        }
+                    }
+                }
+                _ => {}
             });
 
             let app_handle_sc = app.handle().clone();
@@ -120,21 +120,24 @@ pub fn run() {
                         // Cmd/Ctrl+B -> emit sidebar-toggle to frontend
                         if shortcut.key == Code::KeyB && shortcut.mods == cmd_modifier() {
                             if let Some(main_wv) = app_handle_sc.get_webview("main") {
-                                let _ = main_wv.eval("window.dispatchEvent(new CustomEvent('sidebar-toggle'))");
+                                let _ = main_wv.eval(
+                                    "window.dispatchEvent(new CustomEvent('sidebar-toggle'))",
+                                );
                             }
                             return;
                         }
                         // Cmd/Ctrl+K -> open command palette
                         if shortcut.key == Code::KeyK && shortcut.mods == cmd_modifier() {
                             if let Some(main_wv) = app_handle_sc.get_webview("main") {
-                                let _ = main_wv.eval("window.dispatchEvent(new CustomEvent('open-palette'))");
+                                let _ = main_wv
+                                    .eval("window.dispatchEvent(new CustomEvent('open-palette'))");
                             }
                             return;
                         }
                         // Cmd/Ctrl+R -> reload active webview (embedded in main window)
                         if shortcut.key == Code::KeyR && shortcut.mods == cmd_modifier() {
-                            let state = app_handle_sc
-                                .state::<std::sync::Mutex<crate::state::AppState>>();
+                            let state =
+                                app_handle_sc.state::<std::sync::Mutex<crate::state::AppState>>();
                             if let Ok(st) = state.lock() {
                                 if let Some(ref app_id) = st.active_app_id {
                                     let label = format!("app-{}", app_id);
@@ -212,8 +215,8 @@ pub fn run() {
                 .ok_or_else(|| tauri::Error::WindowNotFound)?;
             main_window.on_window_event(move |event| {
                 if let tauri::WindowEvent::Resized(_) = event {
-                    let state = app_handle_resize
-                        .state::<std::sync::Mutex<crate::state::AppState>>();
+                    let state =
+                        app_handle_resize.state::<std::sync::Mutex<crate::state::AppState>>();
                     let (active_app_id, sidebar_visible) = {
                         match state.lock() {
                             Ok(st) => (st.active_app_id.clone(), st.sidebar_visible),
@@ -230,9 +233,7 @@ pub fn run() {
                                         sidebar_visible,
                                     )
                                 {
-                                    let _ = wv.set_position(
-                                        tauri::LogicalPosition::new(wx, wy),
-                                    );
+                                    let _ = wv.set_position(tauri::LogicalPosition::new(wx, wy));
                                     let _ = wv.set_size(tauri::LogicalSize::new(ww, wh));
                                 }
                             }
