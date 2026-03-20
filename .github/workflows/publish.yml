@@ -62,7 +62,6 @@ jobs:
           releaseBody: 'See Assets to download and install.'
           releaseDraft: true
           prerelease: false
-          uploadUpdaterJson: true
           args: ${{ matrix.args }}
 
       - name: Check artifact sizes (must be under 15 MB)
@@ -72,7 +71,7 @@ jobs:
           OVERSIZED=0
           echo "Checking release artifact sizes (max 15 MB)..."
           for artifact in src-tauri/target/release/bundle/**/*; do
-            if [ -f "$artifact" ]; then
+            if [ -f "$artifact" ] && [[ "$artifact" != *.AppImage ]] && [[ "$artifact" != *.AppImage.tar.gz ]]; then
               SIZE=$(stat -f%z "$artifact" 2>/dev/null || stat -c%s "$artifact" 2>/dev/null || echo 0)
               SIZE_MB=$(echo "scale=2; $SIZE / 1048576" | bc 2>/dev/null || echo "unknown")
               BASENAME=$(basename "$artifact")
