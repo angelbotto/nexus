@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Phase 5 context gathered
-last_updated: "2026-03-20T03:07:33.468Z"
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-03-20T06:26:48.618Z"
 last_activity: 2026-03-19 — Plan 04-03 complete (Phase 4 performance contract verified)
 progress:
   total_phases: 5
   completed_phases: 4
-  total_plans: 14
-  completed_plans: 14
+  total_plans: 18
+  completed_plans: 15
   percent: 97
 ---
 
@@ -58,6 +58,7 @@ Progress: [█████████▓] 97% (Phase 4 complete, Phase 5 ready)
 | Phase 03-command-palette-config-management P03 | 4 | 2 tasks | 7 files |
 | Phase 04-performance-activity P01 | 2 | 2 tasks | 2 files |
 | Phase 04-performance-activity P02 | 2 | 2 tasks | 6 files |
+| Phase 05-cross-platform-distribution P01 | 4 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -95,6 +96,8 @@ Recent decisions affecting current work:
 - [Phase 03-command-palette-config-management]: on_menu_event reload-page uses .lock().ok().and_then() pattern to avoid E0597 lifetime error in Rust closure
 - [Phase 04-performance-activity]: LRU pool size = 8: balances RAM budget (8 webviews ~400 MB) against UX; collect-then-close anti-deadlock pattern prevents holding AppState mutex across Tauri wv.close() calls
 - [Phase 04-performance-activity]: MutationObserver on document.documentElement with subtree:true catches SPA title changes; try/catch on __TAURI_INTERNALS__.invoke makes badge best-effort
+- [Phase 05-cross-platform-distribution]: cmd_modifier() replaces all Modifiers::SUPER — returns SUPER on macOS, CONTROL on Windows/Linux
+- [Phase 05-cross-platform-distribution]: platform_data_dir() with #[allow(dead_code)] for cross-platform webview session isolation on Windows/Linux
 
 ### Pending Todos
 
@@ -108,6 +111,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T03:07:33.461Z
-Stopped at: Phase 5 context gathered
-Resume file: .planning/phases/05-cross-platform-distribution/05-CONTEXT.md
+Last session: 2026-03-20T06:26:48.616Z
+Stopped at: Completed 05-01-PLAN.md
+Resume file: None

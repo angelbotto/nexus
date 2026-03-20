@@ -61,14 +61,14 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **PERF-01**: App starts in under 1 second (cold start)
 - [x] **PERF-02**: Switching between cached apps takes < 100ms perceived
 - [x] **PERF-03**: RAM stays under 500MB with 10 active webviews
-- [ ] **PERF-04**: Binary size is small (under 15MB for the app bundle)
+- [x] **PERF-04**: Binary size is small (under 15MB for the app bundle)
 
 ### Platform
 
 - [x] **PLAT-01**: App builds and runs on macOS arm64
-- [ ] **PLAT-02**: App builds and runs on macOS intel
-- [ ] **PLAT-03**: App builds and runs on Linux (Ubuntu 22.04+)
-- [ ] **PLAT-04**: App builds and runs on Windows 10/11
+- [x] **PLAT-02**: App builds and runs on macOS intel
+- [x] **PLAT-03**: App builds and runs on Linux (Ubuntu 22.04+)
+- [x] **PLAT-04**: App builds and runs on Windows 10/11
 
 ## v2 Requirements
 
@@ -149,11 +149,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PERF-01 | Phase 4 | Complete |
 | PERF-02 | Phase 4 | Complete |
 | PERF-03 | Phase 4 | Complete |
-| PERF-04 | Phase 5 | Pending |
+| PERF-04 | Phase 5 | Complete |
 | PLAT-01 | Phase 1 | Done (01-01) |
-| PLAT-02 | Phase 5 | Pending |
-| PLAT-03 | Phase 5 | Pending |
-| PLAT-04 | Phase 5 | Pending |
+| PLAT-02 | Phase 5 | Complete |
+| PLAT-03 | Phase 5 | Complete |
+| PLAT-04 | Phase 5 | Complete |
 
 **Coverage:**
 - v1 requirements: 30 total
