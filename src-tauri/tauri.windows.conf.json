@@ -1,0 +1,18 @@
+{
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Nexus",
+        "width": 1200,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false,
+        "theme": "Dark",
+        "titleBarStyle": "Visible",
+        "decorations": true,
+        "hiddenTitle": false
+      }
+    ]
+  }
+}
