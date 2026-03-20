@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Sidebar & Navigation** - Sidebar UI, app switching, keyboard shortcuts, dark mode (completed 2026-03-19)
 - [x] **Phase 3: Command Palette & Config Management** - Cmd+K palette, add/remove apps in-app, drag-drop reorder (completed 2026-03-19)
 - [x] **Phase 4: Performance & Activity** - Lazy loading, LRU pool, activity badge dots, perf validation (completed 2026-03-19)
-- [ ] **Phase 5: Cross-Platform Distribution** - macOS intel, Linux, Windows builds and installers
+- [x] **Phase 5: Cross-Platform Distribution** - macOS intel, Linux, Windows builds and installers (completed 2026-03-20)
 
 ## Phase Details
 
@@ -93,7 +93,7 @@ Plans:
   2. Linux .deb and .AppImage run on Ubuntu 22.04 and Fedora 39+ without additional dependencies
   3. Windows NSIS installer runs on Windows 10 and 11 and all features (global shortcuts, session persistence, external link handling) work correctly
   4. Final app bundle size is under 15 MB on all platforms
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans complete
 Plans:
 - [ ] 05-01-PLAN.md — Platform-conditional Rust code, config paths, session isolation, release profile
 - [ ] 05-02-PLAN.md — Auto-updater integration (tauri-plugin-updater + UpdateBanner UI)
@@ -111,4 +111,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Sidebar & Navigation | 3/4 | Complete    | 2026-03-19 |
 | 3. Command Palette & Config Management | 3/4 | Complete    | 2026-03-19 |
 | 4. Performance & Activity | 3/3 | Complete   | 2026-03-19 |
-| 5. Cross-Platform Distribution | 3/4 | In Progress|  |
+| 5. Cross-Platform Distribution | 4/4 | Complete   | 2026-03-20 |
