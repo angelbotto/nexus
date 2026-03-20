@@ -45,10 +45,10 @@ completed: 2026-03-20
 
 ## Performance
 
-- **Duration:** ~3 min (automated checks only — awaiting human verification)
+- **Duration:** ~5 min (automated checks + human verification)
 - **Started:** 2026-03-20T06:36:17Z
-- **Completed:** 2026-03-20 (automated portion)
-- **Tasks:** 0 of 1 complete (Task 1 is checkpoint:human-verify — awaiting human)
+- **Completed:** 2026-03-20
+- **Tasks:** 1 of 1 complete (Task 1: human-verify approved)
 - **Files modified:** 0
 
 ## Accomplishments
@@ -63,6 +63,7 @@ completed: 2026-03-20
 - `objc2` confirmed behind `#[cfg(target_os = "macos")]` in Cargo.toml
 - Platform config overrides confirmed: `tauri.linux.conf.json`, `tauri.windows.conf.json`
 - CI workflow `.github/workflows/publish.yml` exists and triggers on `v*` tags
+- **Human approved:** macOS app launches and all features work (sidebar, switching, shortcuts, command palette); no regressions from cross-platform changes
 
 ## Automated Check Results
 
