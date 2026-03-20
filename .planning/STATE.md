@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-03-20T06:26:48.618Z"
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-03-20T06:32:26.093Z"
 last_activity: 2026-03-19 — Plan 04-03 complete (Phase 4 performance contract verified)
 progress:
   total_phases: 5
   completed_phases: 4
   total_plans: 18
-  completed_plans: 15
+  completed_plans: 16
   percent: 97
 ---
 
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-18)
 
 ## Current Position
 
-Phase: 4 of 5 (Performance + Activity Badges) — COMPLETE
-Plan: 3 of 3 in phase — all plans complete
-Status: Phase 4 complete — all 3 plans done; human tester verified all 5 performance and activity badge criteria
-Last activity: 2026-03-19 — Plan 04-03 complete (Phase 4 performance contract verified)
+Phase: 5 of 5 (Cross-Platform Distribution) — In Progress
+Plan: 2 of 4 in phase — 2 plans complete, 2 remaining
+Status: Phase 5 Plan 02 complete — updater plugin integrated, UpdateBanner component built
+Last activity: 2026-03-20 — Plan 05-02 complete (tauri-plugin-updater with non-blocking banner)
 
-Progress: [█████████▓] 97% (Phase 4 complete, Phase 5 ready)
+Progress: [█████████░] 89% (Phase 5 in progress, 2/4 plans done)
 
 ## Performance Metrics
 
@@ -59,6 +59,7 @@ Progress: [█████████▓] 97% (Phase 4 complete, Phase 5 ready)
 | Phase 04-performance-activity P01 | 2 | 2 tasks | 2 files |
 | Phase 04-performance-activity P02 | 2 | 2 tasks | 6 files |
 | Phase 05-cross-platform-distribution P01 | 4 | 2 tasks | 8 files |
+| Phase 05-cross-platform-distribution P02 | 3 | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -98,6 +99,9 @@ Recent decisions affecting current work:
 - [Phase 04-performance-activity]: MutationObserver on document.documentElement with subtree:true catches SPA title changes; try/catch on __TAURI_INTERNALS__.invoke makes badge best-effort
 - [Phase 05-cross-platform-distribution]: cmd_modifier() replaces all Modifiers::SUPER — returns SUPER on macOS, CONTROL on Windows/Linux
 - [Phase 05-cross-platform-distribution]: platform_data_dir() with #[allow(dead_code)] for cross-platform webview session isolation on Windows/Linux
+- [Phase 05-cross-platform-distribution]: process:allow-restart is correct Tauri v2 capability permission (not process:allow-relaunch)
+- [Phase 05-cross-platform-distribution]: tauri add CLI creates desktop.json for platform-specific capabilities — kept separate from default.json
+- [Phase 05-cross-platform-distribution]: UpdateBanner calls check() twice (mount + Restart) to avoid stale closure on the update object
 
 ### Pending Todos
 
@@ -111,6 +115,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-20T06:26:48.616Z
-Stopped at: Completed 05-01-PLAN.md
+Last session: 2026-03-20T06:32:26.091Z
+Stopped at: Completed 05-02-PLAN.md
 Resume file: None
