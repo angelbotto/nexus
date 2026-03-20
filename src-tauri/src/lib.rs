@@ -11,6 +11,15 @@ mod state;
 
 use state::AppState;
 
+#[cfg(target_os = "macos")]
+fn cmd_modifier() -> Modifiers {
+    Modifiers::SUPER
+}
+#[cfg(not(target_os = "macos"))]
+fn cmd_modifier() -> Modifiers {
+    Modifiers::CONTROL
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -100,30 +109,30 @@ pub fn run() {
                         if event.state() != ShortcutState::Pressed {
                             return;
                         }
-                        // Cmd+N -> open add-app form in command palette
-                        if shortcut.key == Code::KeyN && shortcut.mods == Modifiers::SUPER {
+                        // Cmd/Ctrl+N -> open add-app form in command palette
+                        if shortcut.key == Code::KeyN && shortcut.mods == cmd_modifier() {
                             if let Some(main_wv) = app_handle_sc.get_webview("main") {
                                 let _ = main_wv
                                     .eval("window.dispatchEvent(new CustomEvent('open-add-app'))");
                             }
                             return;
                         }
-                        // Cmd+B -> emit sidebar-toggle to frontend
-                        if shortcut.key == Code::KeyB && shortcut.mods == Modifiers::SUPER {
+                        // Cmd/Ctrl+B -> emit sidebar-toggle to frontend
+                        if shortcut.key == Code::KeyB && shortcut.mods == cmd_modifier() {
                             if let Some(main_wv) = app_handle_sc.get_webview("main") {
                                 let _ = main_wv.eval("window.dispatchEvent(new CustomEvent('sidebar-toggle'))");
                             }
                             return;
                         }
-                        // Cmd+K -> open command palette
-                        if shortcut.key == Code::KeyK && shortcut.mods == Modifiers::SUPER {
+                        // Cmd/Ctrl+K -> open command palette
+                        if shortcut.key == Code::KeyK && shortcut.mods == cmd_modifier() {
                             if let Some(main_wv) = app_handle_sc.get_webview("main") {
                                 let _ = main_wv.eval("window.dispatchEvent(new CustomEvent('open-palette'))");
                             }
                             return;
                         }
-                        // Cmd+R -> reload active webview (embedded in main window)
-                        if shortcut.key == Code::KeyR && shortcut.mods == Modifiers::SUPER {
+                        // Cmd/Ctrl+R -> reload active webview (embedded in main window)
+                        if shortcut.key == Code::KeyR && shortcut.mods == cmd_modifier() {
                             let state = app_handle_sc
                                 .state::<std::sync::Mutex<crate::state::AppState>>();
                             if let Ok(st) = state.lock() {
@@ -136,7 +145,7 @@ pub fn run() {
                             }
                             return;
                         }
-                        // Cmd+1 through Cmd+9 -> switch to app by position
+                        // Cmd/Ctrl+1 through Cmd/Ctrl+9 -> switch to app by position
                         let digit_codes = [
                             Code::Digit1,
                             Code::Digit2,
@@ -149,7 +158,7 @@ pub fn run() {
                             Code::Digit9,
                         ];
                         if let Some(pos) = digit_codes.iter().position(|c| *c == shortcut.key) {
-                            if shortcut.mods == Modifiers::SUPER {
+                            if shortcut.mods == cmd_modifier() {
                                 let state = app_handle_sc
                                     .state::<std::sync::Mutex<crate::state::AppState>>();
                                 let app_id = {
@@ -185,16 +194,16 @@ pub fn run() {
             ];
             for code in digit_codes {
                 app.global_shortcut()
-                    .register(Shortcut::new(Some(Modifiers::SUPER), code))?;
+                    .register(Shortcut::new(Some(cmd_modifier()), code))?;
             }
             app.global_shortcut()
-                .register(Shortcut::new(Some(Modifiers::SUPER), Code::KeyB))?;
+                .register(Shortcut::new(Some(cmd_modifier()), Code::KeyB))?;
             app.global_shortcut()
-                .register(Shortcut::new(Some(Modifiers::SUPER), Code::KeyR))?;
+                .register(Shortcut::new(Some(cmd_modifier()), Code::KeyR))?;
             app.global_shortcut()
-                .register(Shortcut::new(Some(Modifiers::SUPER), Code::KeyK))?;
+                .register(Shortcut::new(Some(cmd_modifier()), Code::KeyK))?;
             app.global_shortcut()
-                .register(Shortcut::new(Some(Modifiers::SUPER), Code::KeyN))?;
+                .register(Shortcut::new(Some(cmd_modifier()), Code::KeyN))?;
 
             // Resize the active child webview whenever the main window is resized.
             let app_handle_resize = app.handle().clone();

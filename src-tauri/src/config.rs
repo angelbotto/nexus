@@ -1,4 +1,3 @@
-use dirs::home_dir;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
@@ -32,10 +31,27 @@ pub struct NexusConfig {
 }
 
 pub fn config_path() -> PathBuf {
-    let mut path = home_dir().expect("cannot resolve home dir");
-    path.push(".nexus");
-    path.push("apps.json");
-    path
+    #[cfg(target_os = "macos")]
+    {
+        let mut path = dirs::home_dir().expect("cannot resolve home dir");
+        path.push(".nexus");
+        path.push("apps.json");
+        path
+    }
+    #[cfg(target_os = "windows")]
+    {
+        let mut path = dirs::config_dir().expect("cannot resolve config dir");
+        path.push("Nexus");
+        path.push("apps.json");
+        path
+    }
+    #[cfg(not(any(target_os = "macos", target_os = "windows")))]
+    {
+        let mut path = dirs::config_dir().expect("cannot resolve config dir");
+        path.push("nexus");
+        path.push("apps.json");
+        path
+    }
 }
 
 pub fn default_config() -> NexusConfig {

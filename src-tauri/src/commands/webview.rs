@@ -73,19 +73,25 @@ pub fn reload_active_webview(
     Ok(())
 }
 
-use crate::routing::{extract_base_domain, is_oauth_provider, is_subdomain_of, make_store_id};
+use crate::routing::{extract_base_domain, is_oauth_provider, is_subdomain_of};
 use crate::state::{AppState, LRU_POOL_SIZE};
 
 // Sidebar is 220px wide.
 const SIDEBAR_WIDTH: f64 = 220.0;
-// Gap around the webview for the "floating card" effect.
-// Must be >= cornerRadius (12px) so rounded corners are fully visible.
+// Gap around the webview for the "floating card" aesthetic.
+// macOS: 12px so rounded corners (12px radius) are fully visible.
+// Windows/Linux: 0px for edge-to-edge webview (no corner radius).
+#[cfg(target_os = "macos")]
 const GAP: f64 = 12.0;
-// Top gap below the titlebar overlay — must be enough for:
-// 1. macOS traffic lights + drag region (~28px)
-// 2. Corner radius visibility (12px)
-// Total: 40px gives room for both.
+#[cfg(not(target_os = "macos"))]
+const GAP: f64 = 0.0;
+// Top gap below the title bar.
+// macOS: 40px for traffic lights + drag region + corner radius.
+// Windows/Linux: 12px — native title bar is handled by the OS.
+#[cfg(target_os = "macos")]
 const GAP_TOP: f64 = 40.0;
+#[cfg(not(target_os = "macos"))]
+const GAP_TOP: f64 = 12.0;
 
 /// Returns (webview_x, webview_y, webview_width, webview_height) based on actual window size.
 pub fn calc_webview_rect(
@@ -136,13 +142,12 @@ pub fn switch_app_impl(
 
     if !already_created {
         let label = format!("app-{}", app_id);
-        let store_id = make_store_id(&app_id);
+        #[cfg(target_os = "macos")]
+        let store_id = crate::routing::make_store_id(&app_id);
         let base_domain = extract_base_domain(&app_url);
         let app_url_clone = app_url.clone();
-        let app_handle_nav = app_handle.clone();
-        let base_domain_nav = base_domain.clone();
-        let app_handle_new_win = app_handle.clone();
         let base_domain_new_win = base_domain.clone();
+        let app_handle_new_win = app_handle.clone();
 
         let url: tauri::Url = app_url
             .parse()
@@ -170,35 +175,40 @@ pub fn switch_app_impl(
             app_id
         );
 
+        let builder = WebviewBuilder::new(&label, WebviewUrl::External(url))
+            .initialization_script(&init_script)
+            .on_navigation(move |_nav_url| {
+                // Allow all in-page navigations (OAuth, widgets, redirects).
+                // External link handling is only on target="_blank" (on_new_window).
+                true
+            })
+            .on_new_window(move |nav_url, _features| {
+                use tauri::webview::NewWindowResponse;
+                let host = nav_url.host_str().unwrap_or("");
+                // Same domain or subdomain → allow in webview
+                if host == base_domain_new_win
+                    || is_subdomain_of(host, &base_domain_new_win)
+                {
+                    return NewWindowResponse::Allow;
+                }
+                // OAuth providers → allow in webview
+                if is_oauth_provider(nav_url.as_str()) {
+                    return NewWindowResponse::Allow;
+                }
+                // Different domain target=_blank → open in system browser
+                let _ = app_handle_new_win
+                    .opener()
+                    .open_url(nav_url.as_str(), None::<&str>);
+                NewWindowResponse::Deny
+            });
+        #[cfg(target_os = "macos")]
+        let builder = builder.data_store_identifier(store_id);
+        #[cfg(not(target_os = "macos"))]
+        let builder = builder.data_directory(crate::routing::platform_data_dir(&app_id));
+
         let child_wv = main_window
             .add_child(
-                WebviewBuilder::new(&label, WebviewUrl::External(url))
-                    .data_store_identifier(store_id)
-                    .initialization_script(&init_script)
-                    .on_navigation(move |_nav_url| {
-                        // Allow all in-page navigations (OAuth, widgets, redirects).
-                        // External link handling is only on target="_blank" (on_new_window).
-                        true
-                    })
-                    .on_new_window(move |nav_url, _features| {
-                        use tauri::webview::NewWindowResponse;
-                        let host = nav_url.host_str().unwrap_or("");
-                        // Same domain or subdomain → allow in webview
-                        if host == base_domain_new_win
-                            || is_subdomain_of(host, &base_domain_new_win)
-                        {
-                            return NewWindowResponse::Allow;
-                        }
-                        // OAuth providers → allow in webview
-                        if is_oauth_provider(nav_url.as_str()) {
-                            return NewWindowResponse::Allow;
-                        }
-                        // Different domain target=_blank → open in system browser
-                        let _ = app_handle_new_win
-                            .opener()
-                            .open_url(nav_url.as_str(), None::<&str>);
-                        NewWindowResponse::Deny
-                    }),
+                builder,
                 LogicalPosition::new(webview_x, webview_y),
                 LogicalSize::new(webview_width, webview_height),
             )

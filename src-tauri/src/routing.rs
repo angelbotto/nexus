@@ -43,8 +43,33 @@ pub fn is_oauth_provider(url: &str) -> bool {
     false
 }
 
+#[cfg(target_os = "macos")]
 pub fn make_store_id(app_id: &str) -> [u8; 16] {
     md5::compute(app_id.as_bytes()).0
+}
+
+#[allow(unused_variables, dead_code)]
+pub fn platform_data_dir(app_id: &str) -> std::path::PathBuf {
+    #[cfg(target_os = "windows")]
+    {
+        dirs::data_local_dir()
+            .unwrap_or_else(|| std::path::PathBuf::from("."))
+            .join("Nexus")
+            .join("webdata")
+            .join(app_id)
+    }
+    #[cfg(not(any(target_os = "macos", target_os = "windows")))]
+    {
+        dirs::config_dir()
+            .unwrap_or_else(|| std::path::PathBuf::from("."))
+            .join("nexus")
+            .join("webdata")
+            .join(app_id)
+    }
+    #[cfg(target_os = "macos")]
+    {
+        std::path::PathBuf::new()
+    }
 }
 
 #[cfg(test)]
@@ -101,17 +126,20 @@ mod tests {
         assert!(!is_oauth_provider("https://linear.app/team"));
     }
 
+    #[cfg(target_os = "macos")]
     #[test]
     fn test_make_store_id_not_zeros() {
         let id = make_store_id("linear");
         assert_ne!(id, [0u8; 16]);
     }
 
+    #[cfg(target_os = "macos")]
     #[test]
     fn test_make_store_id_deterministic() {
         assert_eq!(make_store_id("linear"), make_store_id("linear"));
     }
 
+    #[cfg(target_os = "macos")]
     #[test]
     fn test_make_store_id_unique_per_app() {
         assert_ne!(make_store_id("linear"), make_store_id("gmail"));
