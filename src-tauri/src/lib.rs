@@ -24,6 +24,7 @@ fn cmd_modifier() -> Modifiers {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_opener::init())
@@ -255,6 +256,9 @@ pub fn run() {
             commands::webview::reload_webview,
             commands::webview::set_active_webview_dimmed,
             commands::webview::notify_title_changed,
+            commands::notifications::send_notification,
+            commands::notifications::toggle_mute_app,
+            commands::notifications::set_dnd,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

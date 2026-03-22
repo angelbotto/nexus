@@ -169,8 +169,30 @@ pub fn switch_app_impl(
     observer.observe(document.documentElement, {{
         subtree: true, childList: true, characterData: true
     }});
+
+    // window.Notification intercept — routes new Notification() calls to Rust send_notification
+    try {{
+        var _OriginalNotification = window.Notification;
+        function _NexusNotification(title, options) {{
+            try {{
+                window.__TAURI_INTERNALS__.invoke('send_notification', {{
+                    appId: '{}',
+                    title: title,
+                    body: (options && options.body) ? options.body : ''
+                }});
+            }} catch(_e) {{}}
+            try {{
+                if (_OriginalNotification) return new _OriginalNotification(title, options);
+            }} catch(_e2) {{}}
+        }}
+        _NexusNotification.permission = 'granted';
+        _NexusNotification.requestPermission = function() {{
+            return Promise.resolve('granted');
+        }};
+        window.Notification = _NexusNotification;
+    }} catch(_e3) {{}}
 }})();"#,
-            app_id
+            app_id, app_id
         );
 
         let builder = WebviewBuilder::new(&label, WebviewUrl::External(url))

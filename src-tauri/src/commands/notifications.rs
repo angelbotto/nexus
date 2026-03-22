@@ -29,7 +29,7 @@ pub fn should_send(
 #[tauri::command]
 pub fn send_notification(
     app_id: String,
-    title: String,
+    _title: String,
     body: String,
     state: State<'_, Mutex<AppState>>,
     app_handle: AppHandle,
