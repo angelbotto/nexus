@@ -13,6 +13,7 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useAppsConfig } from "./hooks/useAppsConfig";
+import { useNotifications } from "./hooks/useNotifications";
 import { Sidebar } from "./components/Sidebar";
 import { CommandPalette } from "./components/CommandPalette";
 import { UpdateBanner } from "./components/UpdateBanner";
@@ -31,6 +32,8 @@ function App() {
     reorderGroups,
     loading,
   } = useAppsConfig();
+
+  const { mutedAppIds, dndEnabled, toggleMute, setDnd } = useNotifications(config);
 
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [paletteInitialMode, setPaletteInitialMode] = useState<
@@ -201,6 +204,8 @@ function App() {
             config={config}
             activeAppId={activeAppId}
             badgeAppIds={badgeAppIds}
+            mutedAppIds={mutedAppIds}
+            onToggleMute={toggleMute}
             switchApp={switchApp}
             removeApp={removeApp}
             editApp={handleEditApp}
@@ -217,6 +222,10 @@ function App() {
           isOpen={isPaletteOpen}
           config={config}
           activeAppId={activeAppId}
+          mutedAppIds={mutedAppIds}
+          dndEnabled={dndEnabled}
+          onToggleMute={toggleMute}
+          onSetDnd={setDnd}
           onClose={handlePaletteClose}
           onSwitch={switchApp}
           onAdd={addApp}

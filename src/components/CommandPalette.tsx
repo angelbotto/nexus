@@ -7,6 +7,7 @@ type PaletteMode = "search" | "action" | "add-form" | "edit-form";
 interface Action {
   id: string;
   label: string;
+  description?: string;
   disabled?: boolean;
 }
 
@@ -14,6 +15,10 @@ interface Props {
   isOpen: boolean;
   config: NexusConfig | null;
   activeAppId: string | null;
+  mutedAppIds: Set<string>;
+  dndEnabled: boolean;
+  onToggleMute: (appId: string) => void;
+  onSetDnd: (enabled: boolean) => void;
   onClose: () => void;
   onSwitch: (id: string) => Promise<void>;
   onAdd: (name: string, url: string) => Promise<void>;
@@ -25,7 +30,7 @@ interface Props {
   editingAppId?: string | null;
 }
 
-const ACTIONS: Action[] = [
+const STATIC_ACTIONS: Action[] = [
   { id: "add-app", label: "Add new app" },
   { id: "remove-app", label: "Remove current app" },
   { id: "reload-page", label: "Reload page" },
@@ -36,6 +41,10 @@ export function CommandPalette({
   isOpen,
   config,
   activeAppId,
+  mutedAppIds,
+  dndEnabled,
+  onToggleMute,
+  onSetDnd,
   onClose,
   onSwitch,
   onAdd,
@@ -104,9 +113,26 @@ export function CommandPalette({
   const fuse = new Fuse(apps, { keys: ["name"], threshold: 0.4 });
   const searchResults = query === "" ? apps : fuse.search(query).map((r) => r.item);
 
+  // Build dynamic actions (static + DND + per-app mute)
+  const dndAction: Action = {
+    id: "toggle-dnd",
+    label: "Toggle Do Not Disturb",
+    description: `Currently: ${dndEnabled ? "ON" : "OFF"}`,
+  };
+
+  const muteActions: Action[] = (config?.apps ?? []).map((app) => {
+    const isMuted = mutedAppIds.has(app.id);
+    return {
+      id: `mute-${app.id}`,
+      label: isMuted ? `Unmute ${app.name} notifications` : `Mute ${app.name} notifications`,
+    };
+  });
+
+  const ALL_ACTIONS: Action[] = [...STATIC_ACTIONS, dndAction, ...muteActions];
+
   // Action filtering
   const actionQuery = query.startsWith(">") ? query.slice(1).trim() : "";
-  const filteredActions = ACTIONS.filter((a) =>
+  const filteredActions = ALL_ACTIONS.filter((a) =>
     actionQuery === "" ? true : a.label.toLowerCase().includes(actionQuery.toLowerCase())
   ).map((a) => ({
     ...a,
@@ -156,6 +182,17 @@ export function CommandPalette({
   }
 
   function handleAction(actionId: string) {
+    if (actionId === "toggle-dnd") {
+      onSetDnd(!dndEnabled);
+      onClose();
+      return;
+    }
+    if (actionId.startsWith("mute-")) {
+      const appId = actionId.slice(5);
+      onToggleMute(appId);
+      onClose();
+      return;
+    }
     switch (actionId) {
       case "add-app":
         setMode("add-form");
@@ -330,7 +367,7 @@ export function CommandPalette({
             {filteredActions.map((action, i) => (
               <li
                 key={action.id}
-                className={`flex cursor-pointer items-center gap-3 px-4 py-2 text-sm transition-colors ${
+                className={`flex cursor-pointer items-center justify-between gap-3 px-4 py-2 text-sm transition-colors ${
                   action.disabled
                     ? "cursor-default text-gray-600"
                     : i === selectedIndex
@@ -340,7 +377,10 @@ export function CommandPalette({
                 onClick={() => { if (!action.disabled) handleAction(action.id); }}
                 onMouseEnter={() => { if (!action.disabled) setSelectedIndex(i); }}
               >
-                {action.label}
+                <span>{action.label}</span>
+                {action.description && (
+                  <span className="text-xs text-gray-500">{action.description}</span>
+                )}
               </li>
             ))}
             {filteredActions.length === 0 && (

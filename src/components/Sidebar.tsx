@@ -9,6 +9,8 @@ interface SidebarProps {
   config: NexusConfig;
   activeAppId: string | null;
   badgeAppIds: Set<string>;
+  mutedAppIds: Set<string>;
+  onToggleMute: (appId: string) => void;
   switchApp: (id: string) => Promise<void>;
   removeApp: (appId: string) => Promise<void>;
   editApp: (appId: string) => void;
@@ -28,6 +30,8 @@ interface SortableAppItemProps {
   app: AppConfig;
   isActive: boolean;
   hasBadge: boolean;
+  isMuted: boolean;
+  onToggleMute: (appId: string) => void;
   switchApp: (id: string) => Promise<void>;
   removeApp: (appId: string) => Promise<void>;
   editApp: (appId: string) => void;
@@ -38,6 +42,8 @@ function SortableAppItem({
   app,
   isActive,
   hasBadge,
+  isMuted,
+  onToggleMute,
   switchApp,
   removeApp,
   editApp,
@@ -57,6 +63,11 @@ function SortableAppItem({
     const appId = app.id;
     const menu = await Menu.new({
       items: [
+        await MenuItem.new({
+          text: isMuted ? "Unmute notifications" : "Mute notifications",
+          action: () => onToggleMute(appId),
+        }),
+        await PredefinedMenuItem.new({ item: "Separator" }),
         await MenuItem.new({ text: "Open", action: () => switchApp(appId) }),
         await MenuItem.new({ text: "Reload", action: () => onReload(appId) }),
         await PredefinedMenuItem.new({ item: "Separator" }),
@@ -73,7 +84,7 @@ function SortableAppItem({
         <div className="mx-2 h-px bg-white/30" />
       )}
       <button
-        className={`flex w-full items-center gap-2.5 rounded px-2 py-2 text-left text-sm transition-colors ${
+        className={`group flex w-full items-center gap-2.5 rounded px-2 py-2 text-left text-sm transition-colors ${
           isActive
             ? "bg-white/10 text-white"
             : "text-gray-300 hover:bg-gray-800 hover:text-white"
@@ -91,9 +102,38 @@ function SortableAppItem({
           className="flex-shrink-0 rounded-sm"
         />
         <span className="truncate">{app.name}</span>
-        {hasBadge && !isActive && (
+        {hasBadge && !isActive && !isMuted && (
           <span className="ml-auto h-1.5 w-1.5 flex-shrink-0 rounded-full bg-white opacity-90" />
         )}
+        {hasBadge && !isActive && isMuted && (
+          <span className="ml-auto h-1.5 w-1.5 flex-shrink-0 rounded-full bg-white/40" />
+        )}
+        <span
+          className={`flex-shrink-0 text-gray-500 transition-opacity ${
+            isMuted ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+          }`}
+          onClick={(e) => { e.stopPropagation(); onToggleMute(app.id); }}
+          title={isMuted ? "Unmute notifications" : "Mute notifications"}
+          role="button"
+          aria-label={isMuted ? "Unmute notifications" : "Mute notifications"}
+        >
+          {isMuted ? (
+            // Bell-off icon (16x16)
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              <path d="M18.63 13A17.89 17.89 0 0 1 18 8"/>
+              <path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"/>
+              <path d="M18 8a6 6 0 0 0-9.33-5"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          ) : (
+            // Bell icon (16x16)
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+          )}
+        </span>
       </button>
     </li>
   );
@@ -147,6 +187,8 @@ export function Sidebar({
   config,
   activeAppId,
   badgeAppIds,
+  mutedAppIds,
+  onToggleMute,
   switchApp,
   removeApp,
   editApp,
@@ -198,6 +240,8 @@ export function Sidebar({
                           app={app}
                           isActive={app.id === activeAppId}
                           hasBadge={badgeAppIds.has(app.id)}
+                          isMuted={mutedAppIds.has(app.id)}
+                          onToggleMute={onToggleMute}
                           switchApp={switchApp}
                           removeApp={removeApp}
                           editApp={editApp}
@@ -224,6 +268,8 @@ export function Sidebar({
                   app={app}
                   isActive={app.id === activeAppId}
                   hasBadge={badgeAppIds.has(app.id)}
+                  isMuted={mutedAppIds.has(app.id)}
+                  onToggleMute={onToggleMute}
                   switchApp={switchApp}
                   removeApp={removeApp}
                   editApp={editApp}
