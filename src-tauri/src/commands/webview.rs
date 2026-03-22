@@ -102,7 +102,7 @@ pub fn calc_webview_rect(
     let win_w = size.width as f64 / scale;
     let win_h = size.height as f64 / scale;
 
-    let left = if sidebar_visible { sidebar_width } else { GAP };
+    let left = if sidebar_visible { sidebar_width + GAP } else { GAP };
     let x = left;
     let y = GAP_TOP;
     let w = win_w - left - GAP;
@@ -256,6 +256,12 @@ pub fn switch_app_impl(
                         if let Some(layer) = ns_view.layer() {
                             layer.setCornerRadius(12.0);
                             layer.setMasksToBounds(true);
+                            // Subtle white border for relief effect
+                            layer.setBorderWidth(0.5);
+                            // Use NSColor.whiteColor.CGColor for the border
+                            let white: &objc2_app_kit::NSColor = &objc2_app_kit::NSColor::colorWithSRGBRed_green_blue_alpha(1.0, 1.0, 1.0, 0.1);
+                            let cg_color = white.CGColor();
+                            layer.setBorderColor(Some(&cg_color));
                         }
                     }
                 }
