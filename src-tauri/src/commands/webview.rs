@@ -102,7 +102,7 @@ pub fn calc_webview_rect(
     let win_w = size.width as f64 / scale;
     let win_h = size.height as f64 / scale;
 
-    let left = if sidebar_visible { sidebar_width + GAP } else { GAP };
+    let left = if sidebar_visible { sidebar_width } else { GAP };
     let x = left;
     let y = GAP_TOP;
     let w = win_w - left - GAP;
