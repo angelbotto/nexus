@@ -6,6 +6,8 @@ import {
   reorderApps,
   reorderGroups,
   editApp,
+  pinApp,
+  unpinApp,
 } from "../lib/configMutations";
 import type { NexusConfig, AppConfig, GroupConfig } from "../types";
 
@@ -140,6 +142,15 @@ describe("removeApp", () => {
     const result = removeApp(config, "nonexistent");
     expect(result.apps).toHaveLength(1);
   });
+
+  it("removes the app from pinnedAppIds when the app is pinned", () => {
+    const config = makeConfig({
+      apps: [makeApp({ id: "app-1" }), makeApp({ id: "app-2" })],
+      pinnedAppIds: ["app-1"],
+    });
+    const result = removeApp(config, "app-1");
+    expect(result.pinnedAppIds).not.toContain("app-1");
+  });
 });
 
 // ---------- reorderApps ----------
@@ -166,6 +177,55 @@ describe("reorderGroups", () => {
     const result = reorderGroups(config, groups);
     expect(result.groups[0].id).toBe("g2");
     expect(result.groups[1].id).toBe("g1");
+  });
+});
+
+// ---------- pinApp ----------
+
+describe("pinApp", () => {
+  it("adds the appId to pinnedAppIds", () => {
+    const config = makeConfig({ apps: [makeApp({ id: "gmail" })] });
+    const result = pinApp(config, "gmail");
+    expect(result.pinnedAppIds).toContain("gmail");
+  });
+
+  it("is idempotent when app is already pinned", () => {
+    const config = makeConfig({ apps: [makeApp({ id: "gmail" })], pinnedAppIds: ["gmail"] });
+    const result = pinApp(config, "gmail");
+    expect(result.pinnedAppIds).toHaveLength(1);
+    expect(result.pinnedAppIds[0]).toBe("gmail");
+  });
+
+  it("does not mutate the input config", () => {
+    const config = makeConfig({ apps: [makeApp({ id: "gmail" })] });
+    const original = JSON.stringify(config);
+    pinApp(config, "gmail");
+    expect(JSON.stringify(config)).toBe(original);
+  });
+});
+
+// ---------- unpinApp ----------
+
+describe("unpinApp", () => {
+  it("removes the appId from pinnedAppIds", () => {
+    const config = makeConfig({ pinnedAppIds: ["gmail", "slack"] });
+    const result = unpinApp(config, "gmail");
+    expect(result.pinnedAppIds).not.toContain("gmail");
+    expect(result.pinnedAppIds).toContain("slack");
+  });
+
+  it("is a no-op when app is not pinned", () => {
+    const config = makeConfig({ pinnedAppIds: ["slack"] });
+    const result = unpinApp(config, "unknown");
+    expect(result.pinnedAppIds).toHaveLength(1);
+    expect(result.pinnedAppIds[0]).toBe("slack");
+  });
+
+  it("does not mutate the input config", () => {
+    const config = makeConfig({ pinnedAppIds: ["gmail"] });
+    const original = JSON.stringify(config);
+    unpinApp(config, "gmail");
+    expect(JSON.stringify(config)).toBe(original);
   });
 });
 
