@@ -287,7 +287,7 @@ function App() {
           getCurrentWindow().startDragging().catch(() => {});
         }}
       />
-      <div className={`flex h-screen overflow-hidden bg-[#111117]${isDragging ? " select-none cursor-col-resize" : ""}`}>
+      <div className={`flex h-screen overflow-hidden${isPaletteOpen || isSettingsOpen ? "" : " bg-[#111117]"}${isDragging ? " select-none cursor-col-resize" : ""}`}>
         <AnimatePresence initial={false}>
           {sidebarVisible && (
             <motion.aside
