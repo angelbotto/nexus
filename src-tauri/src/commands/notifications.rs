@@ -60,6 +60,12 @@ pub fn send_notification(
         return Ok(());
     }
 
+    // Store last notified app so window focus can switch to it
+    {
+        let mut st = state.lock().map_err(|e| e.to_string())?;
+        st.last_notified_app_id = Some(app_id.clone());
+    }
+
     app_handle
         .notification()
         .builder()

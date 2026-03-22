@@ -225,6 +225,26 @@ pub fn run() {
                 .get_window("main")
                 .ok_or_else(|| tauri::Error::WindowNotFound)?;
             main_window.on_window_event(move |event| {
+                if let tauri::WindowEvent::Focused(true) = event {
+                    // When window regains focus, switch to the last notified app (if any)
+                    let state =
+                        app_handle_resize.state::<std::sync::Mutex<crate::state::AppState>>();
+                    let pending_app_id = {
+                        match state.lock() {
+                            Ok(mut st) => st.last_notified_app_id.take(),
+                            Err(_) => None,
+                        }
+                    };
+                    if let Some(app_id) = pending_app_id {
+                        if let Some(main_wv) = app_handle_resize.get_webview("main") {
+                            let js = format!(
+                                "window.dispatchEvent(new CustomEvent('switch-to-app', {{ detail: {{ appId: '{}' }} }}))",
+                                app_id
+                            );
+                            let _ = main_wv.eval(&js);
+                        }
+                    }
+                }
                 if let tauri::WindowEvent::Resized(_) = event {
                     let state =
                         app_handle_resize.state::<std::sync::Mutex<crate::state::AppState>>();

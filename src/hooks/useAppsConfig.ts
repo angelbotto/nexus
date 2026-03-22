@@ -138,15 +138,22 @@ export function useAppsConfig(): UseAppsConfigResult {
       setLoadingAppId(prev => (prev === appId ? null : prev));
     }
 
+    function handleSwitchToApp(e: Event) {
+      const appId = (e as CustomEvent).detail?.appId;
+      if (appId) switchApp(appId);
+    }
+
     window.addEventListener("app-switched", handleAppSwitched);
     window.addEventListener("sidebar-toggle", handleSidebarToggle);
     window.addEventListener("app-title-changed", handleTitleChanged);
     window.addEventListener("app-loaded", handleAppLoaded);
+    window.addEventListener("switch-to-app", handleSwitchToApp);
     cleanupFns.push(() => {
       window.removeEventListener("app-switched", handleAppSwitched);
       window.removeEventListener("sidebar-toggle", handleSidebarToggle);
       window.removeEventListener("app-title-changed", handleTitleChanged);
       window.removeEventListener("app-loaded", handleAppLoaded);
+      window.removeEventListener("switch-to-app", handleSwitchToApp);
     });
 
     return () => {

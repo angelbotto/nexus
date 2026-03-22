@@ -10,6 +10,7 @@ pub struct AppState {
     pub webviews_created: HashSet<String>,
     pub sidebar_visible: bool,
     pub lru_order: VecDeque<String>,
+    pub last_notified_app_id: Option<String>,
 }
 
 impl AppState {
@@ -21,6 +22,7 @@ impl AppState {
             webviews_created: HashSet::new(),
             sidebar_visible,
             lru_order: VecDeque::new(),
+            last_notified_app_id: None,
         }
     }
 }
