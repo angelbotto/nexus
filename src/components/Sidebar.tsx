@@ -101,22 +101,23 @@ function SortableAppItem({
           height={16}
           className="flex-shrink-0 rounded-sm"
         />
-        <span className="truncate">{app.name}</span>
-        {hasBadge && !isActive && !isMuted && (
-          <span className="ml-auto h-1.5 w-1.5 flex-shrink-0 rounded-full bg-white opacity-90" />
-        )}
-        {hasBadge && !isActive && isMuted && (
-          <span className="ml-auto h-1.5 w-1.5 flex-shrink-0 rounded-full bg-white/40" />
-        )}
-        <span
-          className={`flex-shrink-0 text-gray-500 transition-opacity ${
-            isMuted ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-          }`}
-          onClick={(e) => { e.stopPropagation(); onToggleMute(app.id); }}
-          title={isMuted ? "Unmute notifications" : "Mute notifications"}
-          role="button"
-          aria-label={isMuted ? "Unmute notifications" : "Mute notifications"}
-        >
+        <span className="truncate flex-1">{app.name}</span>
+        <span className="ml-auto flex items-center gap-1 flex-shrink-0">
+          {hasBadge && !isActive && !isMuted && (
+            <span className="h-1.5 w-1.5 rounded-full bg-white opacity-90" />
+          )}
+          {hasBadge && !isActive && isMuted && (
+            <span className="h-1.5 w-1.5 rounded-full bg-white/40" />
+          )}
+          <span
+            className={`text-gray-500 transition-opacity cursor-pointer hover:text-gray-300 ${
+              isMuted ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+            }`}
+            onClick={(e) => { e.stopPropagation(); onToggleMute(app.id); }}
+            title={isMuted ? "Unmute notifications" : "Mute notifications"}
+            role="button"
+            aria-label={isMuted ? "Unmute notifications" : "Mute notifications"}
+          >
           {isMuted ? (
             // Bell-off icon (16x16)
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -133,6 +134,7 @@ function SortableAppItem({
               <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
             </svg>
           )}
+          </span>
         </span>
       </button>
     </li>
