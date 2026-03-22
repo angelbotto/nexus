@@ -338,9 +338,17 @@ pub fn switch_app(
     switch_app_impl(app_id, &app_handle, &state)
 }
 
-/// Hides or shows the active child webview so the command palette (rendered in the
-/// parent webview) can appear above it. Native child webviews always composite above
-/// the parent's DOM, so hiding is the only way to make overlays visible.
+/// Dims the active child webview and moves it behind the main webview in the NSView
+/// z-order so the command palette (rendered in the parent/main webview) appears above it.
+///
+/// On macOS, child webviews are native WKWebView NSViews that always composite above the
+/// main webview's DOM regardless of CSS z-index. Two operations are required:
+///   1. setAlphaValue — dims the child visually (0.15 = dimmed, 1.0 = normal)
+///   2. addSubview:positioned:relativeTo: — reorders the child NSView in its superview:
+///      - dimmed=true  → move to back (Below, nil) so main webview composites above it
+///      - dimmed=false → move to front (Above, nil) so child composites above main webview
+///
+/// On non-macOS, we just hide/show the webview since there is no transparent overlay need.
 #[tauri::command]
 pub fn set_active_webview_dimmed(
     dimmed: bool,
@@ -351,17 +359,27 @@ pub fn set_active_webview_dimmed(
     if let Some(ref app_id) = st.active_app_id {
         let label = format!("app-{}", app_id);
         if let Some(wv) = app_handle.get_webview(&label) {
-            let alpha: f64 = if dimmed { 0.15 } else { 1.0 };
-
             #[cfg(target_os = "macos")]
             {
+                let alpha: f64 = if dimmed { 0.15 } else { 1.0 };
                 let _ = wv.with_webview(move |platform_wv| {
                     use objc2::runtime::AnyObject;
-                    use objc2_app_kit::NSView;
+                    use objc2_app_kit::{NSView, NSWindowOrderingMode};
                     unsafe {
                         let ns_view_ptr = platform_wv.inner() as *mut AnyObject as *mut NSView;
                         if let Some(ns_view) = ns_view_ptr.as_ref() {
+                            // Step 1: dim/undim
                             ns_view.setAlphaValue(alpha);
+                            // Step 2: reorder in superview so main webview composites above
+                            // when dimmed, or child composites above main when undimmed.
+                            if let Some(superview) = ns_view.superview() {
+                                let order = if dimmed {
+                                    NSWindowOrderingMode::Below
+                                } else {
+                                    NSWindowOrderingMode::Above
+                                };
+                                superview.addSubview_positioned_relativeTo(ns_view, order, None);
+                            }
                         }
                     }
                 });
@@ -369,8 +387,11 @@ pub fn set_active_webview_dimmed(
 
             #[cfg(not(target_os = "macos"))]
             {
-                if dimmed { wv.hide().map_err(|e| e.to_string())?; }
-                else { wv.show().map_err(|e| e.to_string())?; }
+                if dimmed {
+                    wv.hide().map_err(|e| e.to_string())?;
+                } else {
+                    wv.show().map_err(|e| e.to_string())?;
+                }
             }
         }
     }
