@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
@@ -85,6 +85,11 @@ function App() {
     invoke("set_active_webview_dimmed", { dimmed: isPaletteOpen || isSettingsOpen }).catch(() => {});
   }, [isPaletteOpen, isSettingsOpen]);
 
+  const isSettingsOpenRef = useRef(isSettingsOpen);
+  isSettingsOpenRef.current = isSettingsOpen;
+  const isPaletteOpenRef = useRef(isPaletteOpen);
+  isPaletteOpenRef.current = isPaletteOpen;
+
   useEffect(() => {
     function handleOpenPalette() {
       setIsPaletteOpen(true);
@@ -107,6 +112,29 @@ function App() {
       if ((e.metaKey || e.ctrlKey) && e.key === ",") {
         e.preventDefault();
         setIsSettingsOpen((prev) => !prev);
+        return;
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        if (isPaletteOpenRef.current) {
+          setIsPaletteOpen(false);
+          setPaletteInitialMode(undefined);
+          setEditingAppId(null);
+        } else {
+          setIsPaletteOpen(true);
+        }
+        return;
+      }
+      if (e.key === "Escape") {
+        if (isSettingsOpenRef.current) {
+          e.preventDefault();
+          setIsSettingsOpen(false);
+        } else if (isPaletteOpenRef.current) {
+          e.preventDefault();
+          setIsPaletteOpen(false);
+          setPaletteInitialMode(undefined);
+          setEditingAppId(null);
+        }
       }
     }
 
