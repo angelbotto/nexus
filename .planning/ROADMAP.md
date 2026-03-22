@@ -24,7 +24,7 @@ Full details: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 
 **Milestone Goal:** Nexus evolves from a simple app switcher into a full workspace manager — spaces for context switching, multi-account support, split view for productivity, native notifications, and premium visual polish.
 
-- [ ] **Phase 6: Notifications** — Native OS notifications from webview apps with per-app mute control
+- [x] **Phase 6: Notifications** — Native OS notifications from webview apps with per-app mute control
 - [ ] **Phase 7: Polish & Sidebar** — Smooth animations, numeric unread count, sidebar resize, SettingsPanel shell
 - [ ] **Phase 8: Spaces** — Named workspace contexts with independent app sets and compound key migration
 - [ ] **Phase 9: Preferences** — In-app settings panel with full appearance customization
@@ -44,10 +44,10 @@ Full details: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
   3. Unmuted apps show an aggregate unread count badge on the dock/taskbar icon
   4. Notification only fires for background apps — the active app never double-notifies
   5. The notification bridge never throws or crashes even when a webview loads a page that overrides `window.Notification`
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 Plans:
-- [ ] 06-01-PLAN.md — Rust notification backend: config fields, plugin, send_notification command, init script intercept, capabilities
-- [ ] 06-02-PLAN.md — Frontend notification UI: useNotifications hook, sidebar bell icon, command palette mute/DND, dock badge
+- [x] 06-01-PLAN.md — Rust notification backend: config fields, plugin, send_notification command, init script intercept, capabilities
+- [x] 06-02-PLAN.md — Frontend notification UI: useNotifications hook, sidebar bell icon, command palette mute/DND, dock badge
 
 ### Phase 7: Polish & Sidebar
 **Goal**: Nexus feels refined — smooth transitions, numeric unread counts, a resizable sidebar, and a Settings panel container ready for Preferences
@@ -128,7 +128,7 @@ Plans:
 | 3. Command Palette & Config Management | v1.0 | 4/4 | Complete | 2026-03-19 |
 | 4. Performance & Activity | v1.0 | 3/3 | Complete | 2026-03-19 |
 | 5. Cross-Platform Distribution | v1.0 | 4/4 | Complete | 2026-03-20 |
-| 6. Notifications | 1/2 | In Progress|  | - |
+| 6. Notifications | v2.0 | 2/2 | Complete | 2026-03-21 |
 | 7. Polish & Sidebar | v2.0 | 0/? | Not started | - |
 | 8. Spaces | v2.0 | 0/? | Not started | - |
 | 9. Preferences | v2.0 | 0/? | Not started | - |

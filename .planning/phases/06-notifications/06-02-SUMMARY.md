@@ -64,7 +64,7 @@ completed: 2026-03-22
 - **Duration:** ~7 min
 - **Started:** 2026-03-22T02:32:38Z
 - **Completed:** 2026-03-22T02:39:00Z (checkpoint reached)
-- **Tasks:** 2 of 3 complete (checkpoint:human-verify pending)
+- **Tasks:** 3 of 3 complete (checkpoint:human-verify approved)
 - **Files modified:** 7
 
 ## Accomplishments
@@ -80,7 +80,13 @@ completed: 2026-03-22
 
 1. **Task 1: Types + useNotifications hook + unread count logic with tests** - `55d0547` (feat)
 2. **Task 2: Sidebar bell icon + context menu mute + command palette DND actions** - `b53874d` (feat)
-3. **Task 3: Human verification** — PENDING (checkpoint:human-verify)
+3. **Task 3: Human verification** — APPROVED (checkpoint:human-verify passed 2026-03-21)
+
+**Post-checkpoint fix commits:**
+- `cc23d2d` — fix: bell mute toggle with optimistic UI + loading spinner for webviews
+- `a713dbe` — fix(ui): bell icon click blocked by dnd-kit pointer listeners
+- `88b2b3c` — fix(ui): position bell icon to far right on hover, not inline with name
+- `77a8aca` — fix: add Edit menu for clipboard support (Copy/Paste/Cut/Undo/Redo)
 
 ## Files Created/Modified
 
@@ -107,11 +113,21 @@ None — plan executed exactly as written.
 
 None — all tests passed, Rust build clean.
 
+## Checkpoint Verification Results
+
+All 6 verification items confirmed approved by user (2026-03-21):
+- Bell icon toggles mute/unmute with optimistic UI (immediate feedback)
+- Context menu "Mute notifications" works
+- Command palette DND toggle works
+- Loading spinner shows while webview pages load
+- Dock badge with aggregate unread count
+- Native OS notifications from background apps
+
 ## Next Phase Readiness
 
-- Task 3 (human-verify) requires running `npm run tauri dev` and manual verification of the full notification flow
-- After verification: plan complete, ready to proceed to Phase 07
+- Phase 06 complete — both plans shipped and human-verified
+- Ready to proceed to Phase 07: Polish & Sidebar
 
 ---
 *Phase: 06-notifications*
-*Completed: 2026-03-22 (checkpoint pending)*
+*Completed: 2026-03-21*
