@@ -44,7 +44,10 @@ Full details: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
   3. Unmuted apps show an aggregate unread count badge on the dock/taskbar icon
   4. Notification only fires for background apps — the active app never double-notifies
   5. The notification bridge never throws or crashes even when a webview loads a page that overrides `window.Notification`
-**Plans**: TBD
+**Plans:** 2 plans
+Plans:
+- [ ] 06-01-PLAN.md — Rust notification backend: config fields, plugin, send_notification command, init script intercept, capabilities
+- [ ] 06-02-PLAN.md — Frontend notification UI: useNotifications hook, sidebar bell icon, command palette mute/DND, dock badge
 
 ### Phase 7: Polish & Sidebar
 **Goal**: Nexus feels refined — smooth transitions, numeric unread counts, a resizable sidebar, and a Settings panel container ready for Preferences
@@ -125,7 +128,7 @@ Full details: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 | 3. Command Palette & Config Management | v1.0 | 4/4 | Complete | 2026-03-19 |
 | 4. Performance & Activity | v1.0 | 3/3 | Complete | 2026-03-19 |
 | 5. Cross-Platform Distribution | v1.0 | 4/4 | Complete | 2026-03-20 |
-| 6. Notifications | v2.0 | 0/? | Not started | - |
+| 6. Notifications | v2.0 | 0/2 | Planning complete | - |
 | 7. Polish & Sidebar | v2.0 | 0/? | Not started | - |
 | 8. Spaces | v2.0 | 0/? | Not started | - |
 | 9. Preferences | v2.0 | 0/? | Not started | - |
