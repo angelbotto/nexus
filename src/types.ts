@@ -16,4 +16,6 @@ export interface NexusConfig {
   apps: AppConfig[];
   lastActiveAppId?: string | null;
   sidebarCollapsed: boolean;
+  mutedAppIds: string[];
+  dndEnabled: boolean;
 }

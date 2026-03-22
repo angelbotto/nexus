@@ -15,6 +15,8 @@ function makeConfig(overrides: Partial<NexusConfig> = {}): NexusConfig {
     apps: [],
     lastActiveAppId: null,
     sidebarCollapsed: false,
+    mutedAppIds: [],
+    dndEnabled: false,
     ...overrides,
   };
 }

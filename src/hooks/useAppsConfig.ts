@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { watch } from "@tauri-apps/plugin-fs";
 import { homeDir } from "@tauri-apps/api/path";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import type { NexusConfig, AppConfig, GroupConfig } from "../types";
 import {
   addApp as mutateAddApp,
@@ -10,12 +11,14 @@ import {
   reorderGroups as mutateReorderGroups,
   editApp as mutateEditApp,
 } from "../lib/configMutations";
+import { extractUnreadCount, computeBadgeTotal } from "./useNotifications";
 
 interface UseAppsConfigResult {
   config: NexusConfig | null;
   activeAppId: string | null;
   sidebarVisible: boolean;
   badgeAppIds: Set<string>;
+  badgeCounts: Map<string, number | null>;
   switchApp: (id: string) => Promise<void>;
   setActiveAppId: (id: string | null) => void;
   addApp: (name: string, url: string) => Promise<void>;
@@ -30,11 +33,26 @@ export function useAppsConfig(): UseAppsConfigResult {
   const [config, setConfig] = useState<NexusConfig | null>(null);
   const [activeAppId, setActiveAppId] = useState<string | null>(null);
   const [sidebarVisible, setSidebarVisible] = useState(true);
-  const [badgeAppIds, setBadgeAppIds] = useState<Set<string>>(new Set());
+  const [badgeCounts, setBadgeCounts] = useState<Map<string, number | null>>(new Map());
   const [loading, setLoading] = useState(true);
 
   // Keep a ref to the latest config so mutation callbacks always see fresh state
   const configRef = useRef<NexusConfig | null>(null);
+
+  // Derived badgeAppIds for backward compatibility
+  const badgeAppIds = new Set(badgeCounts.keys());
+
+  // Update dock badge whenever badgeCounts or muted apps change
+  useEffect(() => {
+    const mutedAppIds = new Set(config?.mutedAppIds ?? []);
+    const total = computeBadgeTotal(badgeCounts, mutedAppIds);
+    const win = getCurrentWindow();
+    win.setBadgeCount(total > 0 ? total : null).catch(async () => {
+      try {
+        await win.setBadgeLabel(total > 0 ? String(total) : "");
+      } catch (_e2) {}
+    });
+  }, [badgeCounts, config?.mutedAppIds]);
 
   useEffect(() => {
     let cancelled = false;
@@ -82,9 +100,9 @@ export function useAppsConfig(): UseAppsConfigResult {
       const detail = (e as CustomEvent).detail;
       if (typeof detail === "string") {
         setActiveAppId(detail);
-        setBadgeAppIds(prev => {
+        setBadgeCounts(prev => {
           if (!prev.has(detail)) return prev;
-          const next = new Set(prev);
+          const next = new Map(prev);
           next.delete(detail);
           return next;
         });
@@ -100,10 +118,12 @@ export function useAppsConfig(): UseAppsConfigResult {
     }
 
     function handleTitleChanged(e: Event) {
-      const { appId } = (e as CustomEvent<{ appId: string; title: string }>).detail;
-      setBadgeAppIds(prev => {
-        const next = new Set(prev);
-        next.add(appId);
+      const { appId, title } = (e as CustomEvent<{ appId: string; title: string }>).detail;
+      const count = extractUnreadCount(title);
+      setBadgeCounts(prev => {
+        const next = new Map(prev);
+        // count is numeric if parsed, null means dot badge (title changed but no count)
+        next.set(appId, count);
         return next;
       });
     }
@@ -124,9 +144,9 @@ export function useAppsConfig(): UseAppsConfigResult {
   }, []);
 
   async function switchApp(id: string): Promise<void> {
-    setBadgeAppIds(prev => {
+    setBadgeCounts(prev => {
       if (!prev.has(id)) return prev;
-      const next = new Set(prev);
+      const next = new Map(prev);
       next.delete(id);
       return next;
     });
@@ -184,6 +204,7 @@ export function useAppsConfig(): UseAppsConfigResult {
     activeAppId,
     sidebarVisible,
     badgeAppIds,
+    badgeCounts,
     switchApp,
     setActiveAppId,
     addApp,
