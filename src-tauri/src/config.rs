@@ -28,6 +28,10 @@ pub struct NexusConfig {
     pub last_active_app_id: Option<String>,
     #[serde(default)]
     pub sidebar_collapsed: bool,
+    #[serde(default)]
+    pub muted_app_ids: Vec<String>,
+    #[serde(default)]
+    pub dnd_enabled: bool,
 }
 
 pub fn config_path() -> PathBuf {
@@ -96,6 +100,8 @@ pub fn default_config() -> NexusConfig {
         ],
         last_active_app_id: None,
         sidebar_collapsed: false,
+        muted_app_ids: vec![],
+        dnd_enabled: false,
     }
 }
 
@@ -179,6 +185,8 @@ mod tests {
             }],
             last_active_app_id: None,
             sidebar_collapsed: false,
+            muted_app_ids: vec![],
+            dnd_enabled: false,
         };
 
         let json = serde_json::to_string_pretty(&custom_config).unwrap();
@@ -309,6 +317,8 @@ mod tests {
             }],
             last_active_app_id: Some("a1".to_string()),
             sidebar_collapsed: true,
+            muted_app_ids: vec![],
+            dnd_enabled: false,
         };
         let json = serde_json::to_string_pretty(&config).expect("serialize failed");
         // Verify camelCase field names in JSON output
@@ -322,6 +332,42 @@ mod tests {
         );
         let restored: NexusConfig = serde_json::from_str(&json).expect("deserialize failed");
         assert_eq!(config, restored, "round-trip should preserve all fields");
+    }
+
+    #[test]
+    fn test_notification_fields_default_when_missing() {
+        // Old apps.json without muted_app_ids/dnd_enabled — backward compatible
+        let json = r#"{
+            "groups": [{"id": "g1", "name": "G1"}],
+            "apps": [{"id": "a1", "name": "A1", "url": "https://a1.com", "group": "g1"}]
+        }"#;
+        let config: NexusConfig = serde_json::from_str(json).expect("deserialize failed");
+        assert!(
+            config.muted_app_ids.is_empty(),
+            "muted_app_ids should default to empty vec"
+        );
+        assert_eq!(
+            config.dnd_enabled, false,
+            "dnd_enabled should default to false"
+        );
+    }
+
+    #[test]
+    fn test_notification_fields_round_trip() {
+        let config = NexusConfig {
+            groups: vec![],
+            apps: vec![],
+            last_active_app_id: None,
+            sidebar_collapsed: false,
+            muted_app_ids: vec!["gmail".to_string()],
+            dnd_enabled: true,
+        };
+        let json = serde_json::to_string_pretty(&config).expect("serialize failed");
+        assert!(json.contains("mutedAppIds"), "JSON should use camelCase");
+        assert!(json.contains("dndEnabled"), "JSON should use camelCase");
+        let restored: NexusConfig = serde_json::from_str(&json).expect("deserialize failed");
+        assert_eq!(restored.muted_app_ids, vec!["gmail".to_string()]);
+        assert_eq!(restored.dnd_enabled, true);
     }
 
     #[test]
