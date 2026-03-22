@@ -36,9 +36,9 @@ Requirements for v2.0 Power Features milestone. Each maps to roadmap phases.
 
 ### Polish & Animations
 
-- [ ] **PLSH-01**: Smooth animations for sidebar toggle, command palette open/close, and app switching transitions
-- [ ] **PLSH-02**: Sidebar badge shows unread count number (not just a dot) — parsed from page title
-- [ ] **PLSH-03**: Sidebar toggle button visible in the sidebar (Arc-style, bottom of sidebar)
+- [x] **PLSH-01**: Smooth animations for sidebar toggle, command palette open/close, and app switching transitions
+- [x] **PLSH-02**: Sidebar badge shows unread count number (not just a dot) — parsed from page title
+- [x] **PLSH-03**: Sidebar toggle button visible in the sidebar (Arc-style, bottom of sidebar)
 
 ### Sidebar & Navigation
 
@@ -91,9 +91,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | NOTF-01 | Phase 6 | Complete |
 | NOTF-02 | Phase 6 | Complete |
 | NOTF-03 | Phase 6 | Complete |
-| PLSH-01 | Phase 7 | Pending |
-| PLSH-02 | Phase 7 | Pending |
-| PLSH-03 | Phase 7 | Pending |
+| PLSH-01 | Phase 7 | Complete |
+| PLSH-02 | Phase 7 | Complete |
+| PLSH-03 | Phase 7 | Complete |
 | SIDE-01 | Phase 7 | Pending |
 | SIDE-02 | Phase 7 | Pending |
 | SIDE-03 | Phase 7 | Pending |

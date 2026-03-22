@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Power Features
-status: completed
-stopped_at: Phase 7 context gathered
-last_updated: "2026-03-22T03:39:03.937Z"
-last_activity: 2026-03-21 — Phase 06 Notifications complete, all plans verified
+status: in_progress
+stopped_at: Completed 07-polish-sidebar/07-01-PLAN.md
+last_updated: "2026-03-22T04:12:00Z"
+last_activity: 2026-03-22 — Phase 07 Plan 01 complete (animations, badges, config schema)
 progress:
   total_phases: 7
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
-  percent: 46
+  total_plans: 3
+  completed_plans: 1
+  percent: 48
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-20)
 
 **Core value:** Switching between your daily web apps must feel instant and seamless — zero delay, zero friction, zero bloat.
-**Current focus:** Phase 6 — Notifications (v2.0 start)
+**Current focus:** Phase 7 — Polish Sidebar
 
 ## Current Position
 
-Phase: 6 of 12 (Notifications) — COMPLETE
-Plan: 2 of 2 — complete
-Status: Phase complete, ready for Phase 07
-Last activity: 2026-03-21 — Phase 06 Notifications complete, all plans verified
+Phase: 7 of 12 (Polish Sidebar) — IN PROGRESS
+Plan: 1 of 3 — complete
+Status: Plan 01 complete, ready for Plan 02
+Last activity: 2026-03-22 — Phase 07 Plan 01 complete (animations, badges, config schema)
 
-Progress: [█████░░░░░] ~46% (v1.0 complete, Phase 6 complete)
+Progress: [█████░░░░░] ~48% (v1.0 complete, Phase 6 complete, Phase 7 started)
 
 ## Performance Metrics
 
@@ -52,6 +52,7 @@ Progress: [█████░░░░░] ~46% (v1.0 complete, Phase 6 complete
 *Updated after each plan completion*
 | Phase 06-notifications P01 | 3 | 2 tasks | 7 files |
 | Phase 06-notifications P02 | 7 | 2 tasks | 7 files |
+| Phase 07-polish-sidebar P01 | 9 | 3 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -70,6 +71,11 @@ Critical v2.0 decisions to carry forward:
 - [Phase 06-notifications]: Extracted should_send() pure guard function for testability without AppHandle mock
 - [Phase 06-notifications]: shell-only.json scopes notification:default to main window only — app-* webviews excluded from notification plugin
 - [Phase 06-notifications]: Badge dot for muted apps uses reduced opacity to distinguish from unmuted while preserving visual indicator
+- [Phase 07-01]: motion/react (not framer-motion) — same library, official new package name
+- [Phase 07-01]: AnimatePresence initial={false} on sidebar suppresses startup animation
+- [Phase 07-01]: Crossfade overlay: Rust IPC call fires first, THEN animation — no switch delay
+- [Phase 07-01]: calc_webview_rect now accepts sidebar_width as explicit param (was hardcoded 220px)
+- [Phase 07-01]: Only opacity and transform used in animations — never width/height (100ms switch contract)
 
 ### Pending Todos
 
@@ -83,6 +89,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-22T03:39:03.935Z
-Stopped at: Phase 7 context gathered
-Resume file: .planning/phases/07-polish-sidebar/07-CONTEXT.md
+Last session: 2026-03-22T04:12:00Z
+Stopped at: Completed 07-polish-sidebar/07-01-PLAN.md
+Resume file: .planning/phases/07-polish-sidebar/07-02-PLAN.md
