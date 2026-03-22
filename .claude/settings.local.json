@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(source ~/.zshenv)",
+      "Bash(source ~/.zshrc)",
+      "Skill(gsd:discuss-phase)",
+      "Skill(gsd:plan-phase)",
+      "Bash(/Users/angelbotto/.cargo/bin/cargo test:*)",
+      "Bash(/Users/angelbotto/.cargo/bin/cargo build:*)",
+      "Bash(~/.cargo/bin/cargo build:*)",
+      "Bash(grep \"^status:\" .planning/phases/04-performance-activity/*-VERIFICATION.md)",
+      "Bash(grep:*)",
+      "Bash(git init:*)",
+      "Skill(gsd:execute-phase)",
+      "Bash(git remote:*)",
+      "Bash(git push:*)",
+      "Skill(gsd:complete-milestone)",
+      "Bash(find .planning/milestones/v1.0-phases -name *-CONTEXT.md -exec grep -l \"Deferred\\\\|deferred\" {})",
+      "Bash(2)",
+      "Bash(while read:*)",
+      "Bash(do echo:*)",
+      "Read(//Users/angelbotto/Dev/hacks/nexus/**)",
+      "Bash(done)",
+      "Skill(gsd:new-milestone)",
+      "Bash(/Users/angelbotto/.cargo/bin/cargo check:*)"
+    ]
+  }
+}
