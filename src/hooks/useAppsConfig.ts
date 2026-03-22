@@ -16,6 +16,7 @@ import { extractUnreadCount, computeBadgeTotal } from "./useNotifications";
 interface UseAppsConfigResult {
   config: NexusConfig | null;
   activeAppId: string | null;
+  loadingAppId: string | null;
   sidebarVisible: boolean;
   badgeAppIds: Set<string>;
   badgeCounts: Map<string, number | null>;
@@ -26,18 +27,22 @@ interface UseAppsConfigResult {
   reorderApps: (newApps: AppConfig[]) => Promise<void>;
   reorderGroups: (newGroups: GroupConfig[]) => Promise<void>;
   editApp: (appId: string, name: string, url: string) => Promise<void>;
+  toggleMute: (appId: string) => Promise<void>;
   loading: boolean;
 }
 
 export function useAppsConfig(): UseAppsConfigResult {
   const [config, setConfig] = useState<NexusConfig | null>(null);
   const [activeAppId, setActiveAppId] = useState<string | null>(null);
+  const [loadingAppId, setLoadingAppId] = useState<string | null>(null);
   const [sidebarVisible, setSidebarVisible] = useState(true);
   const [badgeCounts, setBadgeCounts] = useState<Map<string, number | null>>(new Map());
   const [loading, setLoading] = useState(true);
 
   // Keep a ref to the latest config so mutation callbacks always see fresh state
   const configRef = useRef<NexusConfig | null>(null);
+  // Track which app IDs have had their webview created (mirrors Rust AppState.webviews_created)
+  const createdWebviewsRef = useRef<Set<string>>(new Set());
 
   // Derived badgeAppIds for backward compatibility
   const badgeAppIds = new Set(badgeCounts.keys());
@@ -128,13 +133,20 @@ export function useAppsConfig(): UseAppsConfigResult {
       });
     }
 
+    function handleAppLoaded(e: Event) {
+      const appId = (e as CustomEvent<string>).detail;
+      setLoadingAppId(prev => (prev === appId ? null : prev));
+    }
+
     window.addEventListener("app-switched", handleAppSwitched);
     window.addEventListener("sidebar-toggle", handleSidebarToggle);
     window.addEventListener("app-title-changed", handleTitleChanged);
+    window.addEventListener("app-loaded", handleAppLoaded);
     cleanupFns.push(() => {
       window.removeEventListener("app-switched", handleAppSwitched);
       window.removeEventListener("sidebar-toggle", handleSidebarToggle);
       window.removeEventListener("app-title-changed", handleTitleChanged);
+      window.removeEventListener("app-loaded", handleAppLoaded);
     });
 
     return () => {
@@ -150,6 +162,11 @@ export function useAppsConfig(): UseAppsConfigResult {
       next.delete(id);
       return next;
     });
+    const isFirstLoad = !createdWebviewsRef.current.has(id);
+    if (isFirstLoad) {
+      setLoadingAppId(id);
+      createdWebviewsRef.current.add(id);
+    }
     await invoke("switch_app", { appId: id });
     setActiveAppId(id);
   }
@@ -175,6 +192,7 @@ export function useAppsConfig(): UseAppsConfigResult {
       await invoke("destroy_webview", { appId });
       setActiveAppId(null);
     }
+    createdWebviewsRef.current.delete(appId);
     await persistMutation(updated);
   }
 
@@ -199,9 +217,32 @@ export function useAppsConfig(): UseAppsConfigResult {
     await persistMutation(updated);
   }
 
+  async function toggleMute(appId: string): Promise<void> {
+    const current = configRef.current;
+    if (!current) return;
+    // Optimistic update — flip the muted state immediately so UI responds instantly
+    const alreadyMuted = current.mutedAppIds.includes(appId);
+    const newMutedAppIds = alreadyMuted
+      ? current.mutedAppIds.filter((id) => id !== appId)
+      : [...current.mutedAppIds, appId];
+    const optimistic = { ...current, mutedAppIds: newMutedAppIds };
+    configRef.current = optimistic;
+    setConfig(optimistic);
+    // Persist via Rust (also updates AppState for notification filtering)
+    try {
+      await invoke("toggle_mute_app", { appId });
+    } catch (e) {
+      console.error("toggleMute failed:", e);
+      // Revert optimistic update on error
+      configRef.current = current;
+      setConfig(current);
+    }
+  }
+
   return {
     config,
     activeAppId,
+    loadingAppId,
     sidebarVisible,
     badgeAppIds,
     badgeCounts,
@@ -212,6 +253,7 @@ export function useAppsConfig(): UseAppsConfigResult {
     reorderApps,
     reorderGroups,
     editApp,
+    toggleMute,
     loading,
   };
 }

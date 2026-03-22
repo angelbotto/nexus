@@ -23,7 +23,6 @@ export function computeBadgeTotal(
 interface UseNotificationsResult {
   mutedAppIds: Set<string>;
   dndEnabled: boolean;
-  toggleMute: (appId: string) => Promise<void>;
   setDnd: (enabled: boolean) => Promise<void>;
 }
 
@@ -34,19 +33,10 @@ export function useNotifications(config: NexusConfig | null): UseNotificationsRe
   );
   const dndEnabled = config?.dndEnabled ?? false;
 
-  async function toggleMute(appId: string): Promise<void> {
-    try {
-      await invoke("toggle_mute_app", { appId });
-      await invoke("reload_config");
-    } catch (e) {
-      console.error("toggleMute failed:", e);
-    }
-  }
-
   async function setDnd(enabled: boolean): Promise<void> {
     await invoke("set_dnd", { enabled });
     await invoke("reload_config");
   }
 
-  return { mutedAppIds, dndEnabled, toggleMute, setDnd };
+  return { mutedAppIds, dndEnabled, setDnd };
 }

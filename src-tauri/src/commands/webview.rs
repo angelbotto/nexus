@@ -195,8 +195,18 @@ pub fn switch_app_impl(
             app_id, app_id
         );
 
+        let app_handle_loaded = app_handle.clone();
+        let app_id_loaded = app_id.clone();
         let builder = WebviewBuilder::new(&label, WebviewUrl::External(url))
             .initialization_script(&init_script)
+            .on_page_load(move |_wv, _payload| {
+                if let Some(main_wv) = app_handle_loaded.get_webview("main") {
+                    let _ = main_wv.eval(&format!(
+                        "window.dispatchEvent(new CustomEvent('app-loaded', {{ detail: '{}' }}))",
+                        app_id_loaded
+                    ));
+                }
+            })
             .on_navigation(move |_nav_url| {
                 // Allow all in-page navigations (OAuth, widgets, redirects).
                 // External link handling is only on target="_blank" (on_new_window).
