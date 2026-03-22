@@ -76,8 +76,6 @@ pub fn reload_active_webview(
 use crate::routing::{extract_base_domain, is_oauth_provider, is_subdomain_of};
 use crate::state::{AppState, LRU_POOL_SIZE};
 
-// Sidebar is 220px wide.
-const SIDEBAR_WIDTH: f64 = 220.0;
 // Gap around the webview for the "floating card" aesthetic.
 // macOS: 12px so rounded corners (12px radius) are fully visible.
 // Windows/Linux: 0px for edge-to-edge webview (no corner radius).
@@ -97,13 +95,14 @@ const GAP_TOP: f64 = 12.0;
 pub fn calc_webview_rect(
     main_window: &tauri::Window,
     sidebar_visible: bool,
+    sidebar_width: f64,
 ) -> Result<(f64, f64, f64, f64), String> {
     let size = main_window.inner_size().map_err(|e| e.to_string())?;
     let scale = main_window.scale_factor().unwrap_or(1.0);
     let win_w = size.width as f64 / scale;
     let win_h = size.height as f64 / scale;
 
-    let x_offset = if sidebar_visible { SIDEBAR_WIDTH } else { 0.0 };
+    let x_offset = if sidebar_visible { sidebar_width } else { 0.0 };
     let x = x_offset + GAP;
     let y = GAP_TOP;
     let w = win_w - x_offset - GAP * 2.0;
@@ -116,7 +115,7 @@ pub fn switch_app_impl(
     app_handle: &AppHandle,
     state: &Mutex<AppState>,
 ) -> Result<(), String> {
-    let (already_created, app_url, prev_app_id, sidebar_visible) = {
+    let (already_created, app_url, prev_app_id, sidebar_visible, sidebar_width) = {
         let st = state.lock().map_err(|e| e.to_string())?;
         let already_created = st.webviews_created.contains(&app_id);
         let app_url = st
@@ -128,7 +127,8 @@ pub fn switch_app_impl(
             .ok_or_else(|| format!("app '{}' not found in config", app_id))?;
         let prev_app_id = st.active_app_id.clone();
         let sidebar_visible = st.sidebar_visible;
-        (already_created, app_url, prev_app_id, sidebar_visible)
+        let sidebar_width = st.sidebar_width;
+        (already_created, app_url, prev_app_id, sidebar_visible, sidebar_width)
     };
 
     let main_window = app_handle
@@ -136,7 +136,7 @@ pub fn switch_app_impl(
         .ok_or_else(|| "main window not found".to_string())?;
 
     let (webview_x, webview_y, webview_width, webview_height) =
-        calc_webview_rect(&main_window, sidebar_visible)?;
+        calc_webview_rect(&main_window, sidebar_visible, sidebar_width)?;
 
     if !already_created {
         let label = format!("app-{}", app_id);
@@ -364,12 +364,14 @@ pub fn set_active_webview_dimmed(
 #[tauri::command]
 pub fn resize_active_webview(
     sidebar_visible: bool,
+    sidebar_width: f64,
     state: State<'_, Mutex<AppState>>,
     app_handle: AppHandle,
 ) -> Result<(), String> {
     let active_app_id = {
         let mut st = state.lock().map_err(|e| e.to_string())?;
         st.sidebar_visible = sidebar_visible;
+        st.sidebar_width = sidebar_width;
         st.active_app_id.clone()
     };
 
@@ -379,7 +381,7 @@ pub fn resize_active_webview(
             let main_window = app_handle
                 .get_window("main")
                 .ok_or_else(|| "main window not found".to_string())?;
-            let (wx, wy, ww, wh) = calc_webview_rect(&main_window, sidebar_visible)?;
+            let (wx, wy, ww, wh) = calc_webview_rect(&main_window, sidebar_visible, sidebar_width)?;
             wv.set_position(LogicalPosition::new(wx, wy))
                 .map_err(|e| e.to_string())?;
             wv.set_size(LogicalSize::new(ww, wh))
@@ -387,5 +389,18 @@ pub fn resize_active_webview(
         }
     }
 
+    Ok(())
+}
+
+#[tauri::command]
+pub fn save_sidebar_width(
+    width: f64,
+    state: State<'_, Mutex<AppState>>,
+) -> Result<(), String> {
+    let mut st = state.lock().map_err(|e| e.to_string())?;
+    st.sidebar_width = width;
+    st.config.sidebar_width = width;
+    let json = serde_json::to_string_pretty(&st.config).map_err(|e| e.to_string())?;
+    std::fs::write(crate::config::config_path(), json).map_err(|e| e.to_string())?;
     Ok(())
 }

@@ -18,4 +18,6 @@ export interface NexusConfig {
   sidebarCollapsed: boolean;
   mutedAppIds: string[];
   dndEnabled: boolean;
+  pinnedAppIds: string[];
+  sidebarWidth: number;
 }

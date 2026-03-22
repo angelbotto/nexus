@@ -248,9 +248,9 @@ pub fn run() {
                 if let tauri::WindowEvent::Resized(_) = event {
                     let state =
                         app_handle_resize.state::<std::sync::Mutex<crate::state::AppState>>();
-                    let (active_app_id, sidebar_visible) = {
+                    let (active_app_id, sidebar_visible, sidebar_width) = {
                         match state.lock() {
-                            Ok(st) => (st.active_app_id.clone(), st.sidebar_visible),
+                            Ok(st) => (st.active_app_id.clone(), st.sidebar_visible, st.sidebar_width),
                             Err(_) => return,
                         }
                     };
@@ -262,6 +262,7 @@ pub fn run() {
                                     crate::commands::webview::calc_webview_rect(
                                         &win,
                                         sidebar_visible,
+                                        sidebar_width,
                                     )
                                 {
                                     let _ = wv.set_position(tauri::LogicalPosition::new(wx, wy));
@@ -289,6 +290,7 @@ pub fn run() {
             commands::notifications::send_notification,
             commands::notifications::toggle_mute_app,
             commands::notifications::set_dnd,
+            commands::webview::save_sidebar_width,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

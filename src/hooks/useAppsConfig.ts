@@ -52,7 +52,7 @@ export function useAppsConfig(): UseAppsConfigResult {
     const mutedAppIds = new Set(config?.mutedAppIds ?? []);
     const total = computeBadgeTotal(badgeCounts, mutedAppIds);
     const win = getCurrentWindow();
-    win.setBadgeCount(total > 0 ? total : null).catch(async () => {
+    win.setBadgeCount(total > 0 ? total : undefined).catch(async () => {
       try {
         await win.setBadgeLabel(total > 0 ? String(total) : "");
       } catch (_e2) {}
@@ -117,7 +117,8 @@ export function useAppsConfig(): UseAppsConfigResult {
     function handleSidebarToggle() {
       setSidebarVisible((prev) => {
         const next = !prev;
-        invoke("resize_active_webview", { sidebarVisible: next }).catch(() => {});
+        const width = configRef.current?.sidebarWidth ?? 200;
+        invoke("resize_active_webview", { sidebarVisible: next, sidebarWidth: width }).catch(() => {});
         return next;
       });
     }

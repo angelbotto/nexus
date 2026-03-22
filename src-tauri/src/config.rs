@@ -32,6 +32,14 @@ pub struct NexusConfig {
     pub muted_app_ids: Vec<String>,
     #[serde(default)]
     pub dnd_enabled: bool,
+    #[serde(default)]
+    pub pinned_app_ids: Vec<String>,
+    #[serde(default = "default_sidebar_width")]
+    pub sidebar_width: f64,
+}
+
+fn default_sidebar_width() -> f64 {
+    200.0
 }
 
 pub fn config_path() -> PathBuf {
@@ -102,6 +110,8 @@ pub fn default_config() -> NexusConfig {
         sidebar_collapsed: false,
         muted_app_ids: vec![],
         dnd_enabled: false,
+        pinned_app_ids: vec![],
+        sidebar_width: 200.0,
     }
 }
 
@@ -187,6 +197,8 @@ mod tests {
             sidebar_collapsed: false,
             muted_app_ids: vec![],
             dnd_enabled: false,
+            pinned_app_ids: vec![],
+            sidebar_width: 200.0,
         };
 
         let json = serde_json::to_string_pretty(&custom_config).unwrap();
@@ -319,6 +331,8 @@ mod tests {
             sidebar_collapsed: true,
             muted_app_ids: vec![],
             dnd_enabled: false,
+            pinned_app_ids: vec![],
+            sidebar_width: 200.0,
         };
         let json = serde_json::to_string_pretty(&config).expect("serialize failed");
         // Verify camelCase field names in JSON output
@@ -361,6 +375,8 @@ mod tests {
             sidebar_collapsed: false,
             muted_app_ids: vec!["gmail".to_string()],
             dnd_enabled: true,
+            pinned_app_ids: vec![],
+            sidebar_width: 200.0,
         };
         let json = serde_json::to_string_pretty(&config).expect("serialize failed");
         assert!(json.contains("mutedAppIds"), "JSON should use camelCase");
