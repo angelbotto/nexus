@@ -15,6 +15,7 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { AnimatePresence, motion } from "motion/react";
 import { useAppsConfig } from "./hooks/useAppsConfig";
 import { useNotifications } from "./hooks/useNotifications";
+import { useSidebarResize } from "./hooks/useSidebarResize";
 import { Sidebar } from "./components/Sidebar";
 import { CommandPalette } from "./components/CommandPalette";
 import { UpdateBanner } from "./components/UpdateBanner";
@@ -39,6 +40,29 @@ function App() {
   } = useAppsConfig();
 
   const { mutedAppIds, dndEnabled, setDnd } = useNotifications(config);
+
+  const [sidebarWidth, setSidebarWidth] = useState(() => config?.sidebarWidth ?? 200);
+  const [iconOnly, setIconOnly] = useState(false);
+
+  // Sync initial sidebar width from config on first load
+  useEffect(() => {
+    if (config?.sidebarWidth != null) {
+      setSidebarWidth(config.sidebarWidth);
+    }
+  }, [config?.sidebarWidth]);
+
+  const { width: currentSidebarWidth, iconOnly: currentIconOnly, isDragging, handleProps } = useSidebarResize({
+    initialWidth: sidebarWidth,
+    initialIconOnly: iconOnly,
+    onWidthChange: (w, io) => {
+      setSidebarWidth(w);
+      setIconOnly(io);
+      invoke("resize_active_webview", { sidebarVisible: true, sidebarWidth: w }).catch(() => {});
+    },
+    onWidthCommit: (w, _io) => {
+      invoke("save_sidebar_width", { width: w }).catch(() => {});
+    },
+  });
 
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [isSwitching, setIsSwitching] = useState(false);
@@ -211,7 +235,7 @@ function App() {
           getCurrentWindow().startDragging().catch(() => {});
         }}
       />
-      <div className="flex h-screen overflow-hidden bg-[#111117]">
+      <div className={`flex h-screen overflow-hidden bg-[#111117]${isDragging ? " select-none cursor-col-resize" : ""}`}>
         <AnimatePresence initial={false}>
           {sidebarVisible && (
             <motion.aside
@@ -220,12 +244,16 @@ function App() {
               animate={{ x: 0, opacity: 1, transition: { duration: prefersReducedMotion ? 0 : 0.15, ease: "easeOut" } }}
               exit={{ x: "-100%", opacity: 0, transition: { duration: prefersReducedMotion ? 0 : 0.12, ease: "easeIn" } }}
               className="flex-shrink-0"
+              style={{ width: currentIconOnly ? 48 : currentSidebarWidth }}
             >
               <Sidebar
                 config={config}
                 activeAppId={activeAppId}
                 badgeCounts={badgeCounts}
                 mutedAppIds={mutedAppIds}
+                iconOnly={currentIconOnly}
+                sidebarWidth={currentSidebarWidth}
+                resizeHandleProps={handleProps}
                 onToggleMute={toggleMute}
                 switchApp={handleSwitchApp}
                 removeApp={removeApp}

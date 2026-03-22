@@ -11,6 +11,13 @@ interface SidebarProps {
   activeAppId: string | null;
   badgeCounts: Map<string, number | null>;
   mutedAppIds: Set<string>;
+  iconOnly: boolean;
+  sidebarWidth: number;
+  resizeHandleProps: {
+    onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => void;
+    onPointerMove: (e: React.PointerEvent<HTMLDivElement>) => void;
+    onPointerUp: (e: React.PointerEvent<HTMLDivElement>) => void;
+  };
   onToggleMute: (appId: string) => void;
   switchApp: (id: string) => Promise<void>;
   removeApp: (appId: string) => Promise<void>;
@@ -32,6 +39,7 @@ interface SortableAppItemProps {
   isActive: boolean;
   badgeCount: number | null | undefined;
   isMuted: boolean;
+  iconOnly: boolean;
   onToggleMute: (appId: string) => void;
   switchApp: (id: string) => Promise<void>;
   removeApp: (appId: string) => Promise<void>;
@@ -69,6 +77,7 @@ function SortableAppItem({
   isActive,
   badgeCount,
   isMuted,
+  iconOnly,
   onToggleMute,
   switchApp,
   removeApp,
@@ -110,7 +119,9 @@ function SortableAppItem({
         <div className="mx-2 h-px bg-white/30" />
       )}
       <button
-        className={`group flex w-full items-center gap-2.5 rounded px-2 py-2 text-left text-sm transition-colors ${
+        className={`group relative flex w-full items-center rounded text-left text-sm transition-colors ${
+          iconOnly ? "justify-center px-1 py-2" : "gap-2.5 px-2 py-2"
+        } ${
           isActive
             ? "bg-white/10 text-white"
             : "text-gray-300 hover:bg-gray-800 hover:text-white"
@@ -120,46 +131,60 @@ function SortableAppItem({
         {...attributes}
         {...listeners}
       >
-        <img
-          src={getFaviconUrl(app.url)}
-          alt=""
-          width={16}
-          height={16}
-          className="flex-shrink-0 rounded-sm"
-        />
-        <span className="truncate flex-1">{app.name}</span>
-        <span className="ml-auto flex items-center gap-1 flex-shrink-0">
-          {badgeCount !== undefined && !isActive && (
-            <BadgeCount count={badgeCount} isMuted={isMuted} />
+        <div className="relative flex-shrink-0">
+          <img
+            src={getFaviconUrl(app.url)}
+            alt={iconOnly ? app.name : ""}
+            title={iconOnly ? app.name : undefined}
+            width={16}
+            height={16}
+            className="rounded-sm"
+          />
+          {iconOnly && badgeCount !== undefined && !isActive && (
+            <span className={`absolute -bottom-0.5 -right-0.5 flex h-3 w-3 items-center justify-center rounded-full bg-white/20 text-[8px] font-semibold ${isMuted ? "opacity-40" : "opacity-90"}`}>
+              {badgeCount === null ? (
+                <span className="h-1 w-1 rounded-full bg-white" />
+              ) : (
+                badgeCount > 9 ? "9+" : String(badgeCount)
+              )}
+            </span>
           )}
-          <span
-            className={`text-gray-500 transition-opacity cursor-pointer hover:text-gray-300 ${
-              isMuted ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-            }`}
-            onPointerDown={(e) => e.stopPropagation()}
-            onClick={(e) => { e.stopPropagation(); onToggleMute(app.id); }}
-            title={isMuted ? "Unmute notifications" : "Mute notifications"}
-            role="button"
-            aria-label={isMuted ? "Unmute notifications" : "Mute notifications"}
-          >
-          {isMuted ? (
-            // Bell-off icon (16x16)
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-              <path d="M18.63 13A17.89 17.89 0 0 1 18 8"/>
-              <path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"/>
-              <path d="M18 8a6 6 0 0 0-9.33-5"/>
-              <line x1="1" y1="1" x2="23" y2="23"/>
-            </svg>
-          ) : (
-            // Bell icon (16x16)
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
-          )}
-          </span>
-        </span>
+        </div>
+        {!iconOnly && (
+          <>
+            <span className="truncate flex-1">{app.name}</span>
+            <span className="ml-auto flex items-center gap-1 flex-shrink-0">
+              {badgeCount !== undefined && !isActive && (
+                <BadgeCount count={badgeCount} isMuted={isMuted} />
+              )}
+              <span
+                className={`text-gray-500 transition-opacity cursor-pointer hover:text-gray-300 ${
+                  isMuted ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                }`}
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => { e.stopPropagation(); onToggleMute(app.id); }}
+                title={isMuted ? "Unmute notifications" : "Mute notifications"}
+                role="button"
+                aria-label={isMuted ? "Unmute notifications" : "Mute notifications"}
+              >
+              {isMuted ? (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                  <path d="M18.63 13A17.89 17.89 0 0 1 18 8"/>
+                  <path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"/>
+                  <path d="M18 8a6 6 0 0 0-9.33-5"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              ) : (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+              )}
+              </span>
+            </span>
+          </>
+        )}
       </button>
     </li>
   );
@@ -214,6 +239,9 @@ export function Sidebar({
   activeAppId,
   badgeCounts,
   mutedAppIds,
+  iconOnly,
+  sidebarWidth,
+  resizeHandleProps,
   onToggleMute,
   switchApp,
   removeApp,
@@ -235,66 +263,74 @@ export function Sidebar({
   const groupIds = config.groups.map((g) => g.id);
 
   return (
-    <aside className="flex h-full w-[220px] flex-shrink-0 flex-col bg-[#111117]">
+    <aside
+      className="relative flex h-full flex-shrink-0 flex-col bg-[#111117]"
+      style={{ width: iconOnly ? 48 : sidebarWidth }}
+    >
       <div
         className="h-10 w-full flex-shrink-0"
         onMouseDown={() => {
           getCurrentWindow().startDragging().catch(() => {});
         }}
       />
-      <nav className="flex-1 overflow-y-auto px-2 pb-2">
-        <SortableContext items={groupIds} strategy={verticalListSortingStrategy}>
-          {config.groups.map((group) => {
-            const groupApps = config.apps.filter((app) => app.group === group.id);
-            const isCollapsed = collapsedGroups[group.id] ?? false;
-            const appIds = groupApps.map((a) => a.id);
+      <nav className="flex-1 overflow-y-auto pb-2" style={{ paddingLeft: iconOnly ? 4 : 8, paddingRight: iconOnly ? 4 : 8 }}>
+        {!iconOnly && (
+          <SortableContext items={groupIds} strategy={verticalListSortingStrategy}>
+            {config.groups.map((group) => {
+              const groupApps = config.apps.filter((app) => app.group === group.id);
+              const isCollapsed = collapsedGroups[group.id] ?? false;
+              const appIds = groupApps.map((a) => a.id);
 
-            return (
-              <div key={group.id} className="mb-1">
-                <SortableGroupHeader
-                  group={group}
-                  isCollapsed={isCollapsed}
-                  onToggle={toggleGroup}
-                />
+              return (
+                <div key={group.id} className="mb-1">
+                  <SortableGroupHeader
+                    group={group}
+                    isCollapsed={isCollapsed}
+                    onToggle={toggleGroup}
+                  />
 
-                {!isCollapsed && (
-                  <SortableContext items={appIds} strategy={verticalListSortingStrategy}>
-                    <ul className="space-y-0.5">
-                      {groupApps.map((app) => (
-                        <SortableAppItem
-                          key={app.id}
-                          app={app}
-                          isActive={app.id === activeAppId}
-                          badgeCount={badgeCounts.get(app.id)}
-                          isMuted={mutedAppIds.has(app.id)}
-                          onToggleMute={onToggleMute}
-                          switchApp={switchApp}
-                          removeApp={removeApp}
-                          editApp={editApp}
-                          onReload={onReload}
-                        />
-                      ))}
-                    </ul>
-                  </SortableContext>
-                )}
-              </div>
-            );
-          })}
-        </SortableContext>
+                  {!isCollapsed && (
+                    <SortableContext items={appIds} strategy={verticalListSortingStrategy}>
+                      <ul className="space-y-0.5">
+                        {groupApps.map((app) => (
+                          <SortableAppItem
+                            key={app.id}
+                            app={app}
+                            isActive={app.id === activeAppId}
+                            badgeCount={badgeCounts.get(app.id)}
+                            isMuted={mutedAppIds.has(app.id)}
+                            iconOnly={false}
+                            onToggleMute={onToggleMute}
+                            switchApp={switchApp}
+                            removeApp={removeApp}
+                            editApp={editApp}
+                            onReload={onReload}
+                          />
+                        ))}
+                      </ul>
+                    </SortableContext>
+                  )}
+                </div>
+              );
+            })}
+          </SortableContext>
+        )}
 
-        {appsWithoutGroup.length > 0 && (
+        {iconOnly ? (
+          // Icon-only mode: show all apps as favicons only, no group headers
           <SortableContext
-            items={appsWithoutGroup.map((a) => a.id)}
+            items={config.apps.map((a) => a.id)}
             strategy={verticalListSortingStrategy}
           >
-            <ul className="mt-1 space-y-0.5">
-              {appsWithoutGroup.map((app) => (
+            <ul className="space-y-0.5">
+              {config.apps.map((app) => (
                 <SortableAppItem
                   key={app.id}
                   app={app}
                   isActive={app.id === activeAppId}
                   badgeCount={badgeCounts.get(app.id)}
                   isMuted={mutedAppIds.has(app.id)}
+                  iconOnly={true}
                   onToggleMute={onToggleMute}
                   switchApp={switchApp}
                   removeApp={removeApp}
@@ -304,24 +340,58 @@ export function Sidebar({
               ))}
             </ul>
           </SortableContext>
+        ) : (
+          appsWithoutGroup.length > 0 && (
+            <SortableContext
+              items={appsWithoutGroup.map((a) => a.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <ul className="mt-1 space-y-0.5">
+                {appsWithoutGroup.map((app) => (
+                  <SortableAppItem
+                    key={app.id}
+                    app={app}
+                    isActive={app.id === activeAppId}
+                    badgeCount={badgeCounts.get(app.id)}
+                    isMuted={mutedAppIds.has(app.id)}
+                    iconOnly={false}
+                    onToggleMute={onToggleMute}
+                    switchApp={switchApp}
+                    removeApp={removeApp}
+                    editApp={editApp}
+                    onReload={onReload}
+                  />
+                ))}
+              </ul>
+            </SortableContext>
+          )
         )}
 
         {config.apps.length === 0 && (
-          <p className="px-2 py-2 text-sm text-gray-500">No apps configured</p>
+          <p className="px-2 py-2 text-sm text-gray-500">{iconOnly ? "" : "No apps configured"}</p>
         )}
       </nav>
-      <div className="flex items-center justify-between px-3 py-2 border-t border-white/5">
-        <div />
-        <button
-          className="text-gray-500 hover:text-gray-300 transition-colors"
-          onClick={() => window.dispatchEvent(new CustomEvent("sidebar-toggle"))}
-          title="Toggle sidebar"
-          aria-label="Toggle sidebar"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-        </button>
+      {!iconOnly && (
+        <div className="flex items-center justify-between px-3 py-2 border-t border-white/5">
+          <div />
+          <button
+            className="text-gray-500 hover:text-gray-300 transition-colors"
+            onClick={() => window.dispatchEvent(new CustomEvent("sidebar-toggle"))}
+            title="Toggle sidebar"
+            aria-label="Toggle sidebar"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+        </div>
+      )}
+      {/* Resize handle — absolute right edge, pointer capture-based */}
+      <div
+        className="absolute top-0 right-0 h-full w-1 cursor-col-resize group"
+        {...resizeHandleProps}
+      >
+        <div className="h-full w-px bg-white/0 group-hover:bg-white/10 transition-colors" />
       </div>
     </aside>
   );
