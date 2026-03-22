@@ -62,9 +62,9 @@ Plans:
   6. A SettingsPanel component shell is present and openable — content is populated in Phase 9
 **Plans:** 3/3 plans complete
 Plans:
-- [ ] 07-01-PLAN.md — Config schema + motion install + animations + numeric badge + toggle button
-- [ ] 07-02-PLAN.md — Sidebar edge-drag resize + icon-only collapse mode
-- [ ] 07-03-PLAN.md — Favorites section + settings panel shell + visual checkpoint
+- [x] 07-01-PLAN.md — Config schema + motion install + animations + numeric badge + toggle button
+- [x] 07-02-PLAN.md — Sidebar edge-drag resize + icon-only collapse mode
+- [x] 07-03-PLAN.md — Favorites section + settings panel shell + visual checkpoint
 
 ### Phase 8: Spaces
 **Goal**: Users can maintain independent workspace contexts — each Space has its own app set, order, and layout
@@ -133,7 +133,7 @@ Plans:
 | 4. Performance & Activity | v1.0 | 3/3 | Complete | 2026-03-19 |
 | 5. Cross-Platform Distribution | v1.0 | 4/4 | Complete | 2026-03-20 |
 | 6. Notifications | v2.0 | 2/2 | Complete | 2026-03-21 |
-| 7. Polish & Sidebar | 3/3 | Complete   | 2026-03-22 | - |
+| 7. Polish & Sidebar | v2.0 | 3/3 | Complete | 2026-03-22 |
 | 8. Spaces | v2.0 | 0/? | Not started | - |
 | 9. Preferences | v2.0 | 0/? | Not started | - |
 | 10. Multi-Account | v2.0 | 0/? | Not started | - |

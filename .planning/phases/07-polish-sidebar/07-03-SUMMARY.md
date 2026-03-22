@@ -111,13 +111,26 @@ None.
 
 None - no external service configuration required.
 
+## Post-Checkpoint Fixes
+
+After Task 1 commit but before checkpoint approval, several visual refinements were made during interactive testing:
+
+1. **Webview dimming refinements** — Iterated on modal dimming approach:
+   - Tried `hide/show` (too jarring), then `alphaValue` (made everything transparent), then NSView z-order reorder
+   - Final: `set_active_webview_dimmed` uses NSView alphaValue on the webview layer only with 0.4 opacity
+   - Transparent window + dynamic background class allows the dim effect to show through
+2. **Webview white border** — Added subtle white border on the webview side for a relief effect, iterated on gap presence (removed then re-added)
+3. **Escape + Cmd+K fixes** — Escape closes settings/palette; Cmd+K properly toggles palette open/close
+
+Commits: `69f573c` through `86b663d` (8 fix commits during interactive testing)
+
 ## Next Phase Readiness
 
-- All Phase 7 features implemented: animations (07-01), resize/icon-only (07-02), favorites/settings (07-03)
-- Visual verification checkpoint pending (Task 2 — human approval)
+- All Phase 7 features approved by user visual verification (checkpoint complete)
 - SettingsPanel shell ready for Phase 9 Preferences content wiring
 - pinnedAppIds persists via existing save_config Rust command
+- Phase 8 (Spaces) is unblocked
 
 ---
 *Phase: 07-polish-sidebar*
-*Completed: 2026-03-21*
+*Completed: 2026-03-22*
