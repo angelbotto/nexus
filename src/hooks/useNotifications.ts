@@ -35,8 +35,12 @@ export function useNotifications(config: NexusConfig | null): UseNotificationsRe
   const dndEnabled = config?.dndEnabled ?? false;
 
   async function toggleMute(appId: string): Promise<void> {
-    await invoke("toggle_mute_app", { appId });
-    await invoke("reload_config");
+    try {
+      await invoke("toggle_mute_app", { appId });
+      await invoke("reload_config");
+    } catch (e) {
+      console.error("toggleMute failed:", e);
+    }
   }
 
   async function setDnd(enabled: boolean): Promise<void> {

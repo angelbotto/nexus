@@ -113,6 +113,7 @@ function SortableAppItem({
             className={`text-gray-500 transition-opacity cursor-pointer hover:text-gray-300 ${
               isMuted ? "opacity-100" : "opacity-0 group-hover:opacity-100"
             }`}
+            onPointerDown={(e) => e.stopPropagation()}
             onClick={(e) => { e.stopPropagation(); onToggleMute(app.id); }}
             title={isMuted ? "Unmute notifications" : "Mute notifications"}
             role="button"
