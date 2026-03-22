@@ -26,9 +26,19 @@ export function addApp(config: NexusConfig, name: string, url: string): NexusCon
 
 export function removeApp(config: NexusConfig, appId: string): NexusConfig {
   const apps = config.apps.filter((a) => a.id !== appId);
+  const pinnedAppIds = config.pinnedAppIds.filter((id) => id !== appId);
   const lastActiveAppId =
     config.lastActiveAppId === appId ? null : config.lastActiveAppId;
-  return { ...config, apps, lastActiveAppId };
+  return { ...config, apps, pinnedAppIds, lastActiveAppId };
+}
+
+export function pinApp(config: NexusConfig, appId: string): NexusConfig {
+  if (config.pinnedAppIds.includes(appId)) return config;
+  return { ...config, pinnedAppIds: [...config.pinnedAppIds, appId] };
+}
+
+export function unpinApp(config: NexusConfig, appId: string): NexusConfig {
+  return { ...config, pinnedAppIds: config.pinnedAppIds.filter((id) => id !== appId) };
 }
 
 export function reorderApps(config: NexusConfig, newApps: AppConfig[]): NexusConfig {

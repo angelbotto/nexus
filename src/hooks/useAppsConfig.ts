@@ -10,6 +10,8 @@ import {
   reorderApps as mutateReorderApps,
   reorderGroups as mutateReorderGroups,
   editApp as mutateEditApp,
+  pinApp as mutatePinApp,
+  unpinApp as mutateUnpinApp,
 } from "../lib/configMutations";
 import { extractUnreadCount, computeBadgeTotal } from "./useNotifications";
 
@@ -28,6 +30,8 @@ interface UseAppsConfigResult {
   reorderGroups: (newGroups: GroupConfig[]) => Promise<void>;
   editApp: (appId: string, name: string, url: string) => Promise<void>;
   toggleMute: (appId: string) => Promise<void>;
+  pinApp: (appId: string) => Promise<void>;
+  unpinApp: (appId: string) => Promise<void>;
   loading: boolean;
 }
 
@@ -225,6 +229,20 @@ export function useAppsConfig(): UseAppsConfigResult {
     await persistMutation(updated);
   }
 
+  async function pinApp(appId: string): Promise<void> {
+    const current = configRef.current;
+    if (!current) return;
+    const updated = mutatePinApp(current, appId);
+    await persistMutation(updated);
+  }
+
+  async function unpinApp(appId: string): Promise<void> {
+    const current = configRef.current;
+    if (!current) return;
+    const updated = mutateUnpinApp(current, appId);
+    await persistMutation(updated);
+  }
+
   async function toggleMute(appId: string): Promise<void> {
     const current = configRef.current;
     if (!current) return;
@@ -262,6 +280,8 @@ export function useAppsConfig(): UseAppsConfigResult {
     reorderGroups,
     editApp,
     toggleMute,
+    pinApp,
+    unpinApp,
     loading,
   };
 }

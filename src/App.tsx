@@ -18,6 +18,7 @@ import { useNotifications } from "./hooks/useNotifications";
 import { useSidebarResize } from "./hooks/useSidebarResize";
 import { Sidebar } from "./components/Sidebar";
 import { CommandPalette } from "./components/CommandPalette";
+import { SettingsPanel } from "./components/SettingsPanel";
 import { UpdateBanner } from "./components/UpdateBanner";
 
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -36,6 +37,8 @@ function App() {
     reorderApps,
     reorderGroups,
     toggleMute,
+    pinApp,
+    unpinApp,
     loading,
   } = useAppsConfig();
 
@@ -65,6 +68,7 @@ function App() {
   });
 
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isSwitching, setIsSwitching] = useState(false);
   const [paletteInitialMode, setPaletteInitialMode] = useState<
     "search" | "action" | "add-form" | "edit-form" | undefined
@@ -76,11 +80,10 @@ function App() {
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
 
-  // Dim the active child webview while the palette is open so the palette
-  // is readable over the dimmed page content (native webviews always composite above parent DOM).
+  // Dim the active child webview while the palette or settings is open.
   useEffect(() => {
-    invoke("set_active_webview_dimmed", { dimmed: isPaletteOpen }).catch(() => {});
-  }, [isPaletteOpen]);
+    invoke("set_active_webview_dimmed", { dimmed: isPaletteOpen || isSettingsOpen }).catch(() => {});
+  }, [isPaletteOpen, isSettingsOpen]);
 
   useEffect(() => {
     function handleOpenPalette() {
@@ -92,12 +95,27 @@ function App() {
       setPaletteInitialMode("add-form");
     }
 
+    function handleOpenSettings() {
+      setIsSettingsOpen(true);
+    }
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === ",") {
+        e.preventDefault();
+        setIsSettingsOpen((prev) => !prev);
+      }
+    }
+
     window.addEventListener("open-palette", handleOpenPalette);
     window.addEventListener("open-add-app", handleOpenAddApp);
+    window.addEventListener("open-settings", handleOpenSettings);
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       window.removeEventListener("open-palette", handleOpenPalette);
       window.removeEventListener("open-add-app", handleOpenAddApp);
+      window.removeEventListener("open-settings", handleOpenSettings);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
 
@@ -259,11 +277,16 @@ function App() {
                 removeApp={removeApp}
                 editApp={handleEditApp}
                 onReload={handleReloadApp}
+                onPinApp={pinApp}
+                onUnpinApp={unpinApp}
               />
             </motion.aside>
           )}
         </AnimatePresence>
-        <main className="relative flex flex-1 items-center justify-center text-sm text-gray-600">
+        <main
+          className="relative flex flex-1 items-center justify-center text-sm text-gray-600"
+          onClick={() => { if (isSettingsOpen && !isPaletteOpen) setIsSettingsOpen(false); }}
+        >
           {!activeAppId && (
             <span className="text-gray-500">Select an app</span>
           )}
@@ -299,6 +322,14 @@ function App() {
                 initial={{ opacity: 1 }}
                 animate={{ opacity: 0, transition: { duration: prefersReducedMotion ? 0 : 0.08, ease: "easeOut" } }}
                 exit={{ opacity: 0 }}
+              />
+            )}
+          </AnimatePresence>
+          <AnimatePresence>
+            {isSettingsOpen && (
+              <SettingsPanel
+                isOpen={isSettingsOpen}
+                onClose={() => setIsSettingsOpen(false)}
               />
             )}
           </AnimatePresence>

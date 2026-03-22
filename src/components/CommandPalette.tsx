@@ -38,6 +38,7 @@ const STATIC_ACTIONS: Action[] = [
   { id: "remove-app", label: "Remove current app" },
   { id: "reload-page", label: "Reload page" },
   { id: "toggle-sidebar", label: "Toggle sidebar" },
+  { id: "open-settings", label: "Open Settings" },
 ];
 
 export function CommandPalette({
@@ -214,6 +215,10 @@ export function CommandPalette({
         break;
       case "toggle-sidebar":
         onToggleSidebar();
+        onClose();
+        break;
+      case "open-settings":
+        window.dispatchEvent(new CustomEvent("open-settings"));
         onClose();
         break;
     }

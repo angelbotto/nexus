@@ -23,6 +23,8 @@ interface SidebarProps {
   removeApp: (appId: string) => Promise<void>;
   editApp: (appId: string) => void;
   onReload: (appId: string) => void;
+  onPinApp: (appId: string) => Promise<void>;
+  onUnpinApp: (appId: string) => Promise<void>;
 }
 
 function getFaviconUrl(appUrl: string): string {
@@ -39,12 +41,15 @@ interface SortableAppItemProps {
   isActive: boolean;
   badgeCount: number | null | undefined;
   isMuted: boolean;
+  isPinned: boolean;
   iconOnly: boolean;
   onToggleMute: (appId: string) => void;
   switchApp: (id: string) => Promise<void>;
   removeApp: (appId: string) => Promise<void>;
   editApp: (appId: string) => void;
   onReload: (appId: string) => void;
+  onPinApp: (appId: string) => Promise<void>;
+  onUnpinApp: (appId: string) => Promise<void>;
 }
 
 function BadgeCount({ count, isMuted }: { count: number | null; isMuted: boolean }) {
@@ -77,12 +82,15 @@ function SortableAppItem({
   isActive,
   badgeCount,
   isMuted,
+  isPinned,
   iconOnly,
   onToggleMute,
   switchApp,
   removeApp,
   editApp,
   onReload,
+  onPinApp,
+  onUnpinApp,
 }: SortableAppItemProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging, isOver } =
     useSortable({ id: app.id });
@@ -98,6 +106,11 @@ function SortableAppItem({
     const appId = app.id;
     const menu = await Menu.new({
       items: [
+        await MenuItem.new({
+          text: isPinned ? "Unpin from Favorites" : "Pin to Favorites",
+          action: () => isPinned ? onUnpinApp(appId) : onPinApp(appId),
+        }),
+        await PredefinedMenuItem.new({ item: "Separator" }),
         await MenuItem.new({
           text: isMuted ? "Unmute notifications" : "Mute notifications",
           action: () => onToggleMute(appId),
@@ -247,6 +260,8 @@ export function Sidebar({
   removeApp,
   editApp,
   onReload,
+  onPinApp,
+  onUnpinApp,
 }: SidebarProps) {
   const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>(
     () => Object.fromEntries(config.groups.map((g) => [g.id, g.collapsed]))
@@ -255,6 +270,10 @@ export function Sidebar({
   function toggleGroup(groupId: string) {
     setCollapsedGroups((prev) => ({ ...prev, [groupId]: !prev[groupId] }));
   }
+
+  const pinnedApps = config.pinnedAppIds
+    .map((id) => config.apps.find((a) => a.id === id))
+    .filter((a): a is AppConfig => a !== undefined);
 
   const appsWithoutGroup = config.apps.filter(
     (app) => !config.groups.some((g) => g.id === app.group)
@@ -274,6 +293,31 @@ export function Sidebar({
         }}
       />
       <nav className="flex-1 overflow-y-auto pb-2" style={{ paddingLeft: iconOnly ? 4 : 8, paddingRight: iconOnly ? 4 : 8 }}>
+        {!iconOnly && pinnedApps.length > 0 && (
+          <>
+            <ul className="space-y-0.5">
+              {pinnedApps.map((app) => (
+                <SortableAppItem
+                  key={`pinned-${app.id}`}
+                  app={app}
+                  isActive={app.id === activeAppId}
+                  badgeCount={badgeCounts.get(app.id)}
+                  isMuted={mutedAppIds.has(app.id)}
+                  isPinned={true}
+                  iconOnly={false}
+                  onToggleMute={onToggleMute}
+                  switchApp={switchApp}
+                  removeApp={removeApp}
+                  editApp={editApp}
+                  onReload={onReload}
+                  onPinApp={onPinApp}
+                  onUnpinApp={onUnpinApp}
+                />
+              ))}
+            </ul>
+            <div className="mx-2 my-1 h-px bg-white/10" />
+          </>
+        )}
         {!iconOnly && (
           <SortableContext items={groupIds} strategy={verticalListSortingStrategy}>
             {config.groups.map((group) => {
@@ -299,12 +343,15 @@ export function Sidebar({
                             isActive={app.id === activeAppId}
                             badgeCount={badgeCounts.get(app.id)}
                             isMuted={mutedAppIds.has(app.id)}
+                            isPinned={config.pinnedAppIds.includes(app.id)}
                             iconOnly={false}
                             onToggleMute={onToggleMute}
                             switchApp={switchApp}
                             removeApp={removeApp}
                             editApp={editApp}
                             onReload={onReload}
+                            onPinApp={onPinApp}
+                            onUnpinApp={onUnpinApp}
                           />
                         ))}
                       </ul>
@@ -330,12 +377,15 @@ export function Sidebar({
                   isActive={app.id === activeAppId}
                   badgeCount={badgeCounts.get(app.id)}
                   isMuted={mutedAppIds.has(app.id)}
+                  isPinned={config.pinnedAppIds.includes(app.id)}
                   iconOnly={true}
                   onToggleMute={onToggleMute}
                   switchApp={switchApp}
                   removeApp={removeApp}
                   editApp={editApp}
                   onReload={onReload}
+                  onPinApp={onPinApp}
+                  onUnpinApp={onUnpinApp}
                 />
               ))}
             </ul>
@@ -354,12 +404,15 @@ export function Sidebar({
                     isActive={app.id === activeAppId}
                     badgeCount={badgeCounts.get(app.id)}
                     isMuted={mutedAppIds.has(app.id)}
+                    isPinned={config.pinnedAppIds.includes(app.id)}
                     iconOnly={false}
                     onToggleMute={onToggleMute}
                     switchApp={switchApp}
                     removeApp={removeApp}
                     editApp={editApp}
                     onReload={onReload}
+                    onPinApp={onPinApp}
+                    onUnpinApp={onUnpinApp}
                   />
                 ))}
               </ul>
@@ -373,7 +426,16 @@ export function Sidebar({
       </nav>
       {!iconOnly && (
         <div className="flex items-center justify-between px-3 py-2 border-t border-white/5">
-          <div />
+          <button
+            className="text-gray-500 hover:text-gray-300 transition-colors"
+            onClick={() => window.dispatchEvent(new CustomEvent("open-settings"))}
+            title="Settings"
+            aria-label="Open settings"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+          </button>
           <button
             className="text-gray-500 hover:text-gray-300 transition-colors"
             onClick={() => window.dispatchEvent(new CustomEvent("sidebar-toggle"))}
