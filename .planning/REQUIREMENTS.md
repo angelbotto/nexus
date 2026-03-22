@@ -30,8 +30,8 @@ Requirements for v2.0 Power Features milestone. Each maps to roadmap phases.
 
 ### Notifications
 
-- [ ] **NOTF-01**: User receives native OS notifications from webview apps (Gmail, Slack, etc.)
-- [ ] **NOTF-02**: User can mute notifications per app
+- [x] **NOTF-01**: User receives native OS notifications from webview apps (Gmail, Slack, etc.)
+- [x] **NOTF-02**: User can mute notifications per app
 - [ ] **NOTF-03**: Unread count badge appears on dock/taskbar icon (aggregate count)
 
 ### Polish & Animations
@@ -88,8 +88,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| NOTF-01 | Phase 6 | Pending |
-| NOTF-02 | Phase 6 | Pending |
+| NOTF-01 | Phase 6 | Complete |
+| NOTF-02 | Phase 6 | Complete |
 | NOTF-03 | Phase 6 | Pending |
 | PLSH-01 | Phase 7 | Pending |
 | PLSH-02 | Phase 7 | Pending |

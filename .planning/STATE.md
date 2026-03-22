@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Power Features
 status: planning
-stopped_at: Phase 6 context gathered
-last_updated: "2026-03-22T01:53:15.887Z"
+stopped_at: Completed 06-01-PLAN.md — notification backend done
+last_updated: "2026-03-22T02:31:23.894Z"
 last_activity: 2026-03-20 — v2.0 roadmap created, 29 requirements across 7 phases
 progress:
   total_phases: 7
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 2
+  completed_plans: 1
   percent: 42
 ---
 
@@ -50,6 +50,7 @@ Progress: [█████░░░░░] ~42% (v1.0 complete, v2.0 not started
 | 05-cross-platform | 4 | ~40 min | 10 min |
 
 *Updated after each plan completion*
+| Phase 06-notifications P01 | 3 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -65,6 +66,8 @@ Critical v2.0 decisions to carry forward:
 - [v2.0 Research]: Spaces MUST migrate webview keys to `{space_id}:{app_id}` before any Space UI wires up
 - [v2.0 Research]: `animation` must use only `opacity`/`transform` — never `width`/`height` — to honor 100ms switching contract
 - [v2.0 Research]: Preferences must use delta-patch/serialized single writer to prevent race with drag-reorder
+- [Phase 06-notifications]: Extracted should_send() pure guard function for testability without AppHandle mock
+- [Phase 06-notifications]: shell-only.json scopes notification:default to main window only — app-* webviews excluded from notification plugin
 
 ### Pending Todos
 
@@ -78,6 +81,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-22T01:53:15.882Z
-Stopped at: Phase 6 context gathered
-Resume file: .planning/phases/06-notifications/06-CONTEXT.md
+Last session: 2026-03-22T02:31:23.892Z
+Stopped at: Completed 06-01-PLAN.md — notification backend done
+Resume file: None
