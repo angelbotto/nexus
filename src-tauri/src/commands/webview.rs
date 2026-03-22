@@ -351,12 +351,33 @@ pub fn set_active_webview_dimmed(
     if let Some(ref app_id) = st.active_app_id {
         let label = format!("app-{}", app_id);
         if let Some(wv) = app_handle.get_webview(&label) {
-            // Native webviews render above React DOM — must hide them
-            // so React modals (settings, palette) are visible
-            if dimmed {
-                wv.hide().map_err(|e| e.to_string())?;
-            } else {
-                wv.show().map_err(|e| e.to_string())?;
+            let alpha: f64 = if dimmed { 0.15 } else { 1.0 };
+
+            // macOS: set NSView alphaValue so the React modal shows through
+            // the semi-transparent native webview. Also inject a click-blocking
+            // overlay so interactions go to the main webview (React modals).
+            #[cfg(target_os = "macos")]
+            {
+                let _ = wv.with_webview(move |platform_wv| {
+                    use objc2::runtime::AnyObject;
+                    use objc2_app_kit::NSView;
+                    unsafe {
+                        let ns_view_ptr = platform_wv.inner() as *mut AnyObject as *mut NSView;
+                        if let Some(ns_view) = ns_view_ptr.as_ref() {
+                            ns_view.setAlphaValue(alpha);
+                        }
+                    }
+                });
+            }
+
+            // Non-macOS: fall back to hide/show
+            #[cfg(not(target_os = "macos"))]
+            {
+                if dimmed {
+                    wv.hide().map_err(|e| e.to_string())?;
+                } else {
+                    wv.show().map_err(|e| e.to_string())?;
+                }
             }
         }
     }
