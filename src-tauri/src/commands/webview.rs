@@ -351,10 +351,26 @@ pub fn set_active_webview_dimmed(
     if let Some(ref app_id) = st.active_app_id {
         let label = format!("app-{}", app_id);
         if let Some(wv) = app_handle.get_webview(&label) {
-            if dimmed {
-                wv.hide().map_err(|e| e.to_string())?;
-            } else {
-                wv.show().map_err(|e| e.to_string())?;
+            let alpha: f64 = if dimmed { 0.15 } else { 1.0 };
+
+            #[cfg(target_os = "macos")]
+            {
+                let _ = wv.with_webview(move |platform_wv| {
+                    use objc2::runtime::AnyObject;
+                    use objc2_app_kit::NSView;
+                    unsafe {
+                        let ns_view_ptr = platform_wv.inner() as *mut AnyObject as *mut NSView;
+                        if let Some(ns_view) = ns_view_ptr.as_ref() {
+                            ns_view.setAlphaValue(alpha);
+                        }
+                    }
+                });
+            }
+
+            #[cfg(not(target_os = "macos"))]
+            {
+                if dimmed { wv.hide().map_err(|e| e.to_string())?; }
+                else { wv.show().map_err(|e| e.to_string())?; }
             }
         }
     }
