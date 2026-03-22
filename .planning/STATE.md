@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Power Features
-status: in_progress
-stopped_at: Completed 07-polish-sidebar/07-01-PLAN.md
-last_updated: "2026-03-22T04:12:00Z"
+status: completed
+stopped_at: Completed 07-polish-sidebar/07-02-PLAN.md
+last_updated: "2026-03-22T04:15:05.345Z"
 last_activity: 2026-03-22 — Phase 07 Plan 01 complete (animations, badges, config schema)
 progress:
   total_phases: 7
   completed_phases: 1
-  total_plans: 3
-  completed_plans: 1
+  total_plans: 5
+  completed_plans: 4
   percent: 48
 ---
 
@@ -53,6 +53,7 @@ Progress: [█████░░░░░] ~48% (v1.0 complete, Phase 6 complete
 | Phase 06-notifications P01 | 3 | 2 tasks | 7 files |
 | Phase 06-notifications P02 | 7 | 2 tasks | 7 files |
 | Phase 07-polish-sidebar P01 | 9 | 3 tasks | 9 files |
+| Phase 07-polish-sidebar P02 | 148 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -76,6 +77,9 @@ Critical v2.0 decisions to carry forward:
 - [Phase 07-01]: Crossfade overlay: Rust IPC call fires first, THEN animation — no switch delay
 - [Phase 07-01]: calc_webview_rect now accepts sidebar_width as explicit param (was hardcoded 220px)
 - [Phase 07-01]: Only opacity and transform used in animations — never width/height (100ms switch contract)
+- [Phase 07-02]: clampWidth threshold 80px: below snaps to icon-only 48px, at/above clamps to 120-300px range
+- [Phase 07-02]: onWidthChange fires resize_active_webview live; onWidthCommit fires save_sidebar_width on drag end only
+- [Phase 07-02]: stopPropagation on pointerDown prevents dnd-kit capture conflict with resize handle
 
 ### Pending Todos
 
@@ -89,6 +93,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-22T04:12:00Z
-Stopped at: Completed 07-polish-sidebar/07-01-PLAN.md
-Resume file: .planning/phases/07-polish-sidebar/07-02-PLAN.md
+Last session: 2026-03-22T04:15:05.343Z
+Stopped at: Completed 07-polish-sidebar/07-02-PLAN.md
+Resume file: None
