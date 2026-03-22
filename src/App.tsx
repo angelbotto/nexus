@@ -99,6 +99,10 @@ function App() {
       setIsSettingsOpen(true);
     }
 
+    function handleToggleSettings() {
+      setIsSettingsOpen((prev) => !prev);
+    }
+
     function handleKeyDown(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && e.key === ",") {
         e.preventDefault();
@@ -109,12 +113,14 @@ function App() {
     window.addEventListener("open-palette", handleOpenPalette);
     window.addEventListener("open-add-app", handleOpenAddApp);
     window.addEventListener("open-settings", handleOpenSettings);
+    window.addEventListener("toggle-settings", handleToggleSettings);
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       window.removeEventListener("open-palette", handleOpenPalette);
       window.removeEventListener("open-add-app", handleOpenAddApp);
       window.removeEventListener("open-settings", handleOpenSettings);
+      window.removeEventListener("toggle-settings", handleToggleSettings);
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
@@ -261,7 +267,7 @@ function App() {
               initial={{ x: "-100%", opacity: 0 }}
               animate={{ x: 0, opacity: 1, transition: { duration: prefersReducedMotion ? 0 : 0.15, ease: "easeOut" } }}
               exit={{ x: "-100%", opacity: 0, transition: { duration: prefersReducedMotion ? 0 : 0.12, ease: "easeIn" } }}
-              className="flex-shrink-0"
+              className="flex-shrink-0 h-full"
               style={{ width: currentIconOnly ? 48 : currentSidebarWidth }}
             >
               <Sidebar
@@ -285,7 +291,6 @@ function App() {
         </AnimatePresence>
         <main
           className="relative flex flex-1 items-center justify-center text-sm text-gray-600"
-          onClick={() => { if (isSettingsOpen && !isPaletteOpen) setIsSettingsOpen(false); }}
         >
           {!activeAppId && (
             <span className="text-gray-500">Select an app</span>
