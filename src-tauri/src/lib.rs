@@ -45,6 +45,16 @@ pub fn run() {
                 .item(&PredefinedMenuItem::quit(app, None)?)
                 .build()?;
 
+            let edit_menu = SubmenuBuilder::new(app, "Edit")
+                .undo()
+                .redo()
+                .separator()
+                .cut()
+                .copy()
+                .paste()
+                .select_all()
+                .build()?;
+
             let add_app_item = MenuItemBuilder::new("Add App")
                 .accelerator("CmdOrCtrl+N")
                 .id("add-app")
@@ -70,7 +80,7 @@ pub fn run() {
                 .build()?;
 
             let menu = MenuBuilder::new(app)
-                .items(&[&nexus_menu, &file_menu, &view_menu])
+                .items(&[&nexus_menu, &edit_menu, &file_menu, &view_menu])
                 .build()?;
 
             app.set_menu(menu)?;
