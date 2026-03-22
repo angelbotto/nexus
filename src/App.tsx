@@ -12,11 +12,14 @@ import {
   type DragEndEvent,
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
+import { AnimatePresence, motion } from "motion/react";
 import { useAppsConfig } from "./hooks/useAppsConfig";
 import { useNotifications } from "./hooks/useNotifications";
 import { Sidebar } from "./components/Sidebar";
 import { CommandPalette } from "./components/CommandPalette";
 import { UpdateBanner } from "./components/UpdateBanner";
+
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 function App() {
   const {
@@ -24,7 +27,7 @@ function App() {
     activeAppId,
     loadingAppId,
     sidebarVisible,
-    badgeAppIds,
+    badgeCounts,
     switchApp,
     addApp,
     removeApp,
@@ -38,6 +41,7 @@ function App() {
   const { mutedAppIds, dndEnabled, setDnd } = useNotifications(config);
 
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+  const [isSwitching, setIsSwitching] = useState(false);
   const [paletteInitialMode, setPaletteInitialMode] = useState<
     "search" | "action" | "add-form" | "edit-form" | undefined
   >(undefined);
@@ -95,6 +99,13 @@ function App() {
 
   function handleReloadApp(appId: string) {
     invoke("reload_webview", { appId }).catch(() => {});
+  }
+
+  async function handleSwitchApp(id: string) {
+    if (id === activeAppId) return;
+    await switchApp(id);
+    setIsSwitching(true);
+    setTimeout(() => setIsSwitching(false), 100);
   }
 
   function handleDragStart(event: DragStartEvent) {
@@ -201,19 +212,29 @@ function App() {
         }}
       />
       <div className="flex h-screen overflow-hidden bg-[#111117]">
-        {sidebarVisible && (
-          <Sidebar
-            config={config}
-            activeAppId={activeAppId}
-            badgeAppIds={badgeAppIds}
-            mutedAppIds={mutedAppIds}
-            onToggleMute={toggleMute}
-            switchApp={switchApp}
-            removeApp={removeApp}
-            editApp={handleEditApp}
-            onReload={handleReloadApp}
-          />
-        )}
+        <AnimatePresence initial={false}>
+          {sidebarVisible && (
+            <motion.aside
+              key="sidebar"
+              initial={{ x: "-100%", opacity: 0 }}
+              animate={{ x: 0, opacity: 1, transition: { duration: prefersReducedMotion ? 0 : 0.15, ease: "easeOut" } }}
+              exit={{ x: "-100%", opacity: 0, transition: { duration: prefersReducedMotion ? 0 : 0.12, ease: "easeIn" } }}
+              className="flex-shrink-0"
+            >
+              <Sidebar
+                config={config}
+                activeAppId={activeAppId}
+                badgeCounts={badgeCounts}
+                mutedAppIds={mutedAppIds}
+                onToggleMute={toggleMute}
+                switchApp={handleSwitchApp}
+                removeApp={removeApp}
+                editApp={handleEditApp}
+                onReload={handleReloadApp}
+              />
+            </motion.aside>
+          )}
+        </AnimatePresence>
         <main className="relative flex flex-1 items-center justify-center text-sm text-gray-600">
           {!activeAppId && (
             <span className="text-gray-500">Select an app</span>
@@ -242,6 +263,17 @@ function App() {
               </svg>
             </div>
           )}
+          <AnimatePresence>
+            {isSwitching && (
+              <motion.div
+                key="crossfade"
+                className="pointer-events-none absolute inset-0 bg-[#111117]"
+                initial={{ opacity: 1 }}
+                animate={{ opacity: 0, transition: { duration: prefersReducedMotion ? 0 : 0.08, ease: "easeOut" } }}
+                exit={{ opacity: 0 }}
+              />
+            )}
+          </AnimatePresence>
         </main>
 
         <CommandPalette
@@ -253,7 +285,7 @@ function App() {
           onToggleMute={toggleMute}
           onSetDnd={setDnd}
           onClose={handlePaletteClose}
-          onSwitch={switchApp}
+          onSwitch={handleSwitchApp}
           onAdd={addApp}
           onRemove={removeApp}
           onEdit={editApp}

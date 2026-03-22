@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import Fuse from "fuse.js";
+import { AnimatePresence, motion } from "motion/react";
 import type { NexusConfig } from "../types";
+
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 type PaletteMode = "search" | "action" | "add-form" | "edit-form";
 
@@ -250,16 +253,24 @@ export function CommandPalette({
     }
   }
 
-  if (!isOpen) return null;
-
   return (
-    <div
+    <AnimatePresence>
+      {isOpen && (
+    <motion.div
+      key="palette-backdrop"
       className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]"
       style={{ background: "rgba(0,0,0,0.6)" }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1, transition: { duration: prefersReducedMotion ? 0 : 0.12, ease: "easeOut" } }}
+      exit={{ opacity: 0, transition: { duration: prefersReducedMotion ? 0 : 0.08, ease: "easeIn" } }}
       onClick={onClose}
     >
-      <div
+      <motion.div
+        key="palette-panel"
         className="w-[560px] rounded-xl bg-[#111117] shadow-2xl ring-1 ring-white/10"
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1, transition: { duration: prefersReducedMotion ? 0 : 0.12, ease: "easeOut" } }}
+        exit={{ scale: 0.95, opacity: 0, transition: { duration: prefersReducedMotion ? 0 : 0.08, ease: "easeIn" } }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search / Action input */}
@@ -388,7 +399,9 @@ export function CommandPalette({
             )}
           </ul>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
