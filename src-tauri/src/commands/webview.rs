@@ -361,7 +361,7 @@ pub fn set_active_webview_dimmed(
         if let Some(wv) = app_handle.get_webview(&label) {
             #[cfg(target_os = "macos")]
             {
-                let alpha: f64 = if dimmed { 0.15 } else { 1.0 };
+                let alpha: f64 = if dimmed { 0.4 } else { 1.0 };
                 let _ = wv.with_webview(move |platform_wv| {
                     use objc2::runtime::AnyObject;
                     use objc2_app_kit::{NSView, NSWindowOrderingMode};
