@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSortable, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Menu, MenuItem, PredefinedMenuItem } from "@tauri-apps/api/menu";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { useAnimate } from "motion/react";
 import type { NexusConfig, AppConfig, GroupConfig } from "../types";
 
 interface SidebarProps {
   config: NexusConfig;
   activeAppId: string | null;
-  badgeAppIds: Set<string>;
+  badgeCounts: Map<string, number | null>;
   mutedAppIds: Set<string>;
   onToggleMute: (appId: string) => void;
   switchApp: (id: string) => Promise<void>;
@@ -29,7 +30,7 @@ function getFaviconUrl(appUrl: string): string {
 interface SortableAppItemProps {
   app: AppConfig;
   isActive: boolean;
-  hasBadge: boolean;
+  badgeCount: number | null | undefined;
   isMuted: boolean;
   onToggleMute: (appId: string) => void;
   switchApp: (id: string) => Promise<void>;
@@ -38,10 +39,35 @@ interface SortableAppItemProps {
   onReload: (appId: string) => void;
 }
 
+function BadgeCount({ count, isMuted }: { count: number | null; isMuted: boolean }) {
+  const [scope, animate] = useAnimate();
+  const prevCount = useRef(count);
+
+  useEffect(() => {
+    if (count !== prevCount.current && count !== null) {
+      animate(scope.current, { scale: [1, 1.2, 1] }, { duration: 0.2 });
+    }
+    prevCount.current = count;
+  }, [count, animate, scope]);
+
+  if (count === null) {
+    return <span className={`h-1.5 w-1.5 rounded-full bg-white ${isMuted ? "opacity-40" : "opacity-90"}`} />;
+  }
+
+  return (
+    <span
+      ref={scope}
+      className={`min-w-[16px] rounded-full bg-white/20 px-1 text-center text-[10px] font-semibold tabular-nums leading-[16px] ${isMuted ? "opacity-40" : "opacity-90"}`}
+    >
+      {count > 99 ? "99+" : String(count)}
+    </span>
+  );
+}
+
 function SortableAppItem({
   app,
   isActive,
-  hasBadge,
+  badgeCount,
   isMuted,
   onToggleMute,
   switchApp,
@@ -103,11 +129,8 @@ function SortableAppItem({
         />
         <span className="truncate flex-1">{app.name}</span>
         <span className="ml-auto flex items-center gap-1 flex-shrink-0">
-          {hasBadge && !isActive && !isMuted && (
-            <span className="h-1.5 w-1.5 rounded-full bg-white opacity-90" />
-          )}
-          {hasBadge && !isActive && isMuted && (
-            <span className="h-1.5 w-1.5 rounded-full bg-white/40" />
+          {badgeCount !== undefined && !isActive && (
+            <BadgeCount count={badgeCount} isMuted={isMuted} />
           )}
           <span
             className={`text-gray-500 transition-opacity cursor-pointer hover:text-gray-300 ${
@@ -189,7 +212,7 @@ function SortableGroupHeader({ group, isCollapsed, onToggle }: SortableGroupHead
 export function Sidebar({
   config,
   activeAppId,
-  badgeAppIds,
+  badgeCounts,
   mutedAppIds,
   onToggleMute,
   switchApp,
@@ -242,7 +265,7 @@ export function Sidebar({
                           key={app.id}
                           app={app}
                           isActive={app.id === activeAppId}
-                          hasBadge={badgeAppIds.has(app.id)}
+                          badgeCount={badgeCounts.get(app.id)}
                           isMuted={mutedAppIds.has(app.id)}
                           onToggleMute={onToggleMute}
                           switchApp={switchApp}
@@ -270,7 +293,7 @@ export function Sidebar({
                   key={app.id}
                   app={app}
                   isActive={app.id === activeAppId}
-                  hasBadge={badgeAppIds.has(app.id)}
+                  badgeCount={badgeCounts.get(app.id)}
                   isMuted={mutedAppIds.has(app.id)}
                   onToggleMute={onToggleMute}
                   switchApp={switchApp}
@@ -287,6 +310,19 @@ export function Sidebar({
           <p className="px-2 py-2 text-sm text-gray-500">No apps configured</p>
         )}
       </nav>
+      <div className="flex items-center justify-between px-3 py-2 border-t border-white/5">
+        <div />
+        <button
+          className="text-gray-500 hover:text-gray-300 transition-colors"
+          onClick={() => window.dispatchEvent(new CustomEvent("sidebar-toggle"))}
+          title="Toggle sidebar"
+          aria-label="Toggle sidebar"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+      </div>
     </aside>
   );
 }
