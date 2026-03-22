@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Power Features
 status: planning
-stopped_at: Completed 06-01-PLAN.md — notification backend done
-last_updated: "2026-03-22T02:31:23.894Z"
+stopped_at: "Checkpoint: Task 3 human-verify — run npm run tauri dev and verify notification UI"
+last_updated: "2026-03-22T02:36:50.495Z"
 last_activity: 2026-03-20 — v2.0 roadmap created, 29 requirements across 7 phases
 progress:
   total_phases: 7
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 1
+  completed_plans: 2
   percent: 42
 ---
 
@@ -51,6 +51,7 @@ Progress: [█████░░░░░] ~42% (v1.0 complete, v2.0 not started
 
 *Updated after each plan completion*
 | Phase 06-notifications P01 | 3 | 2 tasks | 7 files |
+| Phase 06-notifications P02 | 7 | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -68,6 +69,7 @@ Critical v2.0 decisions to carry forward:
 - [v2.0 Research]: Preferences must use delta-patch/serialized single writer to prevent race with drag-reorder
 - [Phase 06-notifications]: Extracted should_send() pure guard function for testability without AppHandle mock
 - [Phase 06-notifications]: shell-only.json scopes notification:default to main window only — app-* webviews excluded from notification plugin
+- [Phase 06-notifications]: Badge dot for muted apps uses reduced opacity to distinguish from unmuted while preserving visual indicator
 
 ### Pending Todos
 
@@ -81,6 +83,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-22T02:31:23.892Z
-Stopped at: Completed 06-01-PLAN.md — notification backend done
+Last session: 2026-03-22T02:36:50.493Z
+Stopped at: Checkpoint: Task 3 human-verify — run npm run tauri dev and verify notification UI
 Resume file: None
