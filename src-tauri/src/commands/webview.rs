@@ -198,6 +198,7 @@ pub fn switch_app_impl(
         let app_handle_loaded = app_handle.clone();
         let app_id_loaded = app_id.clone();
         let builder = WebviewBuilder::new(&label, WebviewUrl::External(url))
+            .user_agent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15")
             .initialization_script(&init_script)
             .on_page_load(move |_wv, _payload| {
                 if let Some(main_wv) = app_handle_loaded.get_webview("main") {
@@ -357,7 +358,7 @@ pub fn set_active_webview_dimmed(
                     if (!d) {
                         d = document.createElement('div');
                         d.id = '__nexus_dim_overlay';
-                        d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2147483647;pointer-events:none;transition:opacity 0.15s';
+                        d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.15);z-index:2147483647;pointer-events:none;transition:opacity 0.15s';
                         document.documentElement.appendChild(d);
                     }
                     d.style.opacity = '1';
