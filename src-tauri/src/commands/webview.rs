@@ -350,11 +350,27 @@ pub fn set_active_webview_dimmed(
     if let Some(ref app_id) = st.active_app_id {
         let label = format!("app-{}", app_id);
         if let Some(wv) = app_handle.get_webview(&label) {
-            if dimmed {
-                wv.hide().map_err(|e| e.to_string())?;
+            let js = if dimmed {
+                // Add a semi-transparent dark overlay on top of the page content
+                r#"(function(){
+                    let d = document.getElementById('__nexus_dim_overlay');
+                    if (!d) {
+                        d = document.createElement('div');
+                        d.id = '__nexus_dim_overlay';
+                        d.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2147483647;pointer-events:none;transition:opacity 0.15s';
+                        document.documentElement.appendChild(d);
+                    }
+                    d.style.opacity = '1';
+                    d.style.display = 'block';
+                })()"#
             } else {
-                wv.show().map_err(|e| e.to_string())?;
-            }
+                // Remove the overlay
+                r#"(function(){
+                    let d = document.getElementById('__nexus_dim_overlay');
+                    if (d) d.style.display = 'none';
+                })()"#
+            };
+            let _ = wv.eval(js);
         }
     }
     Ok(())
