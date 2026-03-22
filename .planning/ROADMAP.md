@@ -25,7 +25,7 @@ Full details: [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
 **Milestone Goal:** Nexus evolves from a simple app switcher into a full workspace manager — spaces for context switching, multi-account support, split view for productivity, native notifications, and premium visual polish.
 
 - [x] **Phase 6: Notifications** — Native OS notifications from webview apps with per-app mute control
-- [ ] **Phase 7: Polish & Sidebar** — Smooth animations, numeric unread count, sidebar resize, SettingsPanel shell
+- [x] **Phase 7: Polish & Sidebar** — Smooth animations, numeric unread count, sidebar resize, SettingsPanel shell (completed 2026-03-22)
 - [ ] **Phase 8: Spaces** — Named workspace contexts with independent app sets and compound key migration
 - [ ] **Phase 9: Preferences** — In-app settings panel with full appearance customization
 - [ ] **Phase 10: Multi-Account** — Multiple isolated sessions for the same app (conditional — validation spike required)
@@ -60,7 +60,7 @@ Plans:
   4. User can drag the sidebar edge to resize it; at narrow widths it collapses to icon-only mode (no labels)
   5. User can pin favorite apps to a "Favs" section at the top of the sidebar that persists across all spaces
   6. A SettingsPanel component shell is present and openable — content is populated in Phase 9
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 Plans:
 - [ ] 07-01-PLAN.md — Config schema + motion install + animations + numeric badge + toggle button
 - [ ] 07-02-PLAN.md — Sidebar edge-drag resize + icon-only collapse mode
@@ -133,7 +133,7 @@ Plans:
 | 4. Performance & Activity | v1.0 | 3/3 | Complete | 2026-03-19 |
 | 5. Cross-Platform Distribution | v1.0 | 4/4 | Complete | 2026-03-20 |
 | 6. Notifications | v2.0 | 2/2 | Complete | 2026-03-21 |
-| 7. Polish & Sidebar | 2/3 | In Progress|  | - |
+| 7. Polish & Sidebar | 3/3 | Complete   | 2026-03-22 | - |
 | 8. Spaces | v2.0 | 0/? | Not started | - |
 | 9. Preferences | v2.0 | 0/? | Not started | - |
 | 10. Multi-Account | v2.0 | 0/? | Not started | - |

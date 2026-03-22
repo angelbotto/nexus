@@ -44,7 +44,7 @@ Requirements for v2.0 Power Features milestone. Each maps to roadmap phases.
 
 - [x] **SIDE-01**: User can resize sidebar width by dragging the edge
 - [x] **SIDE-02**: Sidebar collapses to icon-only mode at narrow widths (no labels, just favicons)
-- [ ] **SIDE-03**: User can pin favorite apps to a "Favs" section at the top of the sidebar (always visible across spaces, Arc-style)
+- [x] **SIDE-03**: User can pin favorite apps to a "Favs" section at the top of the sidebar (always visible across spaces, Arc-style)
 
 ### Preferences & Customization
 
@@ -96,7 +96,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PLSH-03 | Phase 7 | Complete |
 | SIDE-01 | Phase 7 | Complete |
 | SIDE-02 | Phase 7 | Complete |
-| SIDE-03 | Phase 7 | Pending |
+| SIDE-03 | Phase 7 | Complete |
 | SPAC-01 | Phase 8 | Pending |
 | SPAC-02 | Phase 8 | Pending |
 | SPAC-03 | Phase 8 | Pending |
